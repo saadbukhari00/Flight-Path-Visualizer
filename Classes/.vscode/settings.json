@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "*.asm": "code-text-binary",
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "fstream": "cpp"
     }
 }

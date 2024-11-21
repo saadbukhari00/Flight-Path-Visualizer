@@ -3,6 +3,12 @@
 #include<ctime>
 #include<string>
 #include<fstream>
-#include<sstream>
+#include <cstring>
+#include<heap.h>
+#include<Flight.h>
+#include<queue.h>
+#include<stack.h>
+#include<list.h>
+#include<FileHandling.h>
 
 using namespace std;

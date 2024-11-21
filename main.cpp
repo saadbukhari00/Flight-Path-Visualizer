@@ -1,5 +1,8 @@
 //#include <SFML/Graphics.hpp>
-#include <iostream>
+
+#include<Classes/main.h>
+
+
 using namespace std;
 
 class Flight {
