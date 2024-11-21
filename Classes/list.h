@@ -1,18 +1,25 @@
-#include<main.h>
-
+#include"main.h"
+    struct FlightData
+    {
+        char origin[50], destination[50], date[20], departureTime[10], arrivalTime[10], airline[50];
+        int price;
+    };
 class LinkedList
 {
 private:
-    struct Node
-    {
-        int data;
-        Node * next;
+    class FlightNode{
+    public:
+        FlightNode * next;
+        FlightData flight;
+    public:
+        FlightNode() { next = NULL; }
+        FlightNode(FlightData &x) { flight = x; next = NULL; }
     };
-    Node * head;
+    FlightNode * head;
 public:
     LinkedList(void);
-    void insert(int x);
-    void remove(int x);
+    void insert(FlightData&);
+    void remove(string);
     void Display(void);
     void clear(void);
 };

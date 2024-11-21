@@ -1,4 +1,4 @@
-#include<stack.h>
+#include"stack.h"
     
     Stack::Stack(void){top = NULL; currentElements = 0; size = 0;}
     Stack::Stack(int s)
