@@ -38,11 +38,6 @@ Queue flightQueue;
 
 public:
 
-
-
-
-
-
 };
 
 // UserInterface class
