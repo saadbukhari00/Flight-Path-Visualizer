@@ -8,7 +8,7 @@
         currentElements = 0;
     }
         
-        void Stack::Push(char character)
+        void Stack::Push(const Flight& flight)
         {
             if(isFull())
             {
@@ -16,7 +16,7 @@
             }
             Node * newNode = new Node;
             newNode->next = NULL;
-            newNode->character = character;
+            newNode->flightdata = flight;
 
             if(top == NULL)
             {
@@ -29,20 +29,21 @@
             }
             currentElements++;
         }
-        char Stack::Pop(void)
+        Flight Stack::Pop(void)
         {
+            Flight popFlight;
             if(!isEmpty())
             {
-                char tp = top->character;
+                popFlight = top->flightdata;
                 Node * del = new Node;
                 del = top;
                 top = top->next;
             
                 delete del;
                 currentElements--;
-                return tp;
+                return popFlight;
             }
-            return '\0';
+            return popFlight;
         }
 
         bool Stack::isEmpty()
@@ -69,12 +70,16 @@
                 curr = nxt;
             }
         }
-        char Stack::Top()
+        Flight Stack::Top()
         {
             if(!isEmpty())
-                return top->character;
+                return top->flightdata;
             else
-                return '\0';
+            {
+                Flight emptyFlight = {};
+                return emptyFlight;
+            }
+
         }
 
         void Stack::Display()
@@ -88,7 +93,7 @@
             Node* curr = top;
             while(curr)
             {
-                cout<<curr->character<<" ";
+                curr->flightdata.display();
                 curr = curr->next;
             }        
         }
