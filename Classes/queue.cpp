@@ -19,10 +19,31 @@
         }
     }
 
-    void Queue::Enqueue(int x, int pri)
+    void Queue::enqueue(const Flight& flight)
     {
         Node * newNode = new Node;
-        newNode->S = x;
+        newNode->flightData = flight;
+        newNode->priority = 0;
+        newNode->next = NULL;
+
+        if(front == NULL && rear == NULL)
+        {
+            //jab queue empty ho
+            front = newNode;
+            rear = newNode;
+        }
+        else
+        {
+            //add at the end
+            rear->next = newNode;
+            rear = newNode;
+        }   
+    }
+
+    void Queue::PriorityEnqueue(const Flight& flight, int pri)
+    {
+        Node * newNode = new Node;
+        newNode->flightData = flight;
         newNode->priority = pri;
         newNode->next = NULL;
 
@@ -119,14 +140,14 @@
         }
     }
 
-    int Queue::Front()
+    Flight Queue::Front()
     {
-        return front->S;
+        return front->flightData;
     }
 
-    int Queue::Rear()
+    Flight Queue::Rear()
     {
-        return rear->S;
+        return rear->flightData;
     }
 
     bool Queue::isEmpty()
@@ -158,7 +179,7 @@
             Node* curr = front;
             while(curr)
             {
-                cout<<curr->S<<" ";
+                curr->flightData.display();
                 curr = curr->next;
             }
         }
