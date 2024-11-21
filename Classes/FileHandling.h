@@ -10,6 +10,7 @@ struct Flight
                 << ", Date: " << date << ", Departure: " << departureTime
                 << ", Arrival: " << arrivalTime << ", Price: " << price
                 << ", Airline: " << airline << "\n";
+                cout<<endl;
     }
 
 };
