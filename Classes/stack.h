@@ -1,9 +1,9 @@
 #include"main.h"
-
+#include"FileHandling.h"
 class Stack{
 private:
         struct Node{
-            char character;
+            Flight flightdata;
             Node * next;
         };
         Node * top;
@@ -14,9 +14,9 @@ public:
     Stack(void);
     Stack(int s);
 
-    void Push(char character);
-    char Pop(void);
-    char Top(void);
+    void Push(const Flight&);
+    Flight Pop(void);
+    Flight Top(void);
     void Clear(void);
     bool isEmpty(void);
     bool isFull(void);
