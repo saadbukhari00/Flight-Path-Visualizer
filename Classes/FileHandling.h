@@ -1,19 +1,5 @@
 #include"main.h"
-struct Flight 
-{
-    char origin[50], destination[50], date[20], departureTime[10], arrivalTime[10], airline[50];
-    int price;
 
-    void display()
-    {
-         cout <<" Origin: " << origin << ", Destination: " << destination
-                << ", Date: " << date << ", Departure: " << departureTime
-                << ", Arrival: " << arrivalTime << ", Price: " << price
-                << ", Airline: " << airline << "\n";
-                cout<<endl;
-    }
-
-};
 
 struct Hotel 
 {
@@ -31,8 +17,11 @@ private:
 public:
     FileHandling(int = 50, int = 50);
 
-    void readFlightsFile();
-    void readHotelsFile();
+    int getFlightCount() const;
+    int getHotelCount() const;
+
+    Flight* readFlightsFile();
+    Hotel* readHotelsFile();
     
     void displayFlights() const;
     void displayHotels() const;

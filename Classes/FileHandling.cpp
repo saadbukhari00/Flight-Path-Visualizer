@@ -9,20 +9,29 @@
         hotelCount = 0;
     }
 
-    void FileHandling::readFlightsFile() {
-        const char* fileName = "flights.txt";
+    int FileHandling::getFlightCount() const {
+        return flightCount;
+    }
+
+    int FileHandling::getHotelCount() const {
+        return hotelCount;
+    }
+
+    Flight* FileHandling::readFlightsFile() 
+    {
+        const char* fileName = "FlightSchedule.txt";
         ifstream file(fileName);
         if(!file.is_open()) 
         {
-            cout << "Error! Could not open the flights file\n";
-            return;
+            cout << "Error: Could not open the flights file.\n";
+            return nullptr;
         }
         char line[256];
         while(file.getline(line, sizeof(line))) 
         {
             if(flightCount >= maxFlights) 
             {
-                cout << "Error! Maximum flight capacity reached\n";
+                cout << "Error: Maximum flight capacity reached.\n";
                 break;
             }
             sscanf(line, "%s %s %s %s %s %d %s", flights[flightCount].origin, flights[flightCount].destination, flights[flightCount].date,
@@ -30,15 +39,16 @@
             flightCount++;
         }
         file.close();
+        return flights;
     }
 
-    void FileHandling::readHotelsFile() {
+    Hotel* FileHandling::readHotelsFile() {
         const char* fileName = "HotelCharges_perday.txt";
         ifstream file(fileName);
         if(!file.is_open()) 
         {
             cout << "Error: Could not open the hotels file.\n";
-            return;
+            return nullptr;
         }
         char line[256];
         while(file.getline(line, sizeof(line))) 
@@ -52,6 +62,7 @@
             hotelCount++;
         }
         file.close();
+        return hotels;
     }
 
     void FileHandling::displayFlights() const {

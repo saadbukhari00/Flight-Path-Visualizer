@@ -2,7 +2,7 @@
 
     LinkedList::LinkedList(void){head=NULL;}
 
-    void LinkedList::insert(FlightData &x){
+    void LinkedList::insert(Flight &x){
         FlightNode *newNode=new FlightNode(x);
         newNode->next=NULL;
         if(head==NULL){
