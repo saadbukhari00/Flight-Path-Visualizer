@@ -1,8 +1,7 @@
 /*
-COMMAND FOR COMPILATION MAC //NOTE - (change with location of where you installed SFML):
-g++ -I/opt/homebrew/opt/sfml/include -L/opt/homebrew/opt/sfml/lib main.cpp Classes/*.cpp -o FlightPathVisualizer -lsfml-graphics -lsfml-window -lsfml-system
+COMMAND FOR COMPILATION MAC NOTE - (change with location of where you installed SFML):
+g++ -I/opt/homebrew/opt/sfml/include -L/opt/homebrew/opt/sfml/lib main.cpp Classes/.cpp -o FlightPathVisualizer -lsfml-graphics -lsfml-window -lsfml-system
 */
-
 
 #include "Classes/main.h"
 #include "Classes/list.h"
