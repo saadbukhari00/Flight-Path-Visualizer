@@ -1,5 +1,7 @@
-#include"main.h"
+#ifndef FILEHANDLING_H
+#define FILEHANDLING_H
 
+#include "main.h"
 
 struct Hotel 
 {
@@ -40,3 +42,5 @@ public:
 
     ~FileHandling();
 };
+
+#endif

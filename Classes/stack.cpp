@@ -76,7 +76,7 @@
                 return top->flightdata;
             else
             {
-                Flight emptyFlight = {};
+                Flight emptyFlight;
                 return emptyFlight;
             }
 

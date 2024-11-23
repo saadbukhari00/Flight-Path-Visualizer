@@ -19,7 +19,7 @@
 
     Flight* FileHandling::readFlightsFile() 
     {
-        const char* fileName = "FlightSchedule.txt";
+        const char* fileName = "Assets/flights.txt";
         ifstream file(fileName);
         if(!file.is_open()) 
         {
@@ -81,7 +81,6 @@
             cout << "Hotel " << i + 1 << ": City: " << hotels[i].city << ", Charge per Day: " << hotels[i].chargePerDay << "\n";
         }
     }
-
 
     void FileHandling::searchByOrigin(const char* origin) const {
         for(int i = 0; i < flightCount; i++)
