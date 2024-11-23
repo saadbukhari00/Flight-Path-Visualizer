@@ -3,6 +3,10 @@ COMMAND FOR COMPILATION MAC NOTE - (change with location of where you installed 
 g++ -I/opt/homebrew/opt/sfml/include -L/opt/homebrew/opt/sfml/lib main.cpp Classes/.cpp -o FlightPathVisualizer -lsfml-graphics -lsfml-window -lsfml-system
 */
 
+/* added by Huzaifa for compilation on my system
+ g++ -o FlightPathVisualizer main.cpp Classes/FileHandling.cpp -lsfml-graphics -lsfml-window -lsfml-system
+*/
+
 #include "Classes/main.h"
 #include "Classes/list.h"
 #include "Classes/heap.h"
