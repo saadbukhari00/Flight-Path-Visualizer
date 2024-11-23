@@ -43,7 +43,7 @@
     }
 
     Hotel* FileHandling::readHotelsFile() {
-        const char* fileName = "HotelCharges_perday.txt";
+        const char* fileName = "Assets/HotelCharges_perday.txt";
         ifstream file(fileName);
         if(!file.is_open()) 
         {
@@ -84,10 +84,17 @@
 
     void FileHandling::searchByOrigin(const char* origin) const {
         for(int i = 0; i < flightCount; i++)
+        {
             if(strcmp(flights[i].origin, origin) == 0)
+            {
                 cout << "Flight " << i + 1 << ": Destination: " << flights[i].destination << ", Date: " << flights[i].date
                     << ", Departure: " << flights[i].departureTime << ", Arrival: " << flights[i].arrivalTime
                     << ", Price: " << flights[i].price << ", Airline: " << flights[i].airline << "\n";
+                return;
+            }
+        }
+        cout << "Flight not found"<<endl;
+
     }
     void FileHandling::searchByDestination(const char* destination) const {
         for(int i = 0; i < flightCount; i++)
@@ -100,6 +107,7 @@
     {
         return (index >= 0 && index < flightCount) ? &flights[index] : nullptr;
     }
+    
     void FileHandling::searchByDate(const char* date) const {
         for (int i = 0; i < flightCount; i++)
             if (strcmp(flights[i].date, date) == 0)
