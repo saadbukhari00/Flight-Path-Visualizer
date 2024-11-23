@@ -20,13 +20,17 @@
     }
 
     void FlightGraph::initializeCityCoordinates() {
-        addCity("Islamabad", sf::Vector2f(0.68f, 0.45f));  
-        addCity("Newyork", sf::Vector2f(0.10f, 0.20f));     
-        addCity("Paris", sf::Vector2f(0.35f, 0.22f));       
-        addCity("Tokyo", sf::Vector2f(0.85f, 0.40f));       
-        addCity("Singapore", sf::Vector2f(0.82f, 0.62f));   
-        addCity("Sydney", sf::Vector2f(0.92f, 0.80f));      
-        addCity("London", sf::Vector2f(0.32f, 0.18f));      
+        addCity("Islamabad", sf::Vector2f(0.74f, 0.45f));
+        addCity("Newyork", sf::Vector2f(0.35f, 0.35f));
+        addCity("Paris", sf::Vector2f(0.53f, 0.38f));
+        addCity("London", sf::Vector2f(0.51f, 0.36f));
+        addCity("Berlin", sf::Vector2f(0.55f, 0.35f));
+        addCity("Seoul", sf::Vector2f(0.90f, 0.45f));
+        addCity("Amsterdam", sf::Vector2f(0.53f, 0.36f));
+        addCity("Singapore", sf::Vector2f(0.84f, 0.64f));
+        addCity("Tokyo", sf::Vector2f(0.95f, 0.45f));
+        addCity("Hongkong", sf::Vector2f(0.87f, 0.53f));
+        addCity("Sydney", sf::Vector2f(0.98f, 0.84f));
     }
 
     sf::Vector2f FlightGraph::getCityPosition(const char* city){
@@ -131,7 +135,18 @@
             }
 
             sf::Text cityName(coordinates[i].city, font, 12);
-            cityName.setPosition(scaledPos.x + 10, scaledPos.y - 10);
+            if (strcmp(coordinates[i].city, "London") == 0) {
+        // Adjust the position for Newyork (move the text down more)
+        cityName.setPosition(scaledPos.x - 25, scaledPos.y + 10); // Move text below the dot
+    }
+    else if (strcmp(coordinates[i].city, "Amsterdam") == 0) {
+        // Adjust the position for Amsterdam (move the text above the dot)
+        cityName.setPosition(scaledPos.x - 20, scaledPos.y - 25);
+        }
+         else {
+        // For all other cities, set the normal position
+        cityName.setPosition(scaledPos.x - 7, scaledPos.y + 10); // Normal distance
+    }
             cityName.setFillColor(sf::Color::Black);
             window.draw(cityName);
         }
