@@ -42,12 +42,12 @@ private:
     sf::Text originText, destText, dateText, searchText;
     string originInput, destInput, dateInput;
     FlightGraph& flightGraph;
-    int selectedOriginIndex = -1, selectedDestIndex = -1;
+    int selectedOriginIndex, selectedDestIndex;
 
     // Flag to check which field is focused
-    bool isOriginFocused = true;
-    bool isDestFocused = false;
-    bool isDateFocused = false;
+    bool isOriginFocused;
+    bool isDestFocused;
+    bool isDateFocused;
 
 public:
     FlightBookingGUI(sf::RenderWindow& win, FlightGraph& graph) : window(win), flightGraph(graph){
