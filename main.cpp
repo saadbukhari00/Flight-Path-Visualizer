@@ -37,24 +37,30 @@ class FlightBookingGUI {
 private:
     sf::RenderWindow& window;
     sf::Font font;
-    // Input fields
+    
     sf::RectangleShape originBox, destBox, dateBox, searchButton;
     sf::Text originText, destText, dateText, searchText;
     string originInput, destInput, dateInput;
     FlightGraph& flightGraph;
     int selectedOriginIndex, selectedDestIndex;
 
-    // Flag to check which field is focused
+    
     bool isOriginFocused;
     bool isDestFocused;
     bool isDateFocused;
 
 public:
-    FlightBookingGUI(sf::RenderWindow& win, FlightGraph& graph) : window(win), flightGraph(graph){
-        // Load font
-        font.loadFromFile("Assets/Aller_Bd.ttf"); // Ensure Arial font file is available
+    FlightBookingGUI(sf::RenderWindow& win, FlightGraph& graph) : window(win), flightGraph(graph)
+    {
+        selectedOriginIndex = -1;
+        selectedDestIndex = -1;
+        isOriginFocused = true;
+        isDestFocused = false;
+        isDateFocused = false;
+        
+        font.loadFromFile("Assets/Aller_Bd.ttf");
 
-        // Initialize UI elements
+        
         originBox.setSize(sf::Vector2f(200, 30));
         originBox.setPosition(100, 100);
         originBox.setFillColor(sf::Color::White);
@@ -82,7 +88,6 @@ public:
         dateText.setFillColor(sf::Color::Black);
         dateText.setString("Date (DD/MM/YYYY): ");
 
-        // Search button
         searchButton.setSize(sf::Vector2f(100, 40));
         searchButton.setPosition(100, 250);
         searchButton.setFillColor(sf::Color::Green);
@@ -93,69 +98,95 @@ public:
         searchText.setString("Search");
     }
 
-    void handleInput() {
+    void handleInput() 
+    {
         sf::Event event;
-        while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed) {
+        while(window.pollEvent(event)) 
+        {
+            if(event.type == sf::Event::Closed) 
+            {
                 window.close();
             }
 
-           if (event.type == sf::Event::TextEntered) {
-                if (event.text.unicode < 128) {
-                    if (event.text.unicode == 8) { // Backspace key
-                        // Remove last character for the focused field
-                        if (isOriginFocused && !originInput.empty()) {
+           if(event.type == sf::Event::TextEntered) 
+           {
+                if(event.text.unicode < 128) 
+                {
+                    if(event.text.unicode == 8) 
+                    {
+                        
+                        if(isOriginFocused && !originInput.empty()) 
+                        {
                             originInput.pop_back();
-                        } else if (isDestFocused && !destInput.empty()) {
+                        } 
+                        else if(isDestFocused && !destInput.empty()) 
+                        {
                             destInput.pop_back();
-                        } else if (isDateFocused && !dateInput.empty()) {
+                        } 
+                        else if(isDateFocused && !dateInput.empty()) 
+                        {
                             dateInput.pop_back();
                         }
-                    } else if (event.text.unicode == 13) { // Enter key
-                        // Shift focus to the next field
-                        if (isOriginFocused) {
+                    } 
+                    else if(event.text.unicode == 13) 
+                    {
+                       
+                        if(isOriginFocused)
+                        {
                             isOriginFocused = false;
                             isDestFocused = true;
-                        } else if (isDestFocused) {
+                        } 
+                        else if(isDestFocused) 
+                        {
                             isDestFocused = false;
                             isDateFocused = true;
                         }
-                    } else {
-                        // Add character to the focused input field
-                        if (isOriginFocused) {
+                    } 
+                    else 
+    {
+                        if(isOriginFocused)
+                        {
                             originInput += static_cast<char>(event.text.unicode);
-                        } else if (isDestFocused) {
+                        } 
+                        else if(isDestFocused) 
+                        {
                             destInput += static_cast<char>(event.text.unicode);
-                        } else if (isDateFocused) {
+                        } 
+                        else if(isDateFocused) 
+                        {
                             dateInput += static_cast<char>(event.text.unicode);
                         }
                     }
                 }
             }
 
-            // Handle mouse click events for shifting focus
-        if (event.type == sf::Event::MouseButtonPressed) {
-            // Check if click is within Origin field
-            if (originBox.getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y)) {
+            
+        if(event.type == sf::Event::MouseButtonPressed) 
+        {
+            
+            if(originBox.getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y)) 
+            {
                 isOriginFocused = true;
                 isDestFocused = false;
                 isDateFocused = false;
             }
-            // Check if click is within Destination field
-            else if (destBox.getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y)) {
+            
+            else if(destBox.getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y)) 
+            {
                 isOriginFocused = false;
                 isDestFocused = true;
                 isDateFocused = false;
             }
-            // Check if click is within Date field
-            else if (dateBox.getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y)) {
+            
+            else if(dateBox.getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y)) 
+            {
                 isOriginFocused = false;
                 isDestFocused = false;
                 isDateFocused = true;
             }
 
-            // Handle search button click (if any)
-            if (searchButton.getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y)) {
+            
+            if(searchButton.getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y)) {
                 handleSearch();
             }
         }
@@ -190,7 +221,6 @@ public:
         window.draw(searchButton);
         window.draw(searchText);
 
-        // Draw the input text in the boxes
         sf::Text inputOriginText;
         inputOriginText.setFont(font);
         inputOriginText.setCharacterSize(20);
@@ -220,7 +250,8 @@ public:
     }
 
     void run() {
-        while (window.isOpen()) {
+        while(window.isOpen()) 
+        {
             handleInput();
             draw();
         }
@@ -232,11 +263,11 @@ int main() {
     FileHandling fileHandler;
     FlightGraph graph(50, fileHandler, 50);
     
-
     graph.populateGraph();
 
     sf::Texture mapTexture;
-    if (!mapTexture.loadFromFile("Assets/world_map.png")) {
+    if(!mapTexture.loadFromFile("Assets/world_map.png")) 
+    {
         std::cerr << "Error loading world_map.png. Ensure the file exists in the 'Assets' folder.\n";
         return -1;
     }
@@ -245,27 +276,26 @@ int main() {
     sf::RenderWindow appWindow(sf::VideoMode(800, 600), "Flight Booking GUI");
     FlightBookingGUI app(appWindow, graph);
 
-    while (mapWindow.isOpen() && appWindow.isOpen()) {
+    while(mapWindow.isOpen() && appWindow.isOpen()) 
+    {
         sf::Event event;
 
-        // Map window event handling
-        while (mapWindow.pollEvent(event)) {
-            if (event.type == sf::Event::Closed)
+        while(mapWindow.pollEvent(event)) 
+        {
+            if(event.type == sf::Event::Closed)
                 mapWindow.close();
         }
         mapWindow.clear();
         graph.displayOnMap(mapWindow,mapTexture); 
         mapWindow.display();
 
-        // App window event handling
-        while (appWindow.pollEvent(event)) {
-            if (event.type == sf::Event::Closed)
+        while(appWindow.pollEvent(event)) 
+        {
+            if(event.type == sf::Event::Closed)
                 appWindow.close();
         }
         appWindow.clear(sf::Color::White);
         app.run();
         appWindow.display();
     }
-
-    return 0;
 }
