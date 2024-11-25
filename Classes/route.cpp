@@ -289,3 +289,22 @@ void Route::listAllFlightsWithinDateRange(const char* startDate, const char* end
         cout << "No indirect flights found within the specified date range.\n";
     }
 }
+
+
+void FlightGraph::displayFlights() 
+{
+    cout << "Current Available Direct Flights:\n";
+    for (int i = 0; i < numVertices; i++) {
+        Edge* edge = vertices[i].head;
+        while (edge) {
+            cout << vertices[i].city << " -> " 
+                 << vertices[edge->destination].city 
+                 << " | Distance: " << edge->flightData->distance 
+                 << " km | Cost: $" << edge->flightData->cost 
+                 << "\n";
+            edge = edge->next;
+        }
+    }
+    cout << endl;
+}
+
