@@ -1,6 +1,0 @@
-{
-    "files.associations": {
-        "*.asm": "code-text-binary",
-        "ios": "cpp"
-    }
-}
