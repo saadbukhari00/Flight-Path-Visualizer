@@ -193,6 +193,23 @@ public:
 
     void handleSearch() 
     {
+    if (originInput.empty() || destInput.empty() || dateInput.empty()) 
+    {
+        std::cout << "Please fill in all fields.\n";
+        return;
+    }
+
+    Route route(flightGraph);
+    std::ostringstream resultStream;  // For formatting the result
+
+    // Search for the shortest route
+    route.displayFlight(originInput.c_str(), destInput.c_str());
+
+    // Update resultText to display the result (you can capture the output in `resultStream`)
+    resultText.setString(resultStream.str());
+
+    // Refresh the window to show the updated result
+    window.draw(resultText);
             
     }
 
