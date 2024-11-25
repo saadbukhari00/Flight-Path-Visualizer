@@ -243,3 +243,85 @@ void Route::findFlightsWithinRange(const char* startCity, int minRange, int maxR
         }
     }
 }
+
+
+void Route::displayIndirectFlights(const char* startCity, const char* endCity) 
+{
+    int startIndex = flightGraph.getCityIndex(startCity);
+    int endIndex = flightGraph.getCityIndex(endCity);
+
+    if (startIndex == -1 || endIndex == -1) 
+    {
+        cerr << "Invalid city name(s): " << startCity << " or " << endCity << "\n";
+        return;
+    }
+
+    cout << "Indirect flights from " << startCity << " to " << endCity << ":\n";
+
+    bool found = false;
+    // Explore all neighbors of the start city
+    Edge* edge = flightGraph.getVertices()[startIndex].head;
+    while (edge) 
+    {
+        int intermediateIndex = edge->destination;
+        // Check if there's a direct flight from this intermediate city to the destination
+        Edge* intermediateEdge = flightGraph.getVertices()[intermediateIndex].head;
+        while (intermediateEdge) 
+        {
+            if (intermediateEdge->destination == endIndex) 
+            {
+                found = true;
+                cout << "Route: " << startCity << " -> " 
+                          << flightGraph.getVertices()[intermediateIndex].city << " -> "
+                          << endCity << "\n";
+                cout << "Total Distance: " << (edge->flightData->distance + intermediateEdge->flightData->distance) << " km\n";
+                cout << "Total Cost: " << (edge->flightData->price + intermediateEdge->flightData->price) << "\n\n";
+            }
+            intermediateEdge = intermediateEdge->next;
+        }
+        edge = edge->next;
+    }
+
+    if (!found) 
+    {
+        cout << "No indirect flights available from " << startCity << " to " << endCity << ".\n";
+    }
+}
+
+void Route::listFlightsWithinDateRange(const char* startDate, const char* endDate)
+{
+    cout << "Flights available between " << startDate << " and " << endDate << ":\n";
+
+    struct tm start = {}, end = {};
+    strptime(startDate, "%Y-%m-%d", &start);
+    strptime(endDate, "%Y-%m-%d", &end);
+
+    bool found = false;
+
+    for (int i = 0; i < flightGraph.getNumVertices(); i++)
+    {
+        Edge* edge = flightGraph.getVertices()[i].head;
+        while (edge) 
+        {
+            struct tm flightDate = {};
+            strptime(edge->flightData->date, "%Y-%m-%d", &flightDate);
+
+            if (difftime(mktime(&flightDate), mktime(&start)) >= 0 &&
+                difftime(mktime(&end), mktime(&flightDate)) >= 0) 
+            {
+                found = true;
+                cout << "Flight: " << flightGraph.getVertices()[i].city << " -> "
+                          << flightGraph.getVertices()[edge->destination].city << "\n";
+                cout << "Date: " << edge->flightData->date << "\n";
+                cout << "Distance: " << edge->flightData->distance << " km\n";
+                cout << "Cost: " << edge->flightData->price << "\n\n";
+            }
+            edge = edge->next;
+        }
+    }
+
+    if (!found) 
+    {
+        cout << "No flights found within the specified date range.\n";
+    }
+}
