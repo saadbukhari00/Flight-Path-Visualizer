@@ -1,7 +1,0 @@
-{
-    "files.associations": {
-        "*.asm": "code-text-binary",
-        "iostream": "cpp",
-        "fstream": "cpp"
-    }
-}
