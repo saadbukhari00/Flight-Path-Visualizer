@@ -5,6 +5,7 @@
 #include <climits>
 #include <cstring>
 #include <iostream>
+#include <ctime>
 
 class Route 
 {
@@ -27,6 +28,9 @@ public:
     void displayFlights(const char* city);
 
     void findFlightsWithinRange(const char* startCity, int minRange, int maxRange);
+
+     void displayIndirectFlights(const char* startCity, const char* endCity);  // List indirect flights
+     void listFlightsWithinDateRange(const char* startDate, const char* endDate); // Flights in date range
 };
 
 #endif // ROUTE_H
