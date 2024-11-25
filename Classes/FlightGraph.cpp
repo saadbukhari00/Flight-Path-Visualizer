@@ -165,3 +165,13 @@
         delete[] vertices;
         delete[] coordinates;
     }
+    
+    
+    
+    int FlightGraph::getNumVertices() const {
+    return vertexCount;
+}
+
+FlightGraph::Vertex* FlightGraph::getVertices() {
+    return vertices;
+}

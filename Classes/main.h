@@ -19,6 +19,8 @@ struct Flight
     char departureTime[50];
     char arrivalTime[50];
     int price;
+    int distance;
+
 
     Flight()
     {
@@ -28,6 +30,7 @@ struct Flight
         strcpy(date, "");
         strcpy(departureTime, "");
         strcpy(arrivalTime, "");
+        distance = 0;
         price = 0;
     }
 

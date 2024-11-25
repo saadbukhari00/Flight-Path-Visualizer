@@ -2,7 +2,7 @@
 #include "FileHandling.h"
 
 class FlightGraph {
-private:
+public:
     struct Edge {
         int destination;
         Flight* flightData;
@@ -25,11 +25,11 @@ private:
     CityCoordinate* coordinates;
     int vertexCount, coordinateCount;
     FileHandling& fileHandler;
+    
 
     int getCityIndex(const char* city);
     sf::Vector2f getCityPosition(const char* city);
 
-public:
     FlightGraph(int size,FileHandling& fileHandler,int maxCoordinates);
     void initializeCityCoordinates();
     void addCity(const char* city,sf::Vector2f position);
@@ -39,4 +39,7 @@ public:
     void adjustForOverlaps();
     void displayOnMap(sf::RenderWindow& window,const sf::Texture& mapTexture);
     ~FlightGraph();
+    
+    int getNumVertices() const;
+    Vertex* getVertices();
 };

@@ -25,12 +25,13 @@ public:
 
     void listShortestAndCheapest(const char* startCity, const char* endCity);
 
-    void displayFlights(const char* city);
+    void displayFlight(const char* originCity, const char* destinationCity);
 
     void findFlightsWithinRange(const char* startCity, int minRange, int maxRange);
 
      void displayIndirectFlights(const char* startCity, const char* endCity);  // List indirect flights
-     void listFlightsWithinDateRange(const char* startDate, const char* endDate); // Flights in date range
+     void listAllFlightsWithinDateRange(const char* originCity, const char* destinationCity, const char* startDate, const char* endDate);
+     bool isWithinDateRange(const char* flightDate, const char* startDate, const char* endDate);
 };
 
 #endif // ROUTE_H
