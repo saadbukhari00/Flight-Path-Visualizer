@@ -21,10 +21,6 @@ public:
     // Add attributes and methods for user preferences
 };
 
-class RouteFinder {
-public:
-    // Implement route-finding algorithms here
-};
 
 class LayoverManager {
     Queue flightQueue;
@@ -33,7 +29,8 @@ public:
     // Implement layover management here
 };
 
-class FlightBookingGUI {
+class FlightBookingGUI 
+{
 private:
     sf::RenderWindow& window;
     sf::Font font;
@@ -194,20 +191,11 @@ public:
         
     }
 
-    void handleSearch() {
+    void handleSearch() 
+    {
             
     }
 
-
-    void searchFlights(int originIndex, int destIndex) {
-        // Example search for direct flights and connecting flights
-        // Print direct flights
-        
-
-        // If no direct flights, display possible connecting flights
-        //cout << "Searching for connecting flights..." << endl;
-        // Implement the connecting flight logic here (could be BFS or DFS to find layovers)
-    }
 
     void draw() 
     {
