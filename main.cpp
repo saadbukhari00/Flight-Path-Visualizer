@@ -232,6 +232,11 @@ public:
 
         // Display flights in terminal
         route.listAllFlightsWithinDateRange(originInput.c_str(), destInput.c_str(), dateInput.c_str(), dateInput1.c_str());
+        route.displayFlight(originInput.c_str(), destInput.c_str());
+        
+        route.listShortestAndCheapest(originInput.c_str(), destInput.c_str());
+        
+        
     }
 
 

@@ -302,9 +302,23 @@ void Route::listAllFlightsWithinDateRange(const char* originCity, const char* de
 
 bool Route::isWithinDateRange(const char* flightDate, const char* startDate, const char* endDate)
 {
-    // Assuming the date format is "YYYY-MM-DD" and the input dates are valid.
-    return strcmp(flightDate, startDate) >= 0 && strcmp(flightDate, endDate) <= 0;
+    int flight = convertDateToComparableFormat(flightDate);
+    int start = convertDateToComparableFormat(startDate);
+    int end = convertDateToComparableFormat(endDate);
+
+    return flight >= start && flight <= end;
+    
 }
 
 
+int Route::convertDateToComparableFormat(const char* date)
+{
+    int day, month, year;
+    char delimiter1, delimiter2;
 
+    std::stringstream dateStream(date);
+    dateStream >> day >> delimiter1 >> month >> delimiter2 >> year;
+
+    // Convert date into an integer like YYYYMMDD
+    return year * 10000 + month * 100 + day;
+}
