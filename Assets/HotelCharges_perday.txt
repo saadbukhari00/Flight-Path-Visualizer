@@ -5,6 +5,6 @@ Tokyo 15000
 London 10000
 Singapore 18000
 HongKong 7500
-Berline 11000
+Berlin 11000
 Seoul 10500
 Amsterdam 17000

@@ -13,7 +13,7 @@ g++ -I/opt/homebrew/opt/sfml/include -L/opt/homebrew/opt/sfml/lib main.cpp Class
 #include "Classes/stack.h"
 #include "Classes/queue.h"
 #include "Classes/route.h"
-FileHandling files(105, 10); // (number of flights, number of hotel cities)
+#include "Classes/FlightGraph.h"
 
 class FlightBookingGUI 
 {
@@ -93,6 +93,11 @@ public:
         searchText.setFillColor(sf::Color::Black);
         searchText.setString("Search");
     }
+
+    string getOriginInput() const { return originInput; }
+    string getDestInput() const { return destInput; }
+    string getFromDateInput() const { return dateInput; }
+    string getToDateInput() const { return dateInput1; }
 
     void handleInput() {
         sf::Event event;
@@ -216,24 +221,17 @@ public:
     window.clear(sf::Color::White);  // Clear the window and proceed to next frame
 }
 
-    void handleSearch() 
+    void handleSearch()
     {
-    	
+        if (originInput.empty() || destInput.empty() || dateInput.empty() || dateInput1.empty()) {
+            showErrorMessage("Please fill in all fields!");
+            return;
+        }
 
-    Route route(flightGraph);
-    ostringstream resultStream;  // For formatting the result
+        Route route(flightGraph);
 
-    // Search for the shortest route
-    route.displayFlight(originInput.c_str(), destInput.c_str());
-
-    // Update resultText to display the result (you can capture the output in `resultStream`)
-    resultText.setString(resultStream.str());
-
-    // Refresh the window to show the updated result
-    window.draw(resultText);
-
-     route.listAllFlightsWithinDateRange(originInput.c_str(), destInput.c_str(), dateInput.c_str(), dateInput1.c_str());
-            
+        // Display flights in terminal
+        route.listAllFlightsWithinDateRange(originInput.c_str(), destInput.c_str(), dateInput.c_str(), dateInput1.c_str());
     }
 
 
@@ -297,44 +295,120 @@ public:
     }
 };
 
+class MainGUI {
+private:
+    sf::RenderWindow& mainWindow;
+    sf::Font font;
+    sf::RectangleShape bookFlightButton;
+    sf::Text buttonText;
+    FlightGraph& flightGraph;
+
+public:
+    MainGUI(sf::RenderWindow& window, FlightGraph& graph)
+        : mainWindow(window), flightGraph(graph) {
+        font.loadFromFile("Assets/Aller_Bd.ttf");
+
+        // Configure the Book Flight button
+        bookFlightButton.setSize(sf::Vector2f(150, 50));
+        bookFlightButton.setPosition(10, 10);
+        bookFlightButton.setFillColor(sf::Color::Green);
+
+        buttonText.setFont(font);
+        buttonText.setCharacterSize(20);
+        buttonText.setFillColor(sf::Color::Black);
+        buttonText.setString("Book Flight");
+        buttonText.setPosition(25, 20);
+    }
+
+    bool handleEvents() {
+        sf::Event event;
+        while (mainWindow.pollEvent(event)) {
+            if (event.type == sf::Event::Closed) {
+                mainWindow.close();
+                return false;
+            }
+            if (event.type == sf::Event::MouseButtonPressed) {
+                sf::Vector2f mousePos(event.mouseButton.x, event.mouseButton.y);
+                if (bookFlightButton.getGlobalBounds().contains(mousePos)) {
+                    return true; // Switch to booking window
+                }
+            }
+        }
+        return false;
+    }
+
+    void draw() {
+        mainWindow.clear(sf::Color::White);
+
+        // Draw flight graph
+        sf::Texture mapTexture;
+        mapTexture.loadFromFile("Assets/world_map.png");
+        flightGraph.displayOnMap(mainWindow, mapTexture);
+
+        // Draw Book Flight button
+        mainWindow.draw(bookFlightButton);
+        mainWindow.draw(buttonText);
+
+        mainWindow.display();
+    }
+};
+
+class FlightVisualizerApp {
+private:
+    sf::RenderWindow mainWindow;
+    sf::RenderWindow bookingWindow;
+    FlightGraph flightGraph;
+    FileHandling fileHandler;
+
+public:
+    FlightVisualizerApp()
+        : mainWindow(sf::VideoMode(1024, 768), "Flight Graph Visualization"),
+          bookingWindow(sf::VideoMode(800, 600), "Flight Booking"),
+          flightGraph(50, fileHandler),
+          fileHandler(200, 50) {
+        // Initialize graph
+        flightGraph.populateGraph();
+    }
+
+    void run() {
+        MainGUI mainGUI(mainWindow, flightGraph);
+        FlightBookingGUI bookingGUI(bookingWindow, flightGraph);
+
+        while (mainWindow.isOpen()) {
+            // Display main graph with Book Flight option
+            bool bookFlightPressed = mainGUI.handleEvents();
+            mainGUI.draw();
+
+            if (bookFlightPressed) {
+                bookingWindow.setVisible(true);
+
+                while (bookingWindow.isOpen()) {
+                    bookingGUI.handleInput();
+                    bookingGUI.draw();
+
+                    if (!bookingWindow.isOpen()) {
+                        // After booking, highlight flights on the main window
+                        std::string origin = bookingGUI.getOriginInput();
+                        std::string destination = bookingGUI.getDestInput();
+                        std::string fromDate = bookingGUI.getFromDateInput();
+                        std::string toDate = bookingGUI.getToDateInput();
+
+                        // highlight flights on the main window
+                    }
+                }
+            }
+        }
+    }
+};
 
 int main() {
-    FileHandling fileHandler;
-    FlightGraph graph(50, fileHandler, 50);
+    /*FileHandling fileHandler(200, 50);
+    FlightGraph flightGraph(50, fileHandler);
+    flightGraph.populateGraph();
+    flightGraph.displayGraph();*/
     
-    graph.populateGraph();
-
-    sf::Texture mapTexture;
-    if(!mapTexture.loadFromFile("Assets/world_map.png")) 
-    {
-        std::cerr << "Error loading world_map.png. Ensure the file exists in the 'Assets' folder.\n";
-        return -1;
-    }
-
-    sf::RenderWindow mapWindow(sf::VideoMode(1024, 768), "Flight Graph Visualization");
-    sf::RenderWindow appWindow(sf::VideoMode(800, 600), "Flight Booking GUI");
-    FlightBookingGUI app(appWindow, graph);
-
-    while(mapWindow.isOpen() && appWindow.isOpen()) 
-    {
-        sf::Event event;
-
-        while(mapWindow.pollEvent(event)) 
-        {
-            if(event.type == sf::Event::Closed)
-                mapWindow.close();
-        }
-        mapWindow.clear();
-        graph.displayOnMap(mapWindow,mapTexture); 
-        mapWindow.display();
-
-        while(appWindow.pollEvent(event)) 
-        {
-            if(event.type == sf::Event::Closed)
-                appWindow.close();
-        }
-        appWindow.clear(sf::Color::White);
-        app.run();
-        appWindow.display();
-    }
+    
+    FlightVisualizerApp app;
+    app.run();
+    
 }

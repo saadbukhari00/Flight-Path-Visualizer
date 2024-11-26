@@ -57,7 +57,7 @@ void Route::findShortestRoute(const char* startCity, const char* endCity)
         visited[currentIndex] = true;
 
         // Accessing Edge with FlightGraph::Edge
-        FlightGraph::Edge* edge = flightGraph.getVertices()[currentIndex].head;
+        Edge* edge = flightGraph.getVertices()[currentIndex].head;
         while (edge) {
             int neighbor = edge->destination;
             if (!visited[neighbor] && distances[currentIndex] + edge->flightData->distance < distances[neighbor]) {
@@ -119,7 +119,7 @@ void Route::findCheapestRoute(const char* startCity, const char* endCity)
         visited[currentIndex] = true;
 
         // Accessing Edge with FlightGraph::Edge
-        FlightGraph::Edge* edge = flightGraph.getVertices()[currentIndex].head;
+        Edge* edge = flightGraph.getVertices()[currentIndex].head;
         while (edge) 
         {
             int neighbor = edge->destination;
@@ -178,12 +178,12 @@ void Route::displayIndirectFlights(const char* startCity, const char* endCity)
 
     bool found = false;
     // Explore all neighbors of the start city
-    FlightGraph::Edge* edge = flightGraph.getVertices()[startIndex].head;
+    Edge* edge = flightGraph.getVertices()[startIndex].head;
     while (edge) 
     {
         int intermediateIndex = edge->destination;
         // Check if there's a direct flight from this intermediate city to the destination
-        FlightGraph::Edge* intermediateEdge = flightGraph.getVertices()[intermediateIndex].head;
+        Edge* intermediateEdge = flightGraph.getVertices()[intermediateIndex].head;
         while (intermediateEdge) 
         {
             if (intermediateEdge->destination == endIndex) 
@@ -219,7 +219,7 @@ void Route::displayFlight(const char* originCity, const char* destinationCity)
     }
 
     // Check for a direct flight
-    FlightGraph::Edge* edge = flightGraph.getVertices()[originIndex].head;
+    Edge* edge = flightGraph.getVertices()[originIndex].head;
     while (edge) 
     {
         if (edge->destination == destinationIndex) 
@@ -252,7 +252,7 @@ void Route::listAllFlightsWithinDateRange(const char* originCity, const char* de
          << startDate << " and " << endDate << ":\n\n";
 
     // Check direct flights
-    FlightGraph::Edge* edge = flightGraph.getVertices()[originIndex].head;
+    Edge* edge = flightGraph.getVertices()[originIndex].head;
     while (edge) 
     {
         if (edge->destination == destinationIndex && isWithinDateRange(edge->flightData->date, startDate, endDate)) 
@@ -272,7 +272,7 @@ void Route::listAllFlightsWithinDateRange(const char* originCity, const char* de
     while (edge) 
     {
         int intermediateIndex = edge->destination;
-        FlightGraph::Edge* intermediateEdge = flightGraph.getVertices()[intermediateIndex].head;
+        Edge* intermediateEdge = flightGraph.getVertices()[intermediateIndex].head;
 
         while (intermediateEdge) 
         {

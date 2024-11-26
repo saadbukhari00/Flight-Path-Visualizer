@@ -1,45 +1,58 @@
+#ifndef FLIGHT_GRAPH_H
+#define FLIGHT_GRAPH_H
+
 #include "main.h"
 #include "FileHandling.h"
 
+struct Edge {
+    int destination;
+    Flight* flightData;
+    Edge* next;
+
+    Edge(int dest, Flight* data, Edge* nextEdge)
+        : destination(dest), flightData(data), next(nextEdge) {}
+};
+
+struct Vertex {
+    char city[50];
+    Edge* head;
+};
+
+struct CityCoordinate {
+    char city[50];
+    sf::Vector2f position;
+};
+
 class FlightGraph {
-public:
-    struct Edge {
-        int destination;
-        Flight* flightData;
-        Edge* next;
-        Edge(int dest, Flight* data):destination(dest),flightData(data),next(nullptr){}
-    };
-
-    struct Vertex {
-        char city[50];
-        Edge* head;
-        Vertex():head(nullptr){city[0]='\0';}
-    };
-
-    struct CityCoordinate {
-        char city[50];
-        sf::Vector2f position;
-    };
-
+private:
     Vertex* vertices;
     CityCoordinate* coordinates;
-    int vertexCount, coordinateCount;
+    int vertexCount;
+    int maxVertices;
+    int coordinateCount;
     FileHandling& fileHandler;
-    
+    sf::Texture mapTexture;
 
-    int getCityIndex(const char* city);
-    sf::Vector2f getCityPosition(const char* city);
+public:
+    FlightGraph(int size, FileHandling& fileHandler);
+    ~FlightGraph();
 
-    FlightGraph(int size,FileHandling& fileHandler,int maxCoordinates);
+    Vertex* getVertices();
+    int getCityIndex(const char* cityName);
+    int getNumVertices() const;
+
     void initializeCityCoordinates();
-    void addCity(const char* city,sf::Vector2f position);
-    void addFlight(const char* origin,const char* destination,const char* airline,const char* date,const char* flyingTime,const char* landingTime,int price);
+    sf::Vector2f getCityPosition(const std::string& city);
+
+    int findOrAddCity(const char* cityName);
+    void addCity(const char* city, sf::Vector2f position);
+    void addFlight(const char* origin, const char* destination, const char* airline, const char* date,
+                   const char* departureTime, const char* arrivalTime, int price);
+    
     void populateGraph();
     void displayGraph() const;
-    void adjustForOverlaps();
-    void displayOnMap(sf::RenderWindow& window,const sf::Texture& mapTexture);
-    ~FlightGraph();
-    
-    int getNumVertices() const;
-    Vertex* getVertices();
+    void displayOnMap(sf::RenderWindow& window, const sf::Texture& mapTexture);
+
 };
+
+#endif 

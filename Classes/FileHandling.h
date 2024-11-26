@@ -25,6 +25,8 @@ public:
     Flight* readFlightsFile();
     Hotel* readHotelsFile();
     
+
+    void highlightRoutesOnMap(sf::RenderWindow& window, const std::string& origin, const std::string& destination, const std::string& fromDate, const std::string& toDate);
     void displayFlights() const;
     void displayHotels() const;
 

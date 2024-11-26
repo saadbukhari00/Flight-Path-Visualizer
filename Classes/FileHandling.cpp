@@ -17,33 +17,44 @@
         return hotelCount;
     }
 
-    Flight* FileHandling::readFlightsFile() 
-    {
+
+    Flight* FileHandling::readFlightsFile() {
         const char* fileName = "Assets/flights.txt";
         ifstream file(fileName);
-        if(!file.is_open()) 
-        {
-            cout << "Error: Could not open the flights file.\n";
+        if (!file.is_open()) {
+            cout << "Could not open the flights file.\n";
             return nullptr;
         }
+
         char line[256];
-        while(file.getline(line, sizeof(line))) 
-        {
-            if(flightCount >= maxFlights) 
-            {
+        while (file.getline(line, sizeof(line))) {
+            if (flightCount >= maxFlights) {
                 cout << "Error: Maximum flight capacity reached.\n";
                 break;
             }
-            sscanf(line, "%s %s %s %s %s %d %s", flights[flightCount].origin, flights[flightCount].destination, flights[flightCount].date,
-                flights[flightCount].departureTime, flights[flightCount].arrivalTime, &flights[flightCount].price, flights[flightCount].airline);
-            flightCount++;
+
+            int parsed = sscanf(line, "%s %s %s %s %s %d %s %d", 
+                flights[flightCount].origin, 
+                flights[flightCount].destination, 
+                flights[flightCount].date,
+                flights[flightCount].departureTime, 
+                flights[flightCount].arrivalTime, 
+                &flights[flightCount].price, 
+                flights[flightCount].airline,
+                &flights[flightCount].distance);
+
+            if (parsed == 8) {
+                flightCount++;
+            } else {
+                cout << "Error parsing line: " << line << "\n";
+            }
         }
+
         file.close();
         return flights;
     }
-
     Hotel* FileHandling::readHotelsFile() {
-        const char* fileName = "Assets/HotelCharges_perday.txt";
+        const char* fileName = "HotelCharges_perday.txt";
         ifstream file(fileName);
         if(!file.is_open()) 
         {
@@ -66,12 +77,16 @@
     }
 
     void FileHandling::displayFlights() const {
-        for(int i = 0; i < flightCount; i++) 
+        for (int i = 0; i < flightCount; i++) 
         {
-            cout << "Flight " << i + 1 << ": Origin: " << flights[i].origin << ", Destination: " << flights[i].destination
-                << ", Date: " << flights[i].date << ", Departure: " << flights[i].departureTime
-                << ", Arrival: " << flights[i].arrivalTime << ", Price: " << flights[i].price
-                << ", Airline: " << flights[i].airline << "\n";
+            cout << "Flight " << i + 1 << ": Origin: " << flights[i].origin 
+                << ", Destination: " << flights[i].destination
+                << ", Date: " << flights[i].date 
+                << ", Departure: " << flights[i].departureTime
+                << ", Arrival: " << flights[i].arrivalTime 
+                << ", Price: " << flights[i].price
+                << ", Airline: " << flights[i].airline
+                << ", Distance: " << flights[i].distance << " km\n"; // Include distance
         }
     }
 
@@ -84,17 +99,10 @@
 
     void FileHandling::searchByOrigin(const char* origin) const {
         for(int i = 0; i < flightCount; i++)
-        {
             if(strcmp(flights[i].origin, origin) == 0)
-            {
                 cout << "Flight " << i + 1 << ": Destination: " << flights[i].destination << ", Date: " << flights[i].date
                     << ", Departure: " << flights[i].departureTime << ", Arrival: " << flights[i].arrivalTime
                     << ", Price: " << flights[i].price << ", Airline: " << flights[i].airline << "\n";
-                return;
-            }
-        }
-        cout << "Flight not found"<<endl;
-
     }
     void FileHandling::searchByDestination(const char* destination) const {
         for(int i = 0; i < flightCount; i++)
@@ -107,7 +115,6 @@
     {
         return (index >= 0 && index < flightCount) ? &flights[index] : nullptr;
     }
-    
     void FileHandling::searchByDate(const char* date) const {
         for (int i = 0; i < flightCount; i++)
             if (strcmp(flights[i].date, date) == 0)
