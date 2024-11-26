@@ -53,6 +53,7 @@
         file.close();
         return flights;
     }
+    
     Hotel* FileHandling::readHotelsFile() {
         const char* fileName = "HotelCharges_perday.txt";
         ifstream file(fileName);

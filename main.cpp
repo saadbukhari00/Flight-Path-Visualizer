@@ -402,12 +402,7 @@ public:
 };
 
 int main() {
-    /*FileHandling fileHandler(200, 50);
-    FlightGraph flightGraph(50, fileHandler);
-    flightGraph.populateGraph();
-    flightGraph.displayGraph();*/
-    
-    
+
     FlightVisualizerApp app;
     app.run();
     

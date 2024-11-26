@@ -84,10 +84,11 @@ int FlightGraph::findOrAddCity(const char* cityName) {
 }
 
 void FlightGraph::addFlight(const char* origin, const char* destination, const char* airline, const char* date,
-                            const char* departureTime, const char* arrivalTime, int price) {
+                            const char* departureTime, const char* arrivalTime, int price, int distance) {
     int originIndex = findOrAddCity(origin);
     int destIndex = findOrAddCity(destination);
 
+    // Check for duplicate flights
     Edge* current = vertices[originIndex].head;
     while (current) {
         if (strcmp(current->flightData->destination, destination) == 0 &&
@@ -97,7 +98,8 @@ void FlightGraph::addFlight(const char* origin, const char* destination, const c
         current = current->next;
     }
 
-    Flight* newFlight = new Flight(origin, destination, airline, date, departureTime, arrivalTime, price);
+    // Create and add the flight
+    Flight* newFlight = new Flight(origin, destination, airline, date, departureTime, arrivalTime, price, distance);
     Edge* newEdge = new Edge(destIndex, newFlight, vertices[originIndex].head);
     vertices[originIndex].head = newEdge;
 }
@@ -109,8 +111,8 @@ void FlightGraph::populateGraph() {
     for (int i = 0; i < flightCount; i++) {
         Flight* flight = fileHandler.getFlightByIndex(i);
         if (flight) {
-            addFlight(flight->origin, flight->destination, flight->airline, flight->date, flight->departureTime,
-                      flight->arrivalTime, flight->price);
+            addFlight(flight->origin, flight->destination, flight->airline, flight->date,
+                      flight->departureTime, flight->arrivalTime, flight->price, flight->distance);
         }
     }
 }
@@ -125,7 +127,8 @@ void FlightGraph::displayGraph() const {
             std::cout << vertices[edge->destination].city
                       << " (Airline: " << edge->flightData->airline
                       << ", Date: " << edge->flightData->date
-                      << ", Price: " << edge->flightData->price << "), ";
+                      << ", Price: " << edge->flightData->price << "), "
+                      << "Distance: " << edge->flightData->distance << " km, ";
             edge = edge->next;
         }
         std::cout << "\n";

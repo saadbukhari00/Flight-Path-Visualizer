@@ -47,7 +47,7 @@ public:
     int findOrAddCity(const char* cityName);
     void addCity(const char* city, sf::Vector2f position);
     void addFlight(const char* origin, const char* destination, const char* airline, const char* date,
-                   const char* departureTime, const char* arrivalTime, int price);
+                   const char* departureTime, const char* arrivalTime, int price, int distance);
     
     void populateGraph();
     void displayGraph() const;

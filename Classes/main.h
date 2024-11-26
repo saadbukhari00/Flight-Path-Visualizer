@@ -35,7 +35,7 @@ struct Flight
         price = 0;
     }
 
-    Flight(const char* origin, const char* destination, const char* airline, const char* date, const char* departureTime, const char* arrivalTime, int price)
+    Flight(const char* origin, const char* destination, const char* airline, const char* date, const char* departureTime, const char* arrivalTime, int price, int distance)
     {
         strcpy(this->origin, origin);
         strcpy(this->destination, destination);
@@ -44,6 +44,7 @@ struct Flight
         strcpy(this->departureTime, departureTime);
         strcpy(this->arrivalTime, arrivalTime);
         this->price = price;
+        this->distance = distance;
     }
 
     void display()
