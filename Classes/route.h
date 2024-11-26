@@ -6,6 +6,8 @@
 #include <cstring>
 #include <iostream>
 #include <ctime>
+#include <sstream>
+#include <iomanip>
 
 class Route 
 {
@@ -32,6 +34,7 @@ public:
      void displayIndirectFlights(const char* startCity, const char* endCity);  // List indirect flights
      void listAllFlightsWithinDateRange(const char* originCity, const char* destinationCity, const char* startDate, const char* endDate);
      bool isWithinDateRange(const char* flightDate, const char* startDate, const char* endDate);
+     int convertDateToComparableFormat(const char* date);
 };
 
 #endif // ROUTE_H
