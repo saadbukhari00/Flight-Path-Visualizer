@@ -103,5 +103,3 @@ This simulation serves as a demonstration of various vulnerabilities and securit
 - AES Encryption: [PyCryptodome](https://www.pycryptodome.org/)
 - Logger Configuration: [Python Logging Module](https://docs.python.org/3/library/logging.html)
 ```
-
-This README will give users a comprehensive understanding of the project, its components, and how to run it. Feel free to adjust paths, installation instructions, or any other details as necessary for your setup.
