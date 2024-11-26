@@ -4,7 +4,7 @@ g++ -I/opt/homebrew/opt/sfml/include -L/opt/homebrew/opt/sfml/lib main.cpp Class
 */
 
 /* added by Huzaifa for compilation on my system
- g++ -o FlightPathVisualizer main.cpp Classes/FileHandling.cpp -lsfml-graphics -lsfml-window -lsfml-system
+ g++ -o FlightPathVisualizer main.cpp Classes/FileHandling.cpp Classes/FlightGraph.cpp -lsfml-graphics -lsfml-window -lsfml-system
 */
 
 #include "Classes/main.h"
@@ -73,14 +73,23 @@ public:
         dateText.setCharacterSize(20);
         dateText.setPosition(110, 210);
         dateText.setFillColor(sf::Color::Black);
-        dateText.setString("Date (DD/MM/YYYY): ");
+        dateText.setString("From Date (DD/MM/YYYY): ");
+
+        dateBox1.setSize(sf::Vector2f(200, 30));
+        dateBox1.setPosition(100, 250);
+        dateBox1.setFillColor(sf::Color::White);
+        dateText1.setFont(font);
+        dateText1.setCharacterSize(20);
+        dateText1.setPosition(110, 260);
+        dateText1.setFillColor(sf::Color::Black);
+        dateText1.setString("To Date (DD/MM/YYYY): ");
 
         searchButton.setSize(sf::Vector2f(100, 40));
-        searchButton.setPosition(100, 250);
+        searchButton.setPosition(100, 300);
         searchButton.setFillColor(sf::Color::Green);
         searchText.setFont(font);
         searchText.setCharacterSize(20);
-        searchText.setPosition(120, 260);
+        searchText.setPosition(120, 310);
         searchText.setFillColor(sf::Color::Black);
         searchText.setString("Search");
     }
@@ -212,7 +221,7 @@ public:
     	
 
     Route route(flightGraph);
-    std::ostringstream resultStream;  // For formatting the result
+    ostringstream resultStream;  // For formatting the result
 
     // Search for the shortest route
     route.displayFlight(originInput.c_str(), destInput.c_str());
@@ -262,7 +271,7 @@ public:
         inputDateText.setFont(font);
         inputDateText.setCharacterSize(20);
         inputDateText.setString(dateInput);
-        inputDateText.setPosition(300, 210);
+        inputDateText.setPosition(350, 210);
         inputDateText.setFillColor(sf::Color::Black);
         window.draw(inputDateText);
 
@@ -270,7 +279,7 @@ public:
         inputDateText1.setFont(font);
         inputDateText1.setCharacterSize(20);
         inputDateText1.setString(dateInput1);
-        inputDateText1.setPosition(300, 260);
+        inputDateText1.setPosition(350, 260);
         inputDateText1.setFillColor(sf::Color::Black);
         window.draw(inputDateText1);
 
