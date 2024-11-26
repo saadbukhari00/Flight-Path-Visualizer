@@ -1,8 +1,8 @@
 #include "route.h"
 
 // Assuming Route is defined and used elsewhere as in your provided code.
-
-Route::Route(FlightGraph& graph) : flightGraph(graph) {}
+Route::Route(FlightGraph& graph, sf::RenderWindow& win, const sf::Texture& texture)
+    : flightGraph(graph), window(win), mapTexture(texture) {}
 
 void Route::initializeArrays(int* distances, int* previous, bool* visited, int size) 
 {
@@ -233,6 +233,27 @@ void Route::displayFlight(const char* originCity, const char* destinationCity)
     }
 
     cout << "No direct flight available from " << originCity << " to " << destinationCity << ".\n";
+}
+
+void Route::highlightShortestOrCheapest(const char* origin, const char* destination, bool shortest) {
+    int originIndex = flightGraph.getCityIndex(origin);
+    int destIndex = flightGraph.getCityIndex(destination);
+
+    if (originIndex == -1 || destIndex == -1) {
+        cerr << "Invalid cities for highlighting routes.\n";
+        return;
+    }
+
+    sf::Vector2f originPos = flightGraph.getCityPosition(origin);
+    sf::Vector2f destPos = flightGraph.getCityPosition(destination);
+
+    // Draw the highlighted route
+    sf::Vertex line[] = {
+        sf::Vertex(originPos, sf::Color::Green),
+        sf::Vertex(destPos, sf::Color::Green)
+    };
+
+    window.draw(line, 2, sf::Lines);
 }
 
 void Route::listAllFlightsWithinDateRange(const char* originCity, const char* destinationCity, const char* startDate, const char* endDate)

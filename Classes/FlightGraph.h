@@ -21,6 +21,17 @@ struct Vertex {
 struct CityCoordinate {
     char city[50];
     sf::Vector2f position;
+
+    // Default constructor
+    CityCoordinate() : position(0, 0) {
+        strcpy(city, "");
+    }
+
+    // Parameterized constructor
+    CityCoordinate(float x, float y, const char* name) {
+        position = sf::Vector2f(x, y);
+        strcpy(city, name);
+    }
 };
 
 class FlightGraph {
@@ -31,18 +42,18 @@ private:
     int maxVertices;
     int coordinateCount;
     FileHandling& fileHandler;
-    sf::Texture mapTexture;
 
 public:
+    sf::Texture mapTexture;
     FlightGraph(int size, FileHandling& fileHandler);
     ~FlightGraph();
 
     Vertex* getVertices();
-    int getCityIndex(const char* cityName);
+    int getCityIndex(const char* cityName) const; 
     int getNumVertices() const;
 
     void initializeCityCoordinates();
-    sf::Vector2f getCityPosition(const std::string& city);
+    sf::Vector2f getCityPosition(const char* cityName) ;
 
     int findOrAddCity(const char* cityName);
     void addCity(const char* city, sf::Vector2f position);
@@ -51,7 +62,11 @@ public:
     
     void populateGraph();
     void displayGraph() const;
+
+    void validateCity(const FlightGraph& graph, const char* city);
+
     void displayOnMap(sf::RenderWindow& window, const sf::Texture& mapTexture);
+    void displayHighlightedRoutes(sf::RenderWindow& window);
 
 };
 

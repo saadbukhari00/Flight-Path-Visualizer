@@ -13,17 +13,21 @@ class Route
 {
 private:
     FlightGraph& flightGraph;
+    sf::RenderWindow& window;   
+    const sf::Texture& mapTexture; 
 
     void initializeArrays(int* distances, int* previous, bool* visited, int size);
 
     int findMinDistanceIndex(int* distances, bool* visited, int size);
 
 public:
-    Route(FlightGraph& graph);
+    Route(FlightGraph& graph, sf::RenderWindow& win, const sf::Texture& texture);
 
     void findShortestRoute(const char* startCity, const char* endCity);
 
     void findCheapestRoute(const char* startCity, const char* endCity);
+
+    void highlightShortestOrCheapest(const char* origin, const char* destination, bool shortest);
 
     void listShortestAndCheapest(const char* startCity, const char* endCity);
 

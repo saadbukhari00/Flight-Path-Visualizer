@@ -15,6 +15,67 @@ g++ -I/opt/homebrew/opt/sfml/include -L/opt/homebrew/opt/sfml/lib main.cpp Class
 #include "Classes/route.h"
 #include "Classes/FlightGraph.h"
 
+sf::RenderWindow mainWindow(sf::VideoMode(1024, 768), "Flight Graph Visualization");
+sf::RenderWindow bookingWindow(sf::VideoMode(800, 600), "Flight Booking");
+
+class MainGUI {
+private:
+    sf::RenderWindow& mainWindow;
+    sf::Font font;
+    sf::RectangleShape bookFlightButton;
+    sf::Text buttonText;
+    FlightGraph& flightGraph;
+
+public:
+    MainGUI(sf::RenderWindow& window, FlightGraph& graph)
+        : mainWindow(window), flightGraph(graph) {
+        font.loadFromFile("Assets/Aller_Bd.ttf");
+
+        // Configure the Book Flight button
+        bookFlightButton.setSize(sf::Vector2f(150, 50));
+        bookFlightButton.setPosition(10, 10);
+        bookFlightButton.setFillColor(sf::Color::Green);
+
+        buttonText.setFont(font);
+        buttonText.setCharacterSize(20);
+        buttonText.setFillColor(sf::Color::Black);
+        buttonText.setString("Book Flight");
+        buttonText.setPosition(25, 20);
+    }
+
+    bool handleEvents() {
+        sf::Event event;
+        while (mainWindow.pollEvent(event)) {
+            if (event.type == sf::Event::Closed) {
+                mainWindow.close();
+                return false;
+            }
+            if (event.type == sf::Event::MouseButtonPressed) {
+                sf::Vector2f mousePos(event.mouseButton.x, event.mouseButton.y);
+                if (bookFlightButton.getGlobalBounds().contains(mousePos)) {
+                    return true; // Switch to booking window
+                }
+            }
+        }
+        return false;
+    }
+
+    void draw() {
+        mainWindow.clear(sf::Color::White);
+
+        // Draw flight graph
+        sf::Texture mapTexture;
+        mapTexture.loadFromFile("Assets/world_map.png");
+        flightGraph.displayOnMap(mainWindow, mapTexture);
+
+        // Draw Book Flight button
+        mainWindow.draw(bookFlightButton);
+        mainWindow.draw(buttonText);
+
+        mainWindow.display();
+    }
+};
+
 class FlightBookingGUI 
 {
 private:
@@ -221,23 +282,18 @@ public:
     window.clear(sf::Color::White);  // Clear the window and proceed to next frame
 }
 
-    void handleSearch()
-    {
-        if (originInput.empty() || destInput.empty() || dateInput.empty() || dateInput1.empty()) {
-            showErrorMessage("Please fill in all fields!");
-            return;
-        }
-
-        Route route(flightGraph);
-
-        // Display flights in terminal
-        route.listAllFlightsWithinDateRange(originInput.c_str(), destInput.c_str(), dateInput.c_str(), dateInput1.c_str());
-        route.displayFlight(originInput.c_str(), destInput.c_str());
-        
-        route.listShortestAndCheapest(originInput.c_str(), destInput.c_str());
-        
-        
+    void handleSearch() {
+    if (originInput.empty() || destInput.empty() || dateInput.empty() || dateInput1.empty()) {
+        showErrorMessage("Please fill in all fields!");
+        return;
     }
+
+    Route route(flightGraph, window, flightGraph.mapTexture);
+
+    route.listAllFlightsWithinDateRange(originInput.c_str(), destInput.c_str(), dateInput.c_str(), dateInput1.c_str());
+    route.listShortestAndCheapest(originInput.c_str(), destInput.c_str());
+    route.highlightShortestOrCheapest(originInput.c_str(), destInput.c_str(), true);
+}
 
 
     void draw() 
@@ -292,69 +348,29 @@ public:
     }
 
     void run() {
-        while(window.isOpen()) 
-        {
-            handleInput();
-            draw();
-        }
-    }
-};
+        MainGUI mainGUI(mainWindow, flightGraph);
+        FlightBookingGUI bookingGUI(bookingWindow, flightGraph);
 
-class MainGUI {
-private:
-    sf::RenderWindow& mainWindow;
-    sf::Font font;
-    sf::RectangleShape bookFlightButton;
-    sf::Text buttonText;
-    FlightGraph& flightGraph;
+        while (mainWindow.isOpen()) {
+            bool bookFlightPressed = mainGUI.handleEvents();
+            mainGUI.draw();
 
-public:
-    MainGUI(sf::RenderWindow& window, FlightGraph& graph)
-        : mainWindow(window), flightGraph(graph) {
-        font.loadFromFile("Assets/Aller_Bd.ttf");
-
-        // Configure the Book Flight button
-        bookFlightButton.setSize(sf::Vector2f(150, 50));
-        bookFlightButton.setPosition(10, 10);
-        bookFlightButton.setFillColor(sf::Color::Green);
-
-        buttonText.setFont(font);
-        buttonText.setCharacterSize(20);
-        buttonText.setFillColor(sf::Color::Black);
-        buttonText.setString("Book Flight");
-        buttonText.setPosition(25, 20);
-    }
-
-    bool handleEvents() {
-        sf::Event event;
-        while (mainWindow.pollEvent(event)) {
-            if (event.type == sf::Event::Closed) {
-                mainWindow.close();
-                return false;
-            }
-            if (event.type == sf::Event::MouseButtonPressed) {
-                sf::Vector2f mousePos(event.mouseButton.x, event.mouseButton.y);
-                if (bookFlightButton.getGlobalBounds().contains(mousePos)) {
-                    return true; // Switch to booking window
+            if (bookFlightPressed) {
+                bookingWindow.setVisible(true);
+                while (bookingWindow.isOpen()) {
+                    bookingGUI.handleInput();
+                    bookingGUI.draw();
                 }
+
+                std::string origin = bookingGUI.getOriginInput();
+                std::string destination = bookingGUI.getDestInput();
+                std::string fromDate = bookingGUI.getFromDateInput();
+                std::string toDate = bookingGUI.getToDateInput();
+
+                Route route(flightGraph, mainWindow, flightGraph.mapTexture);
+                route.highlightShortestOrCheapest(origin.c_str(), destination.c_str(), true);
             }
-        }
-        return false;
     }
-
-    void draw() {
-        mainWindow.clear(sf::Color::White);
-
-        // Draw flight graph
-        sf::Texture mapTexture;
-        mapTexture.loadFromFile("Assets/world_map.png");
-        flightGraph.displayOnMap(mainWindow, mapTexture);
-
-        // Draw Book Flight button
-        mainWindow.draw(bookFlightButton);
-        mainWindow.draw(buttonText);
-
-        mainWindow.display();
     }
 };
 
@@ -398,7 +414,19 @@ public:
                         std::string fromDate = bookingGUI.getFromDateInput();
                         std::string toDate = bookingGUI.getToDateInput();
 
-                        // highlight flights on the main window
+                        bool userChoosesShortest = true; // Example: you can let the user set this via a UI option
+
+                        Route route(flightGraph, mainWindow, flightGraph.mapTexture);
+
+                        if (userChoosesShortest) {
+                            route.highlightShortestOrCheapest(origin.c_str(), destination.c_str(), true);
+                            mainWindow.display(); // Update the window with all the drawn objects
+                            mainWindow.clear();   // Clear the window for the next frame
+                        } else {
+                            route.highlightShortestOrCheapest(origin.c_str(), destination.c_str(), false);
+                            mainWindow.display(); // Update the window with all the drawn objects
+                            mainWindow.clear();   // Clear the window for the next frame
+                        }
                     }
                 }
             }

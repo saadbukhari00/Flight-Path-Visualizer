@@ -3,7 +3,7 @@
 FlightGraph::FlightGraph(int size, FileHandling& fileHandler)
     : fileHandler(fileHandler), vertexCount(0), coordinateCount(0), maxVertices(size) {
     vertices = new Vertex[size];
-    coordinates = new CityCoordinate[120];
+    coordinates = new CityCoordinate[size];
     if (!mapTexture.loadFromFile("Assets/world_map.png")) 
     {
     std::cerr << "Error loading map texture.\n";
@@ -16,10 +16,9 @@ Vertex* FlightGraph::getVertices() {
     return vertices;
 }
 
-// Returns the index of a city in the graph, or -1 if not found
-int FlightGraph::getCityIndex(const char* cityName) {
+int FlightGraph::getCityIndex(const char* cityName) const {
     for (int i = 0; i < vertexCount; i++) {
-        if (strcmp(vertices[i].city, cityName) == 0) {
+        if (strcasecmp(vertices[i].city, cityName) == 0) { // Use case-insensitive comparison
             return i;
         }
     }
@@ -42,26 +41,36 @@ void FlightGraph::addCity(const char* city, sf::Vector2f position) {
 }
 
 void FlightGraph::initializeCityCoordinates() {
-    addCity("Islamabad", sf::Vector2f(0.74f, 0.45f));
-    addCity("Newyork", sf::Vector2f(0.35f, 0.35f));
-    addCity("Paris", sf::Vector2f(0.53f, 0.38f));
-    addCity("London", sf::Vector2f(0.51f, 0.36f));
-    addCity("Berlin", sf::Vector2f(0.55f, 0.35f));
-    addCity("Seoul", sf::Vector2f(0.90f, 0.45f));
-    addCity("Amsterdam", sf::Vector2f(0.53f, 0.36f));
-    addCity("Singapore", sf::Vector2f(0.84f, 0.64f));
-    addCity("Tokyo", sf::Vector2f(0.95f, 0.45f));
-    addCity("Hongkong", sf::Vector2f(0.87f, 0.53f));
-    addCity("Sydney", sf::Vector2f(0.98f, 0.84f));
+    // Ensure you populate the coordinates for each city
+    if (coordinateCount > maxVertices) {
+        std::cout << "Error: Too many coordinates for the graph to handle." << std::endl;
+        return;
+    }
+
+    // Example: Initialize with city positions
+    coordinates[0] = CityCoordinate(100.0f, 200.0f, "Islamabad");
+    coordinates[1] = CityCoordinate(300.0f, 400.0f, "Newyork");
+    coordinates[2] = CityCoordinate(150.0f, 250.0f, "Paris");
+    coordinates[3] = CityCoordinate(350.0f, 450.0f, "Tokyo");
+    coordinates[4] = CityCoordinate(400.0f, 150.0f, "London");
+    coordinates[5] = CityCoordinate(200.0f, 300.0f, "Berlin");
+    coordinates[6] = CityCoordinate(600.0f, 500.0f, "Singapore");
+    coordinates[7] = CityCoordinate(500.0f, 100.0f, "Amsterdam");
+    coordinates[8] = CityCoordinate(250.0f, 350.0f, "Sydney");
+    coordinates[9] = CityCoordinate(450.0f, 550.0f, "Seoul");
+    coordinates[10] = CityCoordinate(550.0f, 600.0f, "HongKong");
+
+    coordinateCount = 11; // Adjust according to the number of cities initialized
 }
 
-sf::Vector2f FlightGraph::getCityPosition(const std::string& city) {
-    for (int i = 0; i < coordinateCount; i++) {
-        if (strcmp(coordinates[i].city, city.c_str()) == 0) {
-            return coordinates[i].position;
+sf::Vector2f FlightGraph::getCityPosition(const char* cityName) {
+    for (int i = 0; i < vertexCount; i++) {
+        if (strcmp(vertices[i].city, cityName) == 0) {
+            return coordinates[i].position; // Use position directly
         }
     }
-    return sf::Vector2f(0, 0); // Return a default position if city is not found
+    std::cerr << "City not found: " << cityName << std::endl;
+    return sf::Vector2f(-1, -1); // Return invalid position for debugging
 }
 
 int FlightGraph::findOrAddCity(const char* cityName) {
@@ -83,8 +92,7 @@ int FlightGraph::findOrAddCity(const char* cityName) {
     return -1; // Error: Max vertices reached
 }
 
-void FlightGraph::addFlight(const char* origin, const char* destination, const char* airline, const char* date,
-                            const char* departureTime, const char* arrivalTime, int price, int distance) {
+void FlightGraph::addFlight(const char* origin, const char* destination, const char* airline, const char* date, const char* departureTime, const char* arrivalTime, int price, int distance) {
     int originIndex = findOrAddCity(origin);
     int destIndex = findOrAddCity(destination);
 
@@ -137,33 +145,53 @@ void FlightGraph::displayGraph() const {
 
 void FlightGraph::displayOnMap(sf::RenderWindow& window, const sf::Texture& mapTexture) {
     sf::Sprite map(mapTexture);
-    sf::Vector2u windowSize = window.getSize();
-    map.setScale(static_cast<float>(windowSize.x) / mapTexture.getSize().x,
-                 static_cast<float>(windowSize.y) / mapTexture.getSize().y);
     window.draw(map);
 
-    sf::CircleShape cityPoint(5.f);
-    cityPoint.setFillColor(sf::Color::Red);
+    // Draw cities
+    for (int i = 0; i < vertexCount; i++) {
+        if (vertices[i].city[0] == '\0') continue;
 
-    sf::Font font;
-    if (!font.loadFromFile("Assets/arial.ttf")) {
-        std::cerr << "Error: Failed to load font.\n";
-        return;
+        sf::CircleShape cityMarker(5);
+        cityMarker.setFillColor(sf::Color::Red);
+        cityMarker.setPosition(coordinates[i].position.x - 2.5, coordinates[i].position.y - 2.5);
+        window.draw(cityMarker);
     }
 
-    for (int i = 0; i < coordinateCount; i++) {
-        sf::Vector2f position = coordinates[i].position;
-        sf::Vector2f scaledPos = sf::Vector2f(position.x * windowSize.x, position.y * windowSize.y);
-        cityPoint.setPosition(scaledPos - sf::Vector2f(cityPoint.getRadius(), cityPoint.getRadius()));
-        window.draw(cityPoint);
+    // Draw routes
+    for (int i = 0; i < vertexCount; i++) {
+        Edge* edge = vertices[i].head;
+        while (edge) {
+            int destIndex = edge->destination;
+            sf::Vertex line[] = {
+                sf::Vertex(sf::Vector2f(coordinates[i].position.x, coordinates[i].position.y), sf::Color::Blue),
+                sf::Vertex(sf::Vector2f(coordinates[destIndex].position.x, coordinates[destIndex].position.y), sf::Color::Blue)
+            };
+            window.draw(line, 2, sf::Lines);
+            edge = edge->next;
+        }
+    }
+    window.display();
+}
 
-        sf::Text cityName(coordinates[i].city, font, 12);
-        cityName.setPosition(scaledPos + sf::Vector2f(10, -10));
-        cityName.setFillColor(sf::Color::Black);
-        window.draw(cityName);
+void FlightGraph::displayHighlightedRoutes(sf::RenderWindow& window) {
+    
+    for(int i = 0; i < vertexCount; i++)
+    {
+        if(vertices[i].city[0] == '\0') continue;
+        sf::CircleShape cityMarker(5);
+        cityMarker.setFillColor(sf::Color::Red);
+        cityMarker.setPosition(coordinates[i].position.x - 2.5, coordinates[i].position.y - 2.5);
+        window.draw(cityMarker);
     }
 }
 
+void FlightGraph::validateCity(const FlightGraph &graph, const char *city)
+{
+    int index = graph.getCityIndex(city);
+    if (index == -1) {
+        std::cerr << "City " << city << " not found in the graph.\n";
+    }
+}
 
 FlightGraph::~FlightGraph() {
     for (int i = 0; i < vertexCount; i++) {
