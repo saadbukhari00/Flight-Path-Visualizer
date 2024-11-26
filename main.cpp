@@ -13,28 +13,7 @@ g++ -I/opt/homebrew/opt/sfml/include -L/opt/homebrew/opt/sfml/lib main.cpp Class
 #include "Classes/stack.h"
 #include "Classes/queue.h"
 #include "Classes/route.h"
-<<<<<<< HEAD
-#include "Classes/FlightGraph.h"
-=======
-
-#include <sstream>
-
->>>>>>> f7c70febc0bcca31033090fd31618b25adb6c651
-
 FileHandling files(105, 10); // (number of flights, number of hotel cities)
-
-class Preferences {
-public:
-    // Add attributes and methods for user preferences
-};
-
-
-class LayoverManager {
-    Queue flightQueue;
-
-public:
-    // Implement layover management here
-};
 
 class FlightBookingGUI 
 {

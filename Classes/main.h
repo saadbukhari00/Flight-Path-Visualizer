@@ -7,6 +7,7 @@
 #include<string>
 #include<fstream>
 #include <cstring>
+#include <sstream>
 #include <SFML/Graphics.hpp>
 
 using namespace std;
