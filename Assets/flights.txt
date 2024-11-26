@@ -1,105 +1,105 @@
-Islamabad Newyork 1/12/2019 11:00 18:00 150000 Emirates
-Islamabad Newyork 1/12/2019 8:00 13:00 300000 Qatar
-Newyork Islamabad 2/12/2019 11:00 18:00 150000 Emirates
-Islamabad Paris 1/12/2019 8:00 13:00 100000 Qatar
-Paris Islamabad 1/12/2019 15:00 20:00 100000 Qatar
-Paris Islamabad 1/12/2019 14:00 17:00 90000 ANA
-Islamabad Tokyo 1/12/2019 11:00 17:00 85000 ANA
-Islamabad Lodon 1/12/2019 15:00 23:00 78000 Emirates
-Newyork Amsterdam 1/12/2019 19:00 1:00 75000 ANA
-Amsterdam Singapore 2/12/2019 8:00 1:00 65000 ANA
-Singapore HongKong 1/12/2019 6:00 11:00 45000 Qatar
-Berline Sydney 1/12/2019 5:00 9:00 35000 Emirates
-Seoul Amsterdam 1/12/2019 6:00 14:00 150000 Qatar
-Newyork Seoul 1/12/2019 20:00 24:00 36000 ANA
-Paris Berlin 1/12/2019 0:30 4:00 25000 Qatar
-Paris Tokyo 2/12/2019 1:00 6:00 35000 Emirates
-Newyork Sydney 1/12/2019 15:00 23:50 50000 Emirates
-Islamabad Berlin 1/12/2019 1:00 7:00 85000 Qatar
-Newyork Islamabad 1/12/2019 10:00 15:00 100000 ANA
-Singapore Berlin 1/12/2019 5:00 10:00 50000 Emirates
-Islamabad Newyork 3/12/2019 8:00 13:00 300000 Qatar
-Paris Islamabad 5/12/2019 14:00 17:00 90000 ANA
-Islamabad Tokyo 2/12/2019 11:00 17:00 85000 ANA
-Seoul Paris 3/12/2019 8:00 13:00 100000 Qatar
-Paris Islamabad 3/12/2019 15:00 20:00 100000 Qatar
-Newyork Seoul 4/12/2019 20:00 24:00 36000 ANA
-Singapore Berlin 5/12/2019 0:30 4:00 25000 Qatar
-Paris Tokyo 6/12/2019 1:00 6:00 35000 Emirates
-Tokyo Sydney 2/12/2019 5:00 9:00 35000 Emirates
-Seoul Amsterdam 3/12/2019 6:00 14:00 150000 Qatar
-Islamabad Amsterdam 3/12/2019 1:00 7:00 85000 Qatar
-Newyork Islamabad 4/12/2019 10:00 15:00 100000 ANA
-Islamabad Lodon 2/12/2019 15:00 23:00 78000 Emirates
-Newyork Amsterdam 3/12/2019 19:00 1:00 75000 ANA
-Amsterdam Singapore 4/12/2019 8:00 1:00 65000 ANA
-Singapore Seoul 2/12/2019 6:00 11:00 45000 Qatar
-Newyork Islamabad 4/12/2019 11:00 18:00 150000 Emirates
-Singapore Berlin 2/12/2019 5:00 10:00 50000 Emirates
-Amsterdam Islamabad 2/12/2019 11:00 16:00 100000 ANA
-Newyork Sydney 2/12/2019 15:00 23:50 50000 Emirates
-Islamabad Tokyo 2/12/2019 11:00 18:00 150000 Emirates
-Newyork Islamabad 3/12/2019 11:00 18:00 150000 Emirates
-Islamabad Paris 4/12/2019 8:00 13:00 100000 Qatar
-Paris Islamabad 5/12/2019 15:00 20:00 100000 Qatar
-Paris Islamabad 6/12/2019 14:00 17:00 90000 ANA
-Islamabad Tokyo 2/12/2019 11:00 17:00 85000 ANA
-Newyork Amsterdam 3/12/2019 19:00 1:00 75000 ANA
-Amsterdam Singapore 2/12/2019 8:00 1:00 65000 ANA
-Singapore HongKong 4/12/2019 6:00 11:00 45000 Qatar
-Newyork Islamabad 5/12/2019 11:00 16:00 100000 ANA
-Berline Sydney 2/12/2019 5:00 9:00 35000 Emirates
-Seoul Amsterdam 3/12/2019 6:00 14:00 150000 Qatar
-Newyork Seoul 5/12/2019 20:00 24:00 36000 ANA
-Paris Berlin 6/12/2019 0:30 4:00 25000 Qatar
-Hongkong Tokyo 2/12/2019 1:00 6:00 35000 Emirates
-Newyork Tokyo 4/12/2019 15:00 23:50 60000 Emirates
-Islamabad Berlin 2/12/2019 1:00 7:00 85000 Qatar
-Newyork Islamabad 1/12/2019 10:00 15:00 100000 ANA
-Singapore Berlin 2/12/2019 5:00 10:00 50000 Emirates
-Paris Islamabad 5/12/2019 14:00 17:00 90000 ANA
-Islamabad Tokyo 4/12/2019 11:00 17:00 85000 ANA
-Seoul Paris 3/12/2019 8:00 13:00 100000 Qatar
-Paris Islamabad 5/12/2019 15:00 20:00 100000 Qatar
-Newyork Seoul 1/12/2019 20:00 24:00 36000 ANA
-Singapore Tokyo 2/12/2019 1:00 6:00 35000 Emirates
-Tokyo Sydney 4/12/2019 5:00 9:00 35000 Emirates
-Seoul Amsterdam 6/12/2019 6:00 14:00 150000 Qatar
-Islamabad Amsterdam 7/12/2019 1:00 7:00 85000 Qatar
-Newyork Islamabad 2/12/2019 10:00 15:00 100000 ANA
-Islamabad Lodon 4/12/2019 15:00 23:00 78000 Emirates
-Newyork Amsterdam 2/12/2019 19:00 1:00 75000 ANA
-Amsterdam Singapore 3/12/2019 8:00 1:00 65000 ANA
-Singapore Seoul 6/12/2019 6:00 11:00 45000 Qatar
-Berlin Islamabad 7/12/2019 11:00 18:00 150000 Emirates
-Newyork Islamabad 2/12/2019 11:00 16:00 100000 ANA
-Singapore Berlin 1/12/2019 5:00 10:00 50000 Emirates
-Amsterdam Islamabad 1/12/2019 11:00 16:00 100000 ANA
-Newyork Sydney 1/12/2019 15:00 23:50 50000 Emirates
-Seoul Newyork 6/12/2019 6:00 14:00 150000 Qatar
-Islamabad Amsterdam 7/12/2019 1:00 7:00 85000 Qatar
-Newyork Islamabad 2/12/2019 10:00 15:00 100000 ANA
-Islamabad Lodon 4/12/2019 15:00 23:00 78000 Emirates
-Newyork Amsterdam 2/12/2019 19:00 1:00 75000 ANA
-Amsterdam Singapore 3/12/2019 8:00 1:00 65000 ANA
-Singapore Seoul 6/12/2019 6:00 11:00 45000 Qatar
-Berlin Islamabad 7/12/2019 11:00 18:00 150000 Emirates
-Newyork Islamabad 2/12/2019 11:00 16:00 100000 ANA
-Singapore Berlin 1/12/2019 5:00 10:00 50000 Emirates
-Amsterdam Islamabad 1/12/2019 11:00 16:00 100000 ANA
-Newyork Sydney 1/12/2019 15:00 23:50 50000 Emirates
-Hongkong Berlin 2/12/2019 1:00 6:00 35000 ANA
-Berlin London 7/12/2019 11:00 18:00 150000 Emirates
-Hongkong Paris 2/12/2019 1:00 6:00 35000 Qatar
-London Hongkong 7/12/2019 11:00 18:00 150000 Emirates
-Seoul Hongkong 1/12/2019 5:00 10:00 50000 Emirates
-Islamabad Lodon 2/12/2019 15:00 23:00 78000 Emirates
-Newyork Amsterdam 3/12/2019 19:00 1:00 75000 ANA
-Amsterdam Singapore 5/12/2019 8:00 1:00 65000 ANA
-Singapore Seoul 2/12/2019 6:00 11:00 45000 Qatar
-Berlin Islamabad 2/12/2019 11:00 18:00 150000 Emirates
-Newyork Islamabad 4/12/2019 11:00 16:00 100000 ANA
-Singapore Berlin 3/12/2019 5:00 10:00 50000 Emirates
-Amsterdam Islamabad 2/12/2019 11:00 16:00 100000 ANA
-Newyork Sydney 5/12/2019 15:00 23:50 500000 Emirates
-Seoul Newyork 4/12/2019 6:00 14:00 150000 Qatar
+Islamabad Newyork 1/12/2019 11:00 18:00 150000 Emirates 11200
+Islamabad Newyork 1/12/2019 8:00 13:00 300000 Qatar 11200
+Newyork Islamabad 2/12/2019 11:00 18:00 150000 Emirates 11200
+Islamabad Paris 1/12/2019 8:00 13:00 100000 Qatar 5960
+Paris Islamabad 1/12/2019 15:00 20:00 100000 Qatar 5960
+Paris Islamabad 1/12/2019 14:00 17:00 90000 ANA 5960
+Islamabad Tokyo 1/12/2019 11:00 17:00 85000 ANA 5840
+Islamabad Lodon 1/12/2019 15:00 23:00 78000 Emirates 6035
+Newyork Amsterdam 1/12/2019 19:00 1:00 75000 ANA 5850
+Amsterdam Singapore 2/12/2019 8:00 1:00 65000 ANA 10500
+Singapore HongKong 1/12/2019 6:00 11:00 45000 Qatar 2600
+Berline Sydney 1/12/2019 5:00 9:00 35000 Emirates 16100
+Seoul Amsterdam 1/12/2019 6:00 14:00 150000 Qatar 8570
+Newyork Seoul 1/12/2019 20:00 24:00 36000 ANA 11040
+Paris Berlin 1/12/2019 0:30 4:00 25000 Qatar 1050
+Paris Tokyo 2/12/2019 1:00 6:00 35000 Emirates 9710
+Newyork Sydney 1/12/2019 15:00 23:50 50000 Emirates 16000
+Islamabad Berlin 1/12/2019 1:00 7:00 85000 Qatar 5050
+Newyork Islamabad 1/12/2019 10:00 15:00 100000 ANA 11200
+Singapore Berlin 1/12/2019 5:00 10:00 50000 Emirates 10380
+Islamabad Newyork 3/12/2019 8:00 13:00 300000 Qatar 11200
+Paris Islamabad 5/12/2019 14:00 17:00 90000 ANA 5960
+Islamabad Tokyo 2/12/2019 11:00 17:00 85000 ANA 5840
+Seoul Paris 3/12/2019 8:00 13:00 100000 Qatar 8950
+Paris Islamabad 3/12/2019 15:00 20:00 100000 Qatar 5960
+Newyork Seoul 4/12/2019 20:00 24:00 36000 ANA 11040
+Singapore Berlin 5/12/2019 0:30 4:00 25000 Qatar 10380
+Paris Tokyo 6/12/2019 1:00 6:00 35000 Emirates 9710
+Tokyo Sydney 2/12/2019 5:00 9:00 35000 Emirates 7800
+Seoul Amsterdam 3/12/2019 6:00 14:00 150000 Qatar 8570
+Islamabad Amsterdam 3/12/2019 1:00 7:00 85000 Qatar 6350
+Newyork Islamabad 4/12/2019 10:00 15:00 100000 ANA 11200
+Islamabad Lodon 2/12/2019 15:00 23:00 78000 Emirates 6035
+Newyork Amsterdam 3/12/2019 19:00 1:00 75000 ANA 5850
+Amsterdam Singapore 4/12/2019 8:00 1:00 65000 ANA 10500
+Singapore Seoul 2/12/2019 6:00 11:00 45000 Qatar 4670
+Newyork Islamabad 4/12/2019 11:00 18:00 150000 Emirates 11200
+Singapore Berlin 2/12/2019 5:00 10:00 50000 Emirates 10380
+Amsterdam Islamabad 2/12/2019 11:00 16:00 100000 ANA 6350
+Newyork Sydney 2/12/2019 15:00 23:50 50000 Emirates 16000
+Islamabad Tokyo 2/12/2019 11:00 18:00 150000 Emirates 5840
+Newyork Islamabad 3/12/2019 11:00 18:00 150000 Emirates 11200
+Islamabad Paris 4/12/2019 8:00 13:00 100000 Qatar 5960
+Paris Islamabad 5/12/2019 15:00 20:00 100000 Qatar 5960
+Paris Islamabad 6/12/2019 14:00 17:00 90000 ANA 5960
+Islamabad Tokyo 2/12/2019 11:00 17:00 85000 ANA 5840
+Newyork Amsterdam 3/12/2019 19:00 1:00 75000 ANA 5850
+Amsterdam Singapore 2/12/2019 8:00 1:00 65000 ANA 10500
+Singapore HongKong 4/12/2019 6:00 11:00 45000 Qatar 2600
+Newyork Islamabad 5/12/2019 11:00 16:00 100000 ANA 11200
+Berlin Sydney 2/12/2019 5:00 9:00 35000 Emirates 16000
+Seoul Amsterdam 3/12/2019 6:00 14:00 150000 Qatar 8500
+Newyork Seoul 5/12/2019 20:00 24:00 36000 ANA 11000
+Paris Berlin 6/12/2019 0:30 4:00 25000 Qatar 1050
+Hongkong Tokyo 2/12/2019 1:00 6:00 35000 Emirates 2900
+Newyork Tokyo 4/12/2019 15:00 23:50 60000 Emirates 10800
+Islamabad Berlin 2/12/2019 1:00 7:00 85000 Qatar 5600
+Newyork Islamabad 1/12/2019 10:00 15:00 100000 ANA 11300
+Singapore Berlin 2/12/2019 5:00 10:00 50000 Emirates 10700
+Paris Islamabad 5/12/2019 14:00 17:00 90000 ANA 6500
+Islamabad Tokyo 4/12/2019 11:00 17:00 85000 ANA 5800
+Seoul Paris 3/12/2019 8:00 13:00 100000 Qatar 8800
+Paris Islamabad 5/12/2019 15:00 20:00 100000 Qatar 6500
+Newyork Seoul 1/12/2019 20:00 24:00 36000 ANA 11000
+Singapore Tokyo 2/12/2019 1:00 6:00 35000 Emirates 5300
+Tokyo Sydney 4/12/2019 5:00 9:00 35000 Emirates 7800
+Seoul Amsterdam 6/12/2019 6:00 14:00 150000 Qatar 8500
+Islamabad Amsterdam 7/12/2019 1:00 7:00 85000 Qatar 5900
+Newyork Islamabad 2/12/2019 10:00 15:00 100000 ANA 11300
+Islamabad Lodon 4/12/2019 15:00 23:00 78000 Emirates 6200
+Newyork Amsterdam 2/12/2019 19:00 1:00 75000 ANA 5845
+Amsterdam Singapore 3/12/2019 8:00 1:00 65000 ANA 10500
+Singapore Seoul 6/12/2019 6:00 11:00 45000 Qatar 4650
+Berlin Islamabad 7/12/2019 11:00 18:00 150000 Emirates 5600
+Newyork Islamabad 2/12/2019 11:00 16:00 100000 ANA 11300
+Singapore Berlin 1/12/2019 5:00 10:00 50000 Emirates 10700
+Amsterdam Islamabad 1/12/2019 11:00 16:00 100000 ANA 6200
+Newyork Sydney 1/12/2019 15:00 23:50 50000 Emirates 15984
+Seoul Newyork 6/12/2019 6:00 14:00 150000 Qatar 11000
+Islamabad Amsterdam 7/12/2019 1:00 7:00 85000 Qatar 5900
+Newyork Islamabad 2/12/2019 10:00 15:00 100000 ANA 11300
+Islamabad Lodon 4/12/2019 15:00 23:00 78000 Emirates 6200
+Newyork Amsterdam 2/12/2019 19:00 1:00 75000 ANA 5845
+Amsterdam Singapore 3/12/2019 8:00 1:00 65000 ANA 10500
+Singapore Seoul 6/12/2019 6:00 11:00 45000 Qatar 4650
+Berlin Islamabad 7/12/2019 11:00 18:00 150000 Emirates 5600
+Newyork Islamabad 2/12/2019 11:00 16:00 100000 ANA 11300
+Singapore Berlin 1/12/2019 5:00 10:00 50000 Emirates 10700
+Amsterdam Islamabad 1/12/2019 11:00 16:00 100000 ANA 6200
+Newyork Sydney 1/12/2019 15:00 23:50 50000 Emirates 15984
+Hongkong Berlin 2/12/2019 1:00 6:00 35000 ANA 8720
+Berlin London 7/12/2019 11:00 18:00 150000 Emirates 930
+Hongkong Paris 2/12/2019 1:00 6:00 35000 Qatar 9640
+London Hongkong 7/12/2019 11:00 18:00 150000 Emirates 9640
+Seoul Hongkong 1/12/2019 5:00 10:00 50000 Emirates 2060
+Islamabad Lodon 2/12/2019 15:00 23:00 78000 Emirates 6200
+Newyork Amsterdam 3/12/2019 19:00 1:00 75000 ANA 5845
+Amsterdam Singapore 5/12/2019 8:00 1:00 65000 ANA 10500
+Singapore Seoul 2/12/2019 6:00 11:00 45000 Qatar 4650
+Berlin Islamabad 2/12/2019 11:00 18:00 150000 Emirates 5600
+Newyork Islamabad 4/12/2019 11:00 16:00 100000 ANA 11300
+Singapore Berlin 3/12/2019 5:00 10:00 50000 Emirates 10700
+Amsterdam Islamabad 2/12/2019 11:00 16:00 100000 ANA 6200
+Newyork Sydney 5/12/2019 15:00 23:50 500000 Emirates 15984
+Seoul Newyork 4/12/2019 6:00 14:00 150000 Qatar 11000
