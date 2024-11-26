@@ -231,6 +231,8 @@ public:
 
     // Refresh the window to show the updated result
     window.draw(resultText);
+
+     route.displayFlight(originInput.c_str(), destInput.c_str(), dateInput.c_str(), dateInput1.c_str());
             
     }
 
