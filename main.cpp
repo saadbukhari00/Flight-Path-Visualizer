@@ -12,6 +12,7 @@ g++ -I/opt/homebrew/opt/sfml/include -L/opt/homebrew/opt/sfml/lib main.cpp Class
 #include "Classes/heap.h"
 #include "Classes/stack.h"
 #include "Classes/queue.h"
+#include "Classes/route.h"
 #include "Classes/FlightGraph.h"
 
 FileHandling files(105, 10); // (number of flights, number of hotel cities)
