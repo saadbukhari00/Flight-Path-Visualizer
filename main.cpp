@@ -12,7 +12,10 @@ g++ -I/opt/homebrew/opt/sfml/include -L/opt/homebrew/opt/sfml/lib main.cpp Class
 #include "Classes/heap.h"
 #include "Classes/stack.h"
 #include "Classes/queue.h"
-#include "Classes/FlightGraph.h"
+#include "Classes/route.h"
+
+#include <sstream>
+
 
 FileHandling files(105, 10); // (number of flights, number of hotel cities)
 
@@ -34,6 +37,8 @@ class FlightBookingGUI
 private:
     sf::RenderWindow& window;
     sf::Font font;
+    sf::Text resultText;
+
     
     sf::RectangleShape originBox, destBox, dateBox, searchButton;
     sf::Text originText, destText, dateText, searchText;
@@ -193,7 +198,7 @@ public:
 
     void handleSearch() 
     {
-    if (originInput.empty() || destInput.empty() || dateInput.empty()) 
+    	 if (originInput.empty() || destInput.empty() || dateInput.empty()) 
     {
         std::cout << "Please fill in all fields.\n";
         return;
