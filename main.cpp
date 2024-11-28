@@ -223,19 +223,16 @@ public:
 
     void handleSearch()
     {
-        if (originInput.empty() || destInput.empty() || dateInput.empty() || dateInput1.empty()) {
-            showErrorMessage("Please fill in all fields!");
-            return;
-        }
-
-        Route route(flightGraph);
+        Route route(flightGraph, window, flightGraph.getMapTexture());
 
         // Display flights in terminal
         route.listAllFlightsWithinDateRange(originInput.c_str(), destInput.c_str(), dateInput.c_str(), dateInput1.c_str());
         route.displayFlight(originInput.c_str(), destInput.c_str());
         
         route.listShortestAndCheapest(originInput.c_str(), destInput.c_str());
-        
+
+        // Highlight the shortest route on the map
+        route.highlightShortestOrCheapest(originInput.c_str(), destInput.c_str(), true);
         
     }
 
@@ -399,6 +396,12 @@ public:
                         std::string toDate = bookingGUI.getToDateInput();
 
                         // highlight flights on the main window
+                        Route route(flightGraph, mainWindow, flightGraph.getMapTexture());
+                        route.listAllFlightsWithinDateRange(origin.c_str(), destination.c_str(), fromDate.c_str(), toDate.c_str());
+                        route.displayFlight(origin.c_str(), destination.c_str());
+                        route.listShortestAndCheapest(origin.c_str(), destination.c_str());
+                        route.highlightShortestOrCheapest(origin.c_str(), destination.c_str(), true);
+                        
                     }
                 }
             }

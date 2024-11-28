@@ -2,7 +2,8 @@
 
 // Assuming Route is defined and used elsewhere as in your provided code.
 
-Route::Route(FlightGraph& graph) : flightGraph(graph) {}
+Route::Route(FlightGraph& graph, sf::RenderWindow& win, const sf::Texture& texture)
+    : flightGraph(graph), window(win), mapTexture(texture) {}
 
 void Route::initializeArrays(int* distances, int* previous, bool* visited, int size) 
 {
@@ -206,7 +207,6 @@ void Route::displayIndirectFlights(const char* startCity, const char* endCity)
     }
 }
 
-
 void Route::displayFlight(const char* originCity, const char* destinationCity) 
 {
     int originIndex = flightGraph.getCityIndex(originCity);
@@ -310,7 +310,6 @@ bool Route::isWithinDateRange(const char* flightDate, const char* startDate, con
     
 }
 
-
 int Route::convertDateToComparableFormat(const char* date)
 {
     int day, month, year;
@@ -321,4 +320,26 @@ int Route::convertDateToComparableFormat(const char* date)
 
     // Convert date into an integer like YYYYMMDD
     return year * 10000 + month * 100 + day;
+}
+
+void Route::highlightShortestOrCheapest(const char* origin, const char* destination, bool shortest) {
+    int originIndex = flightGraph.getCityIndex(origin);
+    int destIndex = flightGraph.getCityIndex(destination);
+
+    if (originIndex == -1 || destIndex == -1) {
+        std::cerr << "Invalid cities for highlighting routes.\n";
+        return;
+    }
+
+    // Retrieve the coordinates of the cities from FlightGraph
+    sf::Vector2f originPos = flightGraph.getCityPosition(flightGraph.getVertices()[originIndex].city);
+    sf::Vector2f destPos = flightGraph.getCityPosition(flightGraph.getVertices()[destIndex].city);
+
+    // Draw the route on the map
+    sf::Vertex line[] = {
+        sf::Vertex(originPos, sf::Color::Red),
+        sf::Vertex(destPos, sf::Color::Red)
+    };
+
+    window.draw(line, 2, sf::Lines);
 }

@@ -31,6 +31,7 @@ int FlightGraph::getNumVertices() const {
     return vertexCount;
 }
 
+
 void FlightGraph::addCity(const char* city, sf::Vector2f position) {
     for (int i = 0; i < coordinateCount; i++) {
         if (strcmp(coordinates[i].city, city) == 0)
@@ -164,6 +165,23 @@ void FlightGraph::displayOnMap(sf::RenderWindow& window, const sf::Texture& mapT
     }
 }
 
+void FlightGraph::displayHighlightedRoutes(sf::RenderWindow& window) {
+    for (int i = 0; i < vertexCount; ++i) {
+        Edge* edge = vertices[i].head;
+        while (edge) {
+            int destIndex = edge->destination;
+
+            // Highlight the route in red or another color
+            sf::Vertex line[] = {
+                sf::Vertex(sf::Vector2f(coordinates[i].position.x, coordinates[i].position.y), sf::Color::Red),
+                sf::Vertex(sf::Vector2f(coordinates[destIndex].position.x, coordinates[destIndex].position.y), sf::Color::Red)
+            };
+
+            window.draw(line, 2, sf::Lines);
+            edge = edge->next;
+        }
+    }
+}
 
 FlightGraph::~FlightGraph() {
     for (int i = 0; i < vertexCount; i++) {

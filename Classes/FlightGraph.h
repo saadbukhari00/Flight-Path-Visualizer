@@ -31,16 +31,16 @@ private:
     int maxVertices;
     int coordinateCount;
     FileHandling& fileHandler;
-    sf::Texture mapTexture;
 
 public:
+    sf::Texture mapTexture;
     FlightGraph(int size, FileHandling& fileHandler);
     ~FlightGraph();
 
     Vertex* getVertices();
     int getCityIndex(const char* cityName);
     int getNumVertices() const;
-
+    sf::Texture getMapTexture() const { return mapTexture; }
     void initializeCityCoordinates();
     sf::Vector2f getCityPosition(const std::string& city);
 
@@ -51,8 +51,9 @@ public:
     
     void populateGraph();
     void displayGraph() const;
-    void displayOnMap(sf::RenderWindow& window, const sf::Texture& mapTexture);
 
+    void displayOnMap(sf::RenderWindow& window, const sf::Texture& mapTexture);
+    void displayHighlightedRoutes(sf::RenderWindow& window);
 };
 
 #endif 
