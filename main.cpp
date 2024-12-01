@@ -4,7 +4,7 @@ g++ -I/opt/homebrew/opt/sfml/include -L/opt/homebrew/opt/sfml/lib main.cpp Class
 */
 
 /* added by Huzaifa for compilation on my system
- g++ -o FlightPathVisualizer main.cpp Classes/FileHandling.cpp Classes/FlightGraph.cpp -lsfml-graphics -lsfml-window -lsfml-system
+ g++ -o FlightPathVisualizer main.cpp Classes/FileHandling.cpp Classes/FlightGraph.cpp Classes/route.cpp Classes/list.cpp -lsfml-graphics -lsfml-window -lsfml-system
 */
 
 #include "Classes/main.h"
@@ -184,7 +184,8 @@ public:
                      {
                     showErrorMessage("Please fill in all fields!");
                 } else {
-                    handleSearch();  
+                    handleSearch();
+                    window.close();  
                 }
                 }
             }
@@ -358,14 +359,13 @@ public:
 class FlightVisualizerApp {
 private:
     sf::RenderWindow mainWindow;
-    sf::RenderWindow bookingWindow;
+    
     FlightGraph flightGraph;
     FileHandling fileHandler;
 
 public:
     FlightVisualizerApp()
         : mainWindow(sf::VideoMode(1024, 768), "Flight Graph Visualization"),
-          bookingWindow(sf::VideoMode(800, 600), "Flight Booking"),
           flightGraph(50, fileHandler),
           fileHandler(200, 50) {
         // Initialize graph
@@ -374,7 +374,7 @@ public:
 
     void run() {
         MainGUI mainGUI(mainWindow, flightGraph);
-        FlightBookingGUI bookingGUI(bookingWindow, flightGraph);
+       
 
         while (mainWindow.isOpen()) {
             // Display main graph with Book Flight option
@@ -382,18 +382,20 @@ public:
             mainGUI.draw();
 
             if (bookFlightPressed) {
-                bookingWindow.setVisible(true);
+                sf::RenderWindow bookingWindow(sf::VideoMode(800, 600), "Flight Booking");
+                FlightBookingGUI bookingGUI(bookingWindow, flightGraph);
 
-                while (bookingWindow.isOpen()) {
+                while (bookingWindow.isOpen())
+                {
                     bookingGUI.handleInput();
                     bookingGUI.draw();
-
-                    if (!bookingWindow.isOpen()) {
-                        // After booking, highlight flights on the main window
-                        std::string origin = bookingGUI.getOriginInput();
-                        std::string destination = bookingGUI.getDestInput();
-                        std::string fromDate = bookingGUI.getFromDateInput();
-                        std::string toDate = bookingGUI.getToDateInput();
+                }
+                 
+                // Retrieve inputs after booking window closes
+                string origin = bookingGUI.getOriginInput();
+                string destination = bookingGUI.getDestInput();
+                string fromDate = bookingGUI.getFromDateInput();
+                string toDate = bookingGUI.getToDateInput();
 
                         // highlight flights on the main window
                         Route route(flightGraph, mainWindow, flightGraph.getMapTexture());
@@ -404,9 +406,9 @@ public:
                         
                     }
                 }
-            }
+            
         }
-    }
+    
 };
 
 int main() {
