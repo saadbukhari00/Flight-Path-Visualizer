@@ -15,6 +15,46 @@ g++ -I/opt/homebrew/opt/sfml/include -L/opt/homebrew/opt/sfml/lib main.cpp Class
 #include "Classes/route.h"
 #include "Classes/FlightGraph.h"
 
+
+// airplane struct to store airplane information
+struct Airplane {
+    sf::ConvexShape shape;      // The triangle to represent the airplane
+    sf::Vector2f startPosition;
+    sf::Vector2f targetPosition;
+    float speed;
+    bool isMoving;
+};
+
+// Function to calculate the angle (in degrees) between two points
+float calculateAngle(const sf::Vector2f& start, const sf::Vector2f& target) {
+    return atan2(target.y - start.y, target.x - start.x) * 180.f / 3.14159f;
+}
+
+// Function to normalize a vector (make its magnitude = 1)
+sf::Vector2f normalize(const sf::Vector2f& vector) {
+    float magnitude = sqrt(vector.x * vector.x + vector.y * vector.y);
+    return magnitude == 0 ? sf::Vector2f(0, 0) : sf::Vector2f(vector.x / magnitude, vector.y / magnitude);
+}
+
+// Update airplane position based on direction and speed
+void updateAirplanePosition(Airplane& airplane, float deltaTime) {
+    if (airplane.isMoving) 
+    {
+        sf::Vector2f direction = normalize(airplane.targetPosition - airplane.shape.getPosition());
+        airplane.shape.move(direction * airplane.speed * deltaTime);
+
+        // Check if the airplane has reached or is very close to the target position
+        sf::Vector2f currentPosition = airplane.shape.getPosition();
+        if (fabs(currentPosition.x - airplane.targetPosition.x) < 1.f &&
+            fabs(currentPosition.y - airplane.targetPosition.y) < 1.f) 
+            {
+            airplane.shape.setPosition(airplane.targetPosition);
+            airplane.isMoving = false;
+        }
+    }
+}
+
+
 class FlightBookingGUI 
 {
 private:
@@ -182,11 +222,13 @@ public:
                 {
                     if (originInput.empty() || destInput.empty() || dateInput.empty() || dateInput1.empty())
                      {
-                    showErrorMessage("Please fill in all fields!");
-                } else {
-                    handleSearch();
-                    window.close();  
-                }
+                        showErrorMessage("Please fill in all fields!");
+                     } 
+                    else 
+                    {
+                        handleSearch();
+                        window.close();         
+                    }
                 }
             }
         }
@@ -234,7 +276,7 @@ public:
 
         // Highlight the shortest route on the map
         route.highlightShortestOrCheapest(originInput.c_str(), destInput.c_str(), true);
-        
+
     }
 
 
@@ -289,12 +331,10 @@ public:
         window.display();
     }
 
-    void run() {
-        while(window.isOpen()) 
-        {
-            handleInput();
-            draw();
-        }
+    void run() 
+    {
+        handleInput();
+        draw();
     }
 };
 
@@ -305,10 +345,11 @@ private:
     sf::RectangleShape bookFlightButton;
     sf::Text buttonText;
     FlightGraph& flightGraph;
+    Airplane airplane; // Adding airplane as a member variable
 
 public:
     MainGUI(sf::RenderWindow& window, FlightGraph& graph)
-        : mainWindow(window), flightGraph(graph) {
+        : mainWindow(window), flightGraph(graph), airplane() {
         font.loadFromFile("Assets/Aller_Bd.ttf");
 
         // Configure the Book Flight button
@@ -340,7 +381,14 @@ public:
         return false;
     }
 
-    void draw() {
+    void addAirplane(const Airplane& newAirplane)
+    {
+        airplane = newAirplane; // Store the airplane passed from the search
+    }
+
+
+    void draw() 
+    {
         mainWindow.clear(sf::Color::White);
 
         // Draw flight graph
@@ -351,15 +399,13 @@ public:
         // Draw Book Flight button
         mainWindow.draw(bookFlightButton);
         mainWindow.draw(buttonText);
-
         mainWindow.display();
     }
 };
 
 class FlightVisualizerApp {
 private:
-    sf::RenderWindow mainWindow;
-    
+    sf::RenderWindow mainWindow; 
     FlightGraph flightGraph;
     FileHandling fileHandler;
 
@@ -372,39 +418,72 @@ public:
         flightGraph.populateGraph();
     }
 
-    void run() {
+    void run() 
+    {
         MainGUI mainGUI(mainWindow, flightGraph);
        
 
-        while (mainWindow.isOpen()) {
+        while (mainWindow.isOpen()) 
+        {
             // Display main graph with Book Flight option
-            bool bookFlightPressed = mainGUI.handleEvents();
             mainGUI.draw();
+            bool bookFlightPressed = mainGUI.handleEvents();
+            
 
-            if (bookFlightPressed) {
+            if (bookFlightPressed) 
+            {
+                // display new window after button is pressed
                 sf::RenderWindow bookingWindow(sf::VideoMode(800, 600), "Flight Booking");
                 FlightBookingGUI bookingGUI(bookingWindow, flightGraph);
-
+                
                 while (bookingWindow.isOpen())
                 {
-                    bookingGUI.handleInput();
-                    bookingGUI.draw();
+                    bookingGUI.run();
                 }
-                 
+                
                 // Retrieve inputs after booking window closes
                 string origin = bookingGUI.getOriginInput();
                 string destination = bookingGUI.getDestInput();
                 string fromDate = bookingGUI.getFromDateInput();
                 string toDate = bookingGUI.getToDateInput();
 
-                        // highlight flights on the main window
-                        Route route(flightGraph, mainWindow, flightGraph.getMapTexture());
-                        route.listAllFlightsWithinDateRange(origin.c_str(), destination.c_str(), fromDate.c_str(), toDate.c_str());
-                        route.displayFlight(origin.c_str(), destination.c_str());
-                        route.listShortestAndCheapest(origin.c_str(), destination.c_str());
-                        route.highlightShortestOrCheapest(origin.c_str(), destination.c_str(), true);
-                        
-                    }
+                sf::Vector2u windowSize = mainWindow.getSize();
+                
+                Airplane airplane;
+                airplane.shape.setPointCount(3);
+                airplane.shape.setPoint(0, sf::Vector2f(0, -10)); // Top vertex of the triangle
+                airplane.shape.setPoint(1, sf::Vector2f(-5, 10)); // Bottom left vertex
+                airplane.shape.setPoint(2, sf::Vector2f(5, 10)); // Bottom right vertex
+                airplane.shape.setFillColor(sf::Color::Red);
+                sf::Vector2f positionOrigin = flightGraph.getCityPosition(origin);
+                sf::Vector2f positionDestination = flightGraph.getCityPosition(destination);
+                sf::Vector2f scaledPos = sf::Vector2f(positionOrigin.x * windowSize.x, positionOrigin.y * windowSize.y);
+                sf::Vector2f scaledDes = sf::Vector2f(positionDestination.x * windowSize.x, positionDestination.y * windowSize.y);
+                airplane.speed = 20.f; // Speed of the airplane
+                airplane.isMoving = true;
+                airplane.targetPosition = scaledDes;
+                airplane.startPosition = scaledPos;
+                airplane.shape.setPosition(airplane.startPosition);
+                airplane.shape.setRotation(calculateAngle(airplane.startPosition, airplane.targetPosition));
+
+                mainGUI.addAirplane(airplane);
+                sf::Clock clock;
+
+                while (airplane.isMoving) // Main loop for updating and rendering
+                {
+                    float deltaTime = clock.restart().asSeconds();
+                    updateAirplanePosition(airplane, deltaTime);
+
+                    // Clear the window and draw the airplane
+                    mainWindow.clear();
+                    mainGUI.draw();
+                    mainWindow.draw(airplane.shape);
+                    mainWindow.display();
+
+                    sf::sleep(sf::milliseconds(1)); // sleep to control frequency
+                }
+                
+                }
                 }
             
         }
