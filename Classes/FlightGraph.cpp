@@ -31,7 +31,6 @@ int FlightGraph::getNumVertices() const {
     return vertexCount;
 }
 
-
 void FlightGraph::addCity(const char* city, sf::Vector2f position) {
     for (int i = 0; i < coordinateCount; i++) {
         if (strcmp(coordinates[i].city, city) == 0)

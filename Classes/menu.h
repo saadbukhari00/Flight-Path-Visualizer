@@ -3,11 +3,11 @@
 class Menu{
 public:
     void displayHeader();
-    void displayDirectFlights(string, string);
-    void displayIndirectFlights(string, string);
+    
+    void displayFlightHeader(string origin, string destination);
+    void displaySCheader(string startCity, string endCity);
+    void displayIndFlightHeader(string, string);
 
-    void displayShortestRoute(string, string);
-    void displayCheapestRoute(string, string);
 
     void displayPreferences();
 
