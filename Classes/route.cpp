@@ -1,9 +1,9 @@
 #include "route.h"
-
+#include "menu.h"
 // Assuming Route is defined and used elsewhere as in your provided code.
 
-Route::Route(FlightGraph& graph, sf::RenderWindow& win, const sf::Texture& texture)
-    : flightGraph(graph), window(win), mapTexture(texture) {}
+Route::Route(FlightGraph& graph)
+    : flightGraph(graph) {}
 
 void Route::initializeArrays(int* distances, int* previous, bool* visited, int size) 
 {
@@ -37,7 +37,7 @@ void Route::findShortestRoute(const char* startCity, const char* endCity)
 
     if (startIndex == -1 || endIndex == -1) 
     {
-        cerr << "Invalid city name(s): " << startCity << " or " << endCity << "\n";
+        cout << "\033[1;31mInvalid city name(s): " << startCity << " or " << endCity << "\033[0m\n";
         return;
     }
 
@@ -71,18 +71,16 @@ void Route::findShortestRoute(const char* startCity, const char* endCity)
 
     if (distances[endIndex] == INT_MAX) 
     {
-        cout << "No route available from " << startCity << " to " << endCity << ".\n";
+        cout << "\033[1;31mNo route available from " << startCity << " to " << endCity << ".\033[0m\n";
     } 
     else 
     {
-        cout << "Shortest route from " << startCity << " to " << endCity << " is " << distances[endIndex] << " km.\n";
-        cout << "Route: ";
         int current = endIndex;
         while (current != -1)
           {
             cout << flightGraph.getVertices()[current].city;
             current = previous[current];
-            if (current != -1) cout << " <- ";
+            
         }
         cout << "\n";
     }
@@ -158,81 +156,12 @@ void Route::findCheapestRoute(const char* startCity, const char* endCity)
 
 void Route::listShortestAndCheapest(const char* startCity, const char* endCity)
 {
-    cout << "Finding shortest and cheapest routes between " << startCity << " and " << endCity << "...\n";
-
+    Menu menu;
+    menu.displayShortestRoute(startCity, endCity);
     findShortestRoute(startCity, endCity);
+
+    menu.displayCheapestRoute(startCity, endCity);
     findCheapestRoute(startCity, endCity);
-}
-
-void Route::displayIndirectFlights(const char* startCity, const char* endCity) 
-{
-    int startIndex = flightGraph.getCityIndex(startCity);
-    int endIndex = flightGraph.getCityIndex(endCity);
-
-    if (startIndex == -1 || endIndex == -1) 
-    {
-        cerr << "Invalid city name(s): " << startCity << " or " << endCity << "\n";
-        return;
-    }
-
-    cout << "Indirect flights from " << startCity << " to " << endCity << ":\n";
-
-    bool found = false;
-    // Explore all neighbors of the start city
-    Edge* edge = flightGraph.getVertices()[startIndex].head;
-    while (edge) 
-    {
-        int intermediateIndex = edge->destination;
-        // Check if there's a direct flight from this intermediate city to the destination
-        Edge* intermediateEdge = flightGraph.getVertices()[intermediateIndex].head;
-        while (intermediateEdge) 
-        {
-            if (intermediateEdge->destination == endIndex) 
-            {
-                found = true;
-                cout << "Route: " << startCity << " -> " 
-                          << flightGraph.getVertices()[intermediateIndex].city << " -> "
-                          << endCity << "\n";
-                cout << "Total Distance: " << (edge->flightData->distance + intermediateEdge->flightData->distance) << " km\n";
-                cout << "Total Cost: " << (edge->flightData->price + intermediateEdge->flightData->price) << "\n\n";
-            }
-            intermediateEdge = intermediateEdge->next;
-        }
-        edge = edge->next;
-    }
-
-    if (!found) 
-    {
-        cout << "No indirect flights available from " << startCity << " to " << endCity << ".\n";
-    }
-}
-
-void Route::displayFlight(const char* originCity, const char* destinationCity) 
-{
-    int originIndex = flightGraph.getCityIndex(originCity);
-    int destinationIndex = flightGraph.getCityIndex(destinationCity);
-
-    if (originIndex == -1 || destinationIndex == -1) 
-    {
-        cerr << "Invalid city name(s): " << originCity << " or " << destinationCity << "\n";
-        return;
-    }
-
-    // Check for a direct flight
-    Edge* edge = flightGraph.getVertices()[originIndex].head;
-    while (edge) 
-    {
-        if (edge->destination == destinationIndex) 
-        {
-            cout << "Direct flight from " << originCity << " to " << destinationCity << ":\n";
-            cout << "Distance: " << edge->flightData->distance << " km\n";
-            cout << "Cost: $" << edge->flightData->price << "\n\n";
-            return;
-        }
-        edge = edge->next;
-    }
-
-    cout << "No direct flight available from " << originCity << " to " << destinationCity << ".\n";
 }
 
 void Route::listAllFlightsWithinDateRange(const char* originCity, const char* destinationCity, const char* startDate, const char* endDate)
@@ -242,30 +171,32 @@ void Route::listAllFlightsWithinDateRange(const char* originCity, const char* de
 
     if (originIndex == -1 || destinationIndex == -1) 
     {
-        cerr << "Invalid city name(s): " << originCity << " or " << destinationCity << "\n";
+        cout << "\033[1;31mInvalid city name(s): " << originCity << " or " << destinationCity << "\033[0m\n";
         return;
     }
 
     bool foundFlights = false;
-
-    cout << "Listing all flights from " << originCity << " to " << destinationCity << " between " 
-         << startDate << " and " << endDate << ":\n\n";
-
+    Menu menu;
+    menu.displayDirectFlights(originCity, destinationCity);
     // Check direct flights
     Edge* edge = flightGraph.getVertices()[originIndex].head;
     while (edge) 
-    {
+    { 
         if (edge->destination == destinationIndex && isWithinDateRange(edge->flightData->date, startDate, endDate)) 
         {
             foundFlights = true;
-            cout << "Direct flight:\n";
-            cout << "From: " << originCity << " To: " << destinationCity << "\n";
-            cout << "Date: " << edge->flightData->date << "\n";
-            cout << "Distance: " << edge->flightData->distance << " km\n";
-            cout << "Cost: $" << edge->flightData->price << "\n\n";
+            cout << "\033[1;36m\t";
+            cout << "|" << std::setw(6) << edge->flightData->date << " |" 
+                 << setw(8) << edge->flightData->airline << " |" 
+                 << setw(14) << edge->flightData->departureTime << " |" 
+                 << setw(12) << edge->flightData->arrivalTime << " |" 
+                 << setw(6) << edge->flightData->price << " |" 
+                 << setw(9) << edge->flightData->distance << " |\033[0m\n";
         }
         edge = edge->next;
     }
+    cout << "\t\033[1;36m|_____________________________________________________________________|\033[0m\n";
+    cout << "\033[0m";
 
     // Check indirect flights
     edge = flightGraph.getVertices()[originIndex].head;
@@ -276,9 +207,7 @@ void Route::listAllFlightsWithinDateRange(const char* originCity, const char* de
 
         while (intermediateEdge) 
         {
-            if (intermediateEdge->destination == destinationIndex &&
-                isWithinDateRange(edge->flightData->date, startDate, endDate) &&
-                isWithinDateRange(intermediateEdge->flightData->date, startDate, endDate)) 
+            if (intermediateEdge->destination == destinationIndex && isWithinDateRange(edge->flightData->date, startDate, endDate) && isWithinDateRange(intermediateEdge->flightData->date, startDate, endDate)) 
             {
                 foundFlights = true;
                 cout << "Indirect flight:\n";
@@ -294,9 +223,12 @@ void Route::listAllFlightsWithinDateRange(const char* originCity, const char* de
         edge = edge->next;
     }
 
+    cout << "\t\033[1;36m|_____________________________________________________________________|\033[0m\n";
+    cout << "\033[0m";
+
     if (!foundFlights) 
     {
-        cout << "No flights found from " << originCity << " to " << destinationCity << " within the specified date range.\n";
+        cout << "\t\033[1;31mNo flights available from " << originCity << " to " << destinationCity << " within the specified date range.\033[0m\n";
     }
 }
 
@@ -320,26 +252,4 @@ int Route::convertDateToComparableFormat(const char* date)
 
     // Convert date into an integer like YYYYMMDD
     return year * 10000 + month * 100 + day;
-}
-
-void Route::highlightShortestOrCheapest(const char* origin, const char* destination, bool shortest) {
-    int originIndex = flightGraph.getCityIndex(origin);
-    int destIndex = flightGraph.getCityIndex(destination);
-
-    if (originIndex == -1 || destIndex == -1) {
-        std::cerr << "Invalid cities for highlighting routes.\n";
-        return;
-    }
-
-    // Retrieve the coordinates of the cities from FlightGraph
-    sf::Vector2f originPos = flightGraph.getCityPosition(flightGraph.getVertices()[originIndex].city);
-    sf::Vector2f destPos = flightGraph.getCityPosition(flightGraph.getVertices()[destIndex].city);
-
-    // Draw the route on the map
-    sf::Vertex line[] = {
-        sf::Vertex(originPos, sf::Color::Red),
-        sf::Vertex(destPos, sf::Color::Red)
-    };
-
-    window.draw(line, 2, sf::Lines);
 }

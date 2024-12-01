@@ -14,6 +14,7 @@ g++ -I/opt/homebrew/opt/sfml/include -L/opt/homebrew/opt/sfml/lib main.cpp Class
 #include "Classes/queue.h"
 #include "Classes/route.h"
 #include "Classes/FlightGraph.h"
+#include "Classes/menu.h"
 
 
 // airplane struct to store airplane information
@@ -26,12 +27,14 @@ struct Airplane {
 };
 
 // Function to calculate the angle (in degrees) between two points
-float calculateAngle(const sf::Vector2f& start, const sf::Vector2f& target) {
+float calculateAngle(const sf::Vector2f& start, const sf::Vector2f& target) 
+{
     return atan2(target.y - start.y, target.x - start.x) * 180.f / 3.14159f;
 }
 
 // Function to normalize a vector (make its magnitude = 1)
-sf::Vector2f normalize(const sf::Vector2f& vector) {
+sf::Vector2f normalize(const sf::Vector2f& vector) 
+{
     float magnitude = sqrt(vector.x * vector.x + vector.y * vector.y);
     return magnitude == 0 ? sf::Vector2f(0, 0) : sf::Vector2f(vector.x / magnitude, vector.y / magnitude);
 }
@@ -266,17 +269,12 @@ public:
 
     void handleSearch()
     {
-        Route route(flightGraph, window, flightGraph.getMapTexture());
+        Route route(flightGraph);
 
         // Display flights in terminal
         route.listAllFlightsWithinDateRange(originInput.c_str(), destInput.c_str(), dateInput.c_str(), dateInput1.c_str());
-        route.displayFlight(originInput.c_str(), destInput.c_str());
         
         route.listShortestAndCheapest(originInput.c_str(), destInput.c_str());
-
-        // Highlight the shortest route on the map
-        route.highlightShortestOrCheapest(originInput.c_str(), destInput.c_str(), true);
-
     }
 
 
@@ -491,6 +489,9 @@ public:
 };
 
 int main() {
+    Menu menu;
+
+    menu.displayHeader();
 
     FlightVisualizerApp app;
     app.run();
