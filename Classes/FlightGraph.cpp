@@ -57,7 +57,8 @@ void FlightGraph::initializeCityCoordinates() {
 }
 
 sf::Vector2f FlightGraph::getCityPosition(const std::string& city) {
-    for (int i = 0; i < coordinateCount; i++) {
+    for (int i = 0; i < coordinateCount; i++) 
+    {
         if (strcmp(coordinates[i].city, city.c_str()) == 0) {
             return coordinates[i].position;
         }
@@ -152,7 +153,8 @@ void FlightGraph::displayOnMap(sf::RenderWindow& window, const sf::Texture& mapT
         return;
     }
 
-    for (int i = 0; i < coordinateCount; i++) {
+    for (int i = 0; i < coordinateCount; i++) 
+    {
         sf::Vector2f position = coordinates[i].position;
         sf::Vector2f scaledPos = sf::Vector2f(position.x * windowSize.x, position.y * windowSize.y);
         cityPoint.setPosition(scaledPos - sf::Vector2f(cityPoint.getRadius(), cityPoint.getRadius()));
