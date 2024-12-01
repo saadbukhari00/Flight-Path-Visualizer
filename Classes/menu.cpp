@@ -34,7 +34,7 @@ void Menu::displayIndirectFlights(string origin, string destination)
     cout << "\033[0m";
 }
 
-void displayShortestRoute(string origin, string destination)
+void Menu::displayShortestRoute(string origin, string destination)
 {
     cout << "\033[1;34m\033[1m\033[1;36m";
     cout << "\t\tShortest Route from " << origin << " to " << destination << endl << endl;
@@ -43,7 +43,7 @@ void displayShortestRoute(string origin, string destination)
     cout << "\033[0m";
 }
 
-void displayCheapestRoute(string origin, string destination)
+void Menu::displayCheapestRoute(string origin, string destination)
 {
     cout << "\033[1;33m\033[1m\033[1;36m";
     cout << "\t\tCheapest Route from " << origin << " to " << destination << endl << endl;
