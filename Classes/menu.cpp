@@ -38,6 +38,21 @@ void Menu::displayIndFlightHeader(string origin, string dest)
 {
         cout << "\033[1;36m";
         cout << "\n\t\tIndirect Flights from " << origin << " to " << dest << "\n\n";
-        cout << "  \t _____________________________________________________________________\n";
-        cout << " First Leg Date | Second Leg Date | Airline \n";
+        cout << "  \t ______________________________________________________________________________________________\n";
+        cout << "\t| First Leg Date | Second Leg Date | Airline | Departure Time | Arrival Time | Price | Distance |\n";
+        cout << "\t|________________|_________________|_________|________________|______________|_______|__________|\n";
+}
+
+string * Menu::takeTransitCities()
+{
+    cout << "\033[1;33m Enter the amount of transit cities you want: \033[0m";
+    int n;
+    cin >> n;
+    string * cities = new string[n];
+    for(int i = 0; i < n; i++)
+    {
+        cout << "Enter transit city " << i + 1 << ": ";
+        cin >> cities[i];
+    }
+    return cities;
 }

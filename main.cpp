@@ -275,6 +275,17 @@ public:
         route.listAllFlightsWithinDateRange(originInput.c_str(), destInput.c_str(), dateInput.c_str(), dateInput1.c_str());
         
         route.listShortestAndCheapest(originInput.c_str(), destInput.c_str());
+
+        //Need to be implemented
+        /*cout << "\033[1;36mDo you have any preferred transit cities (Y/n) ?\033[1m";
+        char choice;
+        cin >> choice;
+
+        if(choice == 'Y')
+           string * TC = menu.takeTransitCities();
+
+        route.displaywithTransitCities(TC);*/
+
     }
 
 
@@ -457,7 +468,7 @@ public:
                 sf::Vector2f positionDestination = flightGraph.getCityPosition(destination);
                 sf::Vector2f scaledPos = sf::Vector2f(positionOrigin.x * windowSize.x, positionOrigin.y * windowSize.y);
                 sf::Vector2f scaledDes = sf::Vector2f(positionDestination.x * windowSize.x, positionDestination.y * windowSize.y);
-                airplane.speed = 20.f; // Speed of the airplane
+                airplane.speed = 100.f; // Speed of the airplane
                 airplane.isMoving = true;
                 airplane.targetPosition = scaledDes;
                 airplane.startPosition = scaledPos;
@@ -495,5 +506,4 @@ int main() {
 
     FlightVisualizerApp app;
     app.run();
-    
 }

@@ -199,7 +199,9 @@ void Route::listAllFlightsWithinDateRange(const char* originCity, const char* de
     int originIndex = flightGraph.getCityIndex(originCity);
     int destinationIndex = flightGraph.getCityIndex(destinationCity);
 
-    if (originIndex == -1 || destinationIndex == -1) 
+    Menu menu;
+
+    if(originIndex == -1 || destinationIndex == -1) 
     {
         cout << "\033[1;31mInvalid city name(s): " << originCity << " or " << destinationCity << "\033[0m\n";
         return;
@@ -207,13 +209,13 @@ void Route::listAllFlightsWithinDateRange(const char* originCity, const char* de
 
     bool foundFlights = false;
 
-    Menu menu;
     menu.displayFlightHeader(originCity, destinationCity);
     // Check direct flights
     Edge* edge = flightGraph.getVertices()[originIndex].head;
+
     while (edge) 
     { 
-        if (edge->destination == destinationIndex && isWithinDateRange(edge->flightData->date, startDate, endDate)) 
+        if(edge->destination == destinationIndex && isWithinDateRange(edge->flightData->date, startDate, endDate)) 
         {
             foundFlights = true;
             cout << "\t";
@@ -231,6 +233,7 @@ void Route::listAllFlightsWithinDateRange(const char* originCity, const char* de
     menu.displayIndFlightHeader(originCity, destinationCity);
     // Check indirect flights
     edge = flightGraph.getVertices()[originIndex].head;
+
     while (edge) 
     {
         int intermediateIndex = edge->destination;
@@ -241,26 +244,52 @@ void Route::listAllFlightsWithinDateRange(const char* originCity, const char* de
             if (intermediateEdge->destination == destinationIndex && isWithinDateRange(edge->flightData->date, startDate, endDate) && isWithinDateRange(intermediateEdge->flightData->date, startDate, endDate)) 
             {
                 foundFlights = true;
-                cout << "Indirect flight:\n";
-                cout << "From: " << originCity << " To: " << flightGraph.getVertices()[intermediateIndex].city 
-                     << " To: " << destinationCity << "\n";
-                cout << "First Leg Date: " << edge->flightData->date << "\n";
-                cout << "Second Leg Date: " << intermediateEdge->flightData->date << "\n";
-                cout << "Total Distance: " << (edge->flightData->distance + intermediateEdge->flightData->distance) << " km\n";
-                cout << "Total Cost: $" << (edge->flightData->price + intermediateEdge->flightData->price) << "\n\n";
+                cout << setw(6) << edge->flightData->date << " |" 
+                     << setw(6) << intermediateEdge->flightData->date << " |" 
+                     << setw(8) << edge->flightData->airline << " |" 
+                     << setw(14) << edge->flightData->departureTime << " |" 
+                     << setw(12) << intermediateEdge->flightData->arrivalTime << " |" 
+                     << setw(6) << edge->flightData->price + intermediateEdge->flightData->price << " |" 
+                     << setw(9) << edge->flightData->distance + intermediateEdge->flightData->distance << " |\n";
             }
             intermediateEdge = intermediateEdge->next;
         }
         edge = edge->next;
     }
 
-    cout << "\t|__________|_________|_______________|_____________|_______|__________|\033[0m\n";
+    cout << "\t|________________|_________________|_________|________________|______________|_______|__________|\033[0m\n";
 
     if (!foundFlights) 
     {
         cout << "\t\033[1;31mNo flights available from " << originCity << " to " << destinationCity << " within the specified date range.\033[0m\n";
     }
 }
+
+/*Need to be implemented
+void Route::displaywithTransitCities(string * transit_cities, int numberOfTransitCities)
+{
+    int i = 0;
+    if(choice == 'Y' || choice == 'y'){
+        while (edge) 
+        { 
+            if(edge->destination == destinationIndex && isWithinDateRange(edge->flightData->date, startDate, endDate) && edge->flightData->airline == transit_cities[i] && i<numberOfTransitCities) 
+            {
+                foundFlights = true;
+                cout << "\t";
+                cout << "|" << std::setw(6) << edge->flightData->date << " |" 
+                    << setw(8) << edge->flightData->airline << " |" 
+                    << setw(14) << edge->flightData->departureTime << " |" 
+                    << setw(12) << edge->flightData->arrivalTime << " |" 
+                    << setw(6) << edge->flightData->price << " |" 
+                    << setw(9) << edge->flightData->distance << " |\n";
+            }
+            edge = edge->next;
+            i++;
+        }
+    }
+    
+}
+*/
 
 bool Route::isWithinDateRange(const char* flightDate, const char* startDate, const char* endDate)
 {

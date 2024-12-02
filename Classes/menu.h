@@ -8,6 +8,7 @@ public:
     void displaySCheader(string startCity, string endCity);
     void displayIndFlightHeader(string, string);
 
+    string * takeTransitCities();
 
     void displayPreferences();
 
