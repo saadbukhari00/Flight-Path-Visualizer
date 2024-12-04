@@ -11,6 +11,21 @@ FlightGraph::FlightGraph(int size, FileHandling& fileHandler)
     initializeCityCoordinates();
 }
 
+const char* FlightGraph::getCityName(int cityIndex) const 
+{
+    if (cityIndex >= 0 && cityIndex < vertexCount) 
+    {
+        return vertices[cityIndex].city;
+    } 
+    else {
+    
+        cout<<"Invalid city index.";
+        return 0;
+    }
+}
+
+
+
 // Returns the list of vertices (cities)
 Vertex* FlightGraph::getVertices() {
     return vertices;

@@ -8,7 +8,6 @@ g++ -I/opt/homebrew/opt/sfml/include -L/opt/homebrew/opt/sfml/lib main.cpp Class
 */
 
 #include "Classes/main.h"
-#include "Classes/list.h"
 #include "Classes/heap.h"
 #include "Classes/stack.h"
 #include "Classes/queue.h"
@@ -286,7 +285,7 @@ public:
         if(choice == 'Y' || choice == 'y')
         {
             TC = menu.takeTransitCities(count);
-            route.listAllFlightsWithinDataRangeandTransitCities(originInput.c_str(), destInput.c_str(), dateInput.c_str(), dateInput1.c_str(), TC, count);
+            route.findFlightsWithTransitCities(originInput.c_str(), destInput.c_str(), dateInput.c_str(), dateInput1.c_str(), TC, count);
         }
 
         string airline;

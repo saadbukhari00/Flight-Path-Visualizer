@@ -17,6 +17,7 @@ public:
     void insert(Flight&);
     void remove(string);
     void Display(void);
+    void DisplayIndirect(void);
     void clear(void);
     Flight getHeadFlight(void) { return head->flight; }
     bool isEmpty(void) { return head == NULL; }

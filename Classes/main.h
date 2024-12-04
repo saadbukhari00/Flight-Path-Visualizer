@@ -56,6 +56,8 @@ struct Flight
                 << ", Airline: " << airline << "\n";
                 cout<<endl;
     }
+    
+    
 
 };
 

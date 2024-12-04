@@ -1,4 +1,5 @@
 #include"list.h"
+#include <iomanip>
 
     LinkedList::LinkedList(void){head=NULL;}
 
@@ -33,25 +34,52 @@
         }
     }
 
-    void LinkedList::Display(void){
-        if(head==NULL){
-            cout<<"The list is empty\n";
-            return;
-        }
-        FlightNode*curr=head;
-        while(curr){
-            cout<<"Origin: "<<curr->flight.origin<<endl;
-            cout<<"Destination: "<<curr->flight.destination<<endl;
-            cout<<"Date: "<<curr->flight.date<<endl;
-            cout<<"Departure Time: "<<curr->flight.departureTime<<endl;
-            cout<<"Arrival Time: "<<curr->flight.arrivalTime<<endl;
-            cout<<"Airline: "<<curr->flight.airline<<endl;
-            cout<<"Price: "<<curr->flight.price<<endl;
-            cout<<"\n";
-            curr=curr->next;
-        }
-        cout<<"\n";
+void LinkedList::Display() 
+{
+    if (head == NULL) 
+    {
+        cout << "The list is empty\n";
+        return;
     }
+
+    FlightNode* curr = head;
+    while (curr) {
+        cout << "\t| " << left << setw(15) << curr->flight.origin
+             << " | " << left << setw(15) << curr->flight.destination
+             << " | " << left << setw(10) << curr->flight.date
+             << " | " << left << setw(15) << curr->flight.airline
+             << " | " << left << setw(15) << curr->flight.departureTime
+             << " | " << left << setw(15) << curr->flight.arrivalTime
+             << " | " << left << setw(10) << curr->flight.price
+             << " | " << left << setw(10) << curr->flight.distance << " |\n";
+        curr = curr->next;
+    }
+}
+
+void LinkedList::DisplayIndirect() 
+{
+    if (head == NULL) 
+    {
+        cout << "The list is empty\n";
+        return;
+    }
+
+    FlightNode* curr = head;
+    while (curr) {
+        cout << "\t| " << left << setw(15) << curr->flight.origin
+             << " | " << left << setw(15) << curr->flight.destination
+             << " | " << left << setw(10) << curr->flight.date
+             << " | " << left << setw(15) << curr->flight.airline
+             << " | " << left << setw(15) << curr->flight.departureTime
+             << " | " << left << setw(15) << curr->flight.arrivalTime
+             << " | " << left << setw(10) << curr->flight.price
+             << " | " << left << setw(10) << curr->flight.distance << " |\n";
+        curr = curr->next;
+    }
+}
+
+
+
 
     void LinkedList::clear(){
         FlightNode *curr=head,*next=NULL;

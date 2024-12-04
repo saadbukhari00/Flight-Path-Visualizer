@@ -55,6 +55,9 @@ public:
 
     void displayOnMap(sf::RenderWindow& window, const sf::Texture& mapTexture);
     void displayHighlightedRoutes(sf::RenderWindow& window);
+    
+    const char* getCityName(int cityIndex) const;
+
 };
 
 #endif 

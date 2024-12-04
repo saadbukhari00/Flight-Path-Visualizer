@@ -27,5 +27,12 @@ string * Menu::takeTransitCities(int &n)
             break;
         n++;
     }while(true);
+    
+    cout << "\n\033[1;32mCities entered:\033[0m" << endl;
+    for (int i = 0; i < n; i++) 
+    {
+        cout << cities[i] << endl;
+    }
+    
     return cities;
 }
