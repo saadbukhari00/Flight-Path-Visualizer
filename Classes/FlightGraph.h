@@ -44,6 +44,7 @@ public:
     void initializeCityCoordinates();
     sf::Vector2f getCityPosition(const std::string& city);
 
+    bool isDuplicateFlight(const char* origin, const char* destination, const char* airline, const char* date);
     int findOrAddCity(const char* cityName);
     void addCity(const char* city, sf::Vector2f position);
     void addFlight(const char* origin, const char* destination, const char* airline, const char* date,

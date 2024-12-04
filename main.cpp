@@ -276,15 +276,29 @@ public:
         
         route.listShortestAndCheapest(originInput.c_str(), destInput.c_str());
 
-        //Need to be implemented
-        /*cout << "\033[1;36mDo you have any preferred transit cities (Y/n) ?\033[1m";
+        Menu menu;
         char choice;
+
+        string * TC;
+        cout << "\033[1;34m\n\tDo you have any preferred transit cities (Y/n) ?\033[0m";
         cin >> choice;
+        int count = 0;
+        if(choice == 'Y' || choice == 'y')
+        {
+            TC = menu.takeTransitCities(count);
+            route.listAllFlightsWithinDataRangeandTransitCities(originInput.c_str(), destInput.c_str(), dateInput.c_str(), dateInput1.c_str(), TC, count);
+        }
 
-        if(choice == 'Y')
-           string * TC = menu.takeTransitCities();
-
-        route.displaywithTransitCities(TC);*/
+        string airline;
+        cout << "\033[1;34m\n\tDo you have any preferred Airline (Y/n) ?\033[0m";
+        cin >> choice;
+        if(choice == 'Y' || choice == 'y')
+        {
+            cin.ignore();
+            cout << "\033[1;34m\n\tEnter the name of the airline: \033[0m";
+            getline(cin, airline);
+            route.listAllFlightsWithinDataRangeandPreferredAirline(originInput.c_str(), destInput.c_str(), dateInput.c_str(), dateInput1.c_str(), airline);
+        }
 
     }
 

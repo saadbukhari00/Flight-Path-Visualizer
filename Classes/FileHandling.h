@@ -24,24 +24,8 @@ public:
 
     Flight* readFlightsFile();
     Hotel* readHotelsFile();
-    
 
-    void highlightRoutesOnMap(sf::RenderWindow& window, const std::string& origin, const std::string& destination, const std::string& fromDate, const std::string& toDate);
-    void displayFlights() const;
-    void displayHotels() const;
-
-    Flight* getFlightByIndex(int index) const;
-    Hotel* getHotelByIndex(int index) const;
-
-    void searchByOrigin(const char* origin) const;
-    void searchByDestination(const char* destination) const;
-    void searchByDate(const char* date) const;
-    void searchByAirline(const char* airline) const;
-    void searchByPriceRange(int minPrice, int maxPrice) const;
-
-    void searchHotelByCity(const char* city) const;
-    void searchHotelByPriceRange(int minPrice, int maxPrice) const;
-
+    Flight* getFlightByIndex(int);
     ~FileHandling();
 };
 

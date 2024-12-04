@@ -16,43 +16,16 @@ void Menu::displayHeader()
     cout << "\033[0m";
 }
 
-void Menu::displayFlightHeader(string origin, string destination)
+string * Menu::takeTransitCities(int &n)
 {
-    cout << "\033[1;36m\033[1m\033[1;36m";
-    cout << "\t\tDirect Flights from " << origin << " to " << destination << endl << endl;
-        cout << "  \t _____________________________________________________________________\n";
-        cout << "\t| Date     | Airline | Departure Time| Arrival Time| Price | Distance |\n";
-        cout << "\t|__________|_________|_______________|_____________|_______|__________|\n";
-}
-
-void Menu::displaySCheader(string startCity, string endCity)
-{
-        cout << "\033[1;33m";
-        cout << "\n\t\tCheapest Route from " << startCity << " to " << endCity << "\n\n";
-        cout << "  \t _____________________________________________________________________\n";
-        cout << "\t| Date     | Airline | Departure Time| Arrival Time| Price | Distance |\n";
-        cout << "\t|__________|_________|_______________|_____________|_______|__________|\n";
-}
-
-void Menu::displayIndFlightHeader(string origin, string dest)
-{
-        cout << "\033[1;36m";
-        cout << "\n\t\tIndirect Flights from " << origin << " to " << dest << "\n\n";
-        cout << "  \t ______________________________________________________________________________________________\n";
-        cout << "\t| First Leg Date | Second Leg Date | Airline | Departure Time | Arrival Time | Price | Distance |\n";
-        cout << "\t|________________|_________________|_________|________________|______________|_______|__________|\n";
-}
-
-string * Menu::takeTransitCities()
-{
-    cout << "\033[1;33m Enter the amount of transit cities you want: \033[0m";
-    int n;
-    cin >> n;
-    string * cities = new string[n];
-    for(int i = 0; i < n; i++)
-    {
-        cout << "Enter transit city " << i + 1 << ": ";
-        cin >> cities[i];
-    }
+    string *cities = new string[100];
+    cin.ignore();
+    do{
+        cout << "\033[1;34m\n\tEnter transit city " << n + 1 << ":  (\"stop\" to stop input)\033[0m";
+        getline(cin, cities[n]);
+        if(cities[n] == "stop")
+            break;
+        n++;
+    }while(true);
     return cities;
 }

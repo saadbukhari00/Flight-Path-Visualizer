@@ -104,6 +104,21 @@ void FlightGraph::addFlight(const char* origin, const char* destination, const c
     Edge* newEdge = new Edge(destIndex, newFlight, vertices[originIndex].head);
     vertices[originIndex].head = newEdge;
 }
+bool FlightGraph::isDuplicateFlight(const char* origin, const char* destination, const char* airline, const char* date) {
+    int originIndex = getCityIndex(origin);
+    if (originIndex == -1) return false;
+
+    Edge* current = vertices[originIndex].head;
+    while (current) {
+        if (strcmp(current->flightData->destination, destination) == 0 &&
+            strcmp(current->flightData->airline, airline) == 0 &&
+            strcmp(current->flightData->date, date) == 0) {
+            return true; // Duplicate flight found
+        }
+        current = current->next;
+    }
+    return false; // No duplicate flight found
+}
 
 void FlightGraph::populateGraph() {
     fileHandler.readFlightsFile();
@@ -111,9 +126,10 @@ void FlightGraph::populateGraph() {
 
     for (int i = 0; i < flightCount; i++) {
         Flight* flight = fileHandler.getFlightByIndex(i);
-        if (flight) {
-            addFlight(flight->origin, flight->destination, flight->airline, flight->date,
-                      flight->departureTime, flight->arrivalTime, flight->price, flight->distance);
+
+        if(flight && !isDuplicateFlight(flight->origin, flight->destination, flight->airline, flight->date)) 
+        {
+            addFlight(flight->origin, flight->destination, flight->airline, flight->date, flight->departureTime, flight->arrivalTime, flight->price, flight->distance);
         }
     }
 }
