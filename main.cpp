@@ -277,26 +277,47 @@ public:
 
         Menu menu;
         char choice;
-
-        string * TC;
-        cout << "\033[1;34m\n\tDo you have any preferred transit cities (Y/n) ?\033[0m";
+        
+        cout << "\033[1;34m\n\tDo you have any preferences on your flight (Y/n) ?\033[0m";
         cin >> choice;
-        int count = 0;
+
         if(choice == 'Y' || choice == 'y')
         {
-            TC = menu.takeTransitCities(count);
-            route.findFlightsWithTransitCities(originInput.c_str(), destInput.c_str(), dateInput.c_str(), dateInput1.c_str(), TC, count);
-        }
+            int ch;
+            string airline;
+            string * TC;
+            int count = 0;
+            cout << "\033[1;33m\n\t\tPREFERENCES";
+            cout << "\n\t\t1. Number of Transit Cities";
+            cout << "\n\t\t2. Preferred Airline";
+            cout << "\n\t\t3. Both";
+            cout << "\n\t\tEnter your choice: \033[0m";
+            cin >> ch;
 
-        string airline;
-        cout << "\033[1;34m\n\tDo you have any preferred Airline (Y/n) ?\033[0m";
-        cin >> choice;
-        if(choice == 'Y' || choice == 'y')
-        {
-            cin.ignore();
-            cout << "\033[1;34m\n\tEnter the name of the airline: \033[0m";
-            getline(cin, airline);
-            route.listAllFlightsWithinDataRangeandPreferredAirline(originInput.c_str(), destInput.c_str(), dateInput.c_str(), dateInput1.c_str(), airline);
+            switch(ch)
+            {
+                case 1:
+                    TC = menu.takeTransitCities(count);
+                    route.findFlightsWithTransitCities(originInput.c_str(), destInput.c_str(), dateInput.c_str(), dateInput1.c_str(), TC, count);
+                    break;
+
+                case 2:
+                    cout << "\033[1;34m\n\tEnter the name of the airline: \033[0m";
+                    getline(cin, airline);
+                    route.listAllFlightsWithinDataRangeandPreferredAirline(originInput.c_str(), destInput.c_str(), dateInput.c_str(), dateInput1.c_str(), airline);
+                    break;
+                
+                case 3:
+                    TC = menu.takeTransitCities(count);
+                    cout << "\033[1;34m\n\tEnter the name of the airline: \033[0m";
+                    getline(cin, airline);
+                    route.filterByTransitCitiesAndAirline(originInput.c_str(), destInput.c_str(), dateInput.c_str(), dateInput1.c_str(), TC, count, airline);
+                    break;
+
+                default:
+                    cout << "\033[1;31m\n\tInvalid choice!\033[0m";
+                    break;
+            }
         }
 
     }

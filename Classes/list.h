@@ -2,7 +2,7 @@
 
 class LinkedList
 {
-private:
+public:
     class FlightNode{
     public:
         FlightNode * next;
@@ -11,9 +11,8 @@ private:
         FlightNode() { next = NULL; }
         FlightNode(Flight &x) { flight = x; next = NULL; }
     };
-    FlightNode * head;
-public:
     LinkedList(void);
+    FlightNode * getHead(void) { return head; }
     void insert(Flight&);
     void remove(string);
     void Display(void);
@@ -21,4 +20,6 @@ public:
     void clear(void);
     Flight getHeadFlight(void) { return head->flight; }
     bool isEmpty(void) { return head == NULL; }
+private:
+    FlightNode * head;
 };

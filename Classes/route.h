@@ -27,13 +27,13 @@ public:
     void listShortestAndCheapest(const char* startCity, const char* endCity);
 
     void listAllFlightsWithinDateRange(const char* originCity, const char* destinationCity, const char* startDate, const char* endDate);
-    void listAllFlightsWithinDataRangeandTransitCities(const char* originCity, const char* destinationCity, const char* startDate, const char* endDate, string* transit_cities, int numberOfTransitCities);
     void listAllFlightsWithinDataRangeandPreferredAirline(const char* originCity, const char* destinationCity, const char* startDate, const char* endDate, string airline);
+    void findFlightsWithTransitCities(const char* originCity, const char* destinationCity, const char* startDate, const char* endDate, string* transitCities, int numberOfTransitCities);
+    void filterByTransitCitiesAndAirline( const char* originCity, const char* destinationCity, const char* startDate, const char* endDate, string* transitCities, int numberOfTransitCities, const string& preferredAirline);
 
     bool isWithinDateRange(const char* flightDate, const char* startDate, const char* endDate);
-    int convertDateToComparableFormat(const char* date);
-    void findFlightsWithTransitCities(const char* originCity, const char* destinationCity, const char* startDate, const char* endDate, string* transitCities, int numberOfTransitCities);
-    bool findDirectAndIndirectFlights(const char* originCity, const char* destinationCity, const char* startDate, const char* endDate, LinkedList& directFlightsList, LinkedList& indirectFlightsList);
+    int convertDateToComparableFormat(const char* date); 
+    bool findDirectAndIndirectFlights(const char* originCity, const char* destinationCity, const char* startDate, const char* endDate, LinkedList& indirectFlightsList);
 
 };
 

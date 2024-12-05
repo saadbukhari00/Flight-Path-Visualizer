@@ -44,42 +44,18 @@ void LinkedList::Display()
 
     FlightNode* curr = head;
     while (curr) {
-        cout << "\t| " << left << setw(15) << curr->flight.origin
-             << " | " << left << setw(15) << curr->flight.destination
-             << " | " << left << setw(10) << curr->flight.date
-             << " | " << left << setw(15) << curr->flight.airline
-             << " | " << left << setw(15) << curr->flight.departureTime
-             << " | " << left << setw(15) << curr->flight.arrivalTime
-             << " | " << left << setw(10) << curr->flight.price
-             << " | " << left << setw(10) << curr->flight.distance << " |\n";
+        cout << "\t";
+        cout << "|" << setw(15) << curr->flight.origin << " |" 
+             << setw(15) << curr->flight.destination << " |" 
+             << setw(10) << curr->flight.date << " |" 
+             << setw(15) << curr->flight.airline << " |" 
+             << setw(15) << curr->flight.departureTime << " |" 
+             << setw(15) << curr->flight.arrivalTime << " |" 
+             << setw(10) << curr->flight.price << " |" 
+             << setw(10) << curr->flight.distance << " |\n";
         curr = curr->next;
     }
 }
-
-void LinkedList::DisplayIndirect() 
-{
-    if (head == NULL) 
-    {
-        cout << "The list is empty\n";
-        return;
-    }
-
-    FlightNode* curr = head;
-    while (curr) {
-        cout << "\t| " << left << setw(15) << curr->flight.origin
-             << " | " << left << setw(15) << curr->flight.destination
-             << " | " << left << setw(10) << curr->flight.date
-             << " | " << left << setw(15) << curr->flight.airline
-             << " | " << left << setw(15) << curr->flight.departureTime
-             << " | " << left << setw(15) << curr->flight.arrivalTime
-             << " | " << left << setw(10) << curr->flight.price
-             << " | " << left << setw(10) << curr->flight.distance << " |\n";
-        curr = curr->next;
-    }
-}
-
-
-
 
     void LinkedList::clear(){
         FlightNode *curr=head,*next=NULL;
