@@ -16,8 +16,10 @@ g++ -I/opt/homebrew/opt/sfml/include -L/opt/homebrew/opt/sfml/lib main.cpp Class
 #include "Classes/menu.h"
 
 
+
 // airplane struct to store airplane information
-struct Airplane {
+struct Airplane 
+{
     sf::ConvexShape shape;      // The triangle to represent the airplane
     sf::Vector2f startPosition;
     sf::Vector2f targetPosition;
@@ -271,7 +273,7 @@ public:
         Route route(flightGraph);
 
         // Display flights in terminal
-        route.listAllFlightsWithinDateRange(originInput.c_str(), destInput.c_str(), dateInput.c_str(), dateInput1.c_str());
+        LinkedList indrectFlights = route.listAllFlightsWithinDateRange(originInput.c_str(), destInput.c_str(), dateInput.c_str(), dateInput1.c_str());
         
         route.listShortestAndCheapest(originInput.c_str(), destInput.c_str());
 
@@ -490,8 +492,72 @@ public:
                 string fromDate = bookingGUI.getFromDateInput();
                 string toDate = bookingGUI.getToDateInput();
 
+                Route route(flightGraph);
+                LinkedList indirectFlights = route.listAllFlightsWithinDateRange(origin.c_str(), destination.c_str(), fromDate.c_str(), toDate.c_str());
+                cout<<"here";
+                indirectFlights.Display();
+
                 sf::Vector2u windowSize = mainWindow.getSize();
-                
+
+
+if (!indirectFlights.isEmpty())
+{
+    // Initialize the airplane
+    Airplane airplane;
+    airplane.shape.setPointCount(3);
+    airplane.shape.setPoint(0, sf::Vector2f(0, -10)); // Top vertex of the triangle
+    airplane.shape.setPoint(1, sf::Vector2f(-5, 10)); // Bottom left vertex
+    airplane.shape.setPoint(2, sf::Vector2f(5, 10)); // Bottom right vertex
+    airplane.shape.setFillColor(sf::Color::Red);
+    airplane.speed = 200.f; // Speed of the airplane
+    airplane.isMoving = true;
+
+    sf::VertexArray path(sf::LineStrip); // To trace the path
+
+    // Linked list traversal
+    LinkedList::FlightNode* currentNode = indirectFlights.getHead(); // Start from the head of the linked list
+
+    while (currentNode) // While there are waypoints
+    {
+        sf::Vector2f positionOrigin = flightGraph.getCityPosition(currentNode->flight.origin);        // Origin
+        sf::Vector2f positionDestination = flightGraph.getCityPosition(currentNode->flight.destination); // Destination
+        
+        sf::Vector2f scaledPos = sf::Vector2f(positionOrigin.x * windowSize.x, positionOrigin.y * windowSize.y);
+        sf::Vector2f scaledDes = sf::Vector2f(positionDestination.x * windowSize.x, positionDestination.y * windowSize.y);
+
+        airplane.startPosition = scaledPos;
+        airplane.targetPosition = scaledDes;
+        airplane.shape.setPosition(airplane.startPosition);
+        airplane.shape.setRotation(calculateAngle(airplane.startPosition, airplane.targetPosition));
+
+        // Move airplane from current origin to destination
+        sf::Clock clock;
+        airplane.isMoving= true;
+        while (airplane.isMoving)
+        {
+            float deltaTime = clock.restart().asSeconds();
+            updateAirplanePosition(airplane, deltaTime);
+
+            // Add current position to path for visualization
+            path.append(sf::Vertex(airplane.shape.getPosition(), sf::Color::Black));
+
+            // Clear the window and draw the airplane
+            mainWindow.clear();
+            mainGUI.draw();
+            mainWindow.draw(path);         // Draw the path
+            mainWindow.draw(airplane.shape); // Draw the airplane
+            mainWindow.display();
+
+            sf::sleep(sf::milliseconds(1)); // Control update frequency
+        }
+
+        // Move to the next node in the linked list
+        currentNode = currentNode->next;
+    }
+}               
+                char ch;
+                cout<<"Proceed to see direct path (y)";
+                cin >> ch;
                 Airplane airplane;
                 airplane.shape.setPointCount(3);
                 airplane.shape.setPoint(0, sf::Vector2f(0, -10)); // Top vertex of the triangle
@@ -502,7 +568,7 @@ public:
                 sf::Vector2f positionDestination = flightGraph.getCityPosition(destination);
                 sf::Vector2f scaledPos = sf::Vector2f(positionOrigin.x * windowSize.x, positionOrigin.y * windowSize.y);
                 sf::Vector2f scaledDes = sf::Vector2f(positionDestination.x * windowSize.x, positionDestination.y * windowSize.y);
-                airplane.speed = 100.f; // Speed of the airplane
+                airplane.speed = 25.f; // Speed of the airplane
                 airplane.isMoving = true;
                 airplane.targetPosition = scaledDes;
                 airplane.startPosition = scaledPos;
@@ -511,6 +577,7 @@ public:
 
                 mainGUI.addAirplane(airplane);
                 sf::Clock clock;
+                sf::VertexArray path(sf::LineStrip); // To trace the path
 
                 while (airplane.isMoving) // Main loop for updating and rendering
                 {
@@ -518,14 +585,16 @@ public:
                     updateAirplanePosition(airplane, deltaTime);
 
                     // Clear the window and draw the airplane
-                    mainWindow.clear();
+                    path.append(sf::Vertex(airplane.shape.getPosition(), sf::Color::Blue));
                     mainGUI.draw();
+                    mainWindow.draw(path);
                     mainWindow.draw(airplane.shape);
                     mainWindow.display();
 
                     sf::sleep(sf::milliseconds(1)); // sleep to control frequency
                 }
-                
+                cout<<"Proceed";
+                cin>>ch;
                 }
                 }
             
