@@ -4,7 +4,7 @@ g++ -I/opt/homebrew/opt/sfml/include -L/opt/homebrew/opt/sfml/lib main.cpp Class
 */
 
 /* added by Huzaifa for compilation on my system
- g++ -o FlightPathVisualizer main.cpp Classes/FileHandling.cpp Classes/FlightGraph.cpp Classes/route.cpp Classes/list.cpp -lsfml-graphics -lsfml-window -lsfml-system
+ g++ -o FlightPathVisualizer main.cpp Classes/FileHandling.cpp Classes/FlightGraph.cpp Classes/route.cpp Classes/list.cpp Classes/menu.cpp -lsfml-graphics -lsfml-window -lsfml-system
 */
 
 #include "Classes/main.h"
