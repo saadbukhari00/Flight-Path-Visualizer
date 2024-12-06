@@ -1,99 +1,39 @@
-#include"stack.h"
-    
-    Stack::Stack(void){top = NULL; currentElements = 0; size = 0;}
-    Stack::Stack(int s)
+#include "stack.h"
+
+Stack::Stack() : top(nullptr), size(0) {}
+
+void Stack::Push(const BookingState& state) 
+{
+    top = new Node(state, top);
+    size++;
+}
+
+void Stack::Pop() {
+    if(IsEmpty()) 
     {
-        top = NULL;
-        size = s;
-        currentElements = 0;
+        return;
     }
-        
-        void Stack::Push(const Flight& flight)
-        {
-            if(isFull())
-            {
-                return;
-            }
-            Node * newNode = new Node;
-            newNode->next = NULL;
-            newNode->flightdata = flight;
 
-            if(top == NULL)
-            {
-                top = newNode;
-            }
-            else
-            {
-                newNode->next = top;
-                top = newNode;
-            }
-            currentElements++;
-        }
-        Flight Stack::Pop(void)
-        {
-            Flight popFlight;
-            if(!isEmpty())
-            {
-                popFlight = top->flightdata;
-                Node * del = new Node;
-                del = top;
-                top = top->next;
-            
-                delete del;
-                currentElements--;
-                return popFlight;
-            }
-            return popFlight;
-        }
+    Node* temp = top;
+    top = top->next;
+    delete temp;
+    size--;
+}
 
-        bool Stack::isEmpty()
-        {
-            return (top == NULL || currentElements == 0);
-        }
-        bool Stack::isFull()
-        {
-            if(currentElements == size)
-            {
-                return true;
-            }
-            return false;
-        }
+BookingState Stack::Top() const {
+    if(IsEmpty()) 
+    {
+        throw out_of_range("Stack is empty");
+    }
 
-        void Stack::Clear(void)
-        {
-            Node* curr = top;
-            Node* nxt = NULL;
-            while(curr)
-            {
-                nxt = curr->next;
-                delete curr;
-                curr = nxt;
-            }
-        }
-        Flight Stack::Top()
-        {
-            if(!isEmpty())
-                return top->flightdata;
-            else
-            {
-                Flight emptyFlight;
-                return emptyFlight;
-            }
+    return top->state;
+}
 
-        }
+bool Stack::IsEmpty() const { return size == 0; }
+int Stack::Size() const { return size; }
 
-        void Stack::Display()
-        {
-            if(isEmpty())
-            {
-                cout<<"\nThe stack is empty\n";
-                return;
-            }
-            cout<<"\nThe stack is: \n";
-            Node* curr = top;
-            while(curr)
-            {
-                curr->flightdata.display();
-                curr = curr->next;
-            }        
-        }
+Stack::~Stack() {
+    while (!IsEmpty()) {
+        Pop();
+    }
+}

@@ -230,7 +230,8 @@ public:
                      } 
                     else 
                     {
-                        handleSearch();
+                        Stack bookingStack;
+                        handleSearch(originInput, destInput, dateInput, dateInput1, bookingStack);
                         window.close();         
                     }
                 }
@@ -268,63 +269,139 @@ public:
     window.clear(sf::Color::White);  // Clear the window and proceed to next frame
 }
 
-    void handleSearch()
-    {
-        Route route(flightGraph);
+void handleSearch(const string& origin, const string& destination, const string& fromDate, const string& toDate, Stack& bookingStack) 
+{
+    Route route(flightGraph);
 
-        // Display flights in terminal
-        LinkedList indrectFlights = route.listAllFlightsWithinDateRange(originInput.c_str(), destInput.c_str(), dateInput.c_str(), dateInput1.c_str());
-        
-        route.listShortestAndCheapest(originInput.c_str(), destInput.c_str());
+    // Initial booking state
+    BookingState currentState(origin, destination, fromDate, toDate);
 
-        Menu menu;
-        char choice;
-        
-        cout << "\033[1;34m\n\tDo you have any preferences on your flight (Y/n) ?\033[0m";
-        cin >> choice;
+    // Push initial state to stack
+    bookingStack.Push(currentState);
 
-        if(choice == 'Y' || choice == 'y')
-        {
-            int ch;
-            string airline;
-            string * TC;
-            int count = 0;
-            cout << "\033[1;33m\n\t\tPREFERENCES";
-            cout << "\n\t\t1. Number of Transit Cities";
-            cout << "\n\t\t2. Preferred Airline";
-            cout << "\n\t\t3. Both";
-            cout << "\n\t\tEnter your choice: \033[0m";
-            cin >> ch;
+    // Display all direct and indirect flights
+    cout << "\n\033[1;36mSearching for flights...\033[0m\n";
+    LinkedList directFlights = route.listDirectFlightsWithinDateRange(origin.c_str(), destination.c_str(), fromDate.c_str(), toDate.c_str());
+    LinkedList indirectFlights = route.listIndirectFlightsWithinDateRange(origin.c_str(), destination.c_str(), fromDate.c_str(), toDate.c_str());
 
-            switch(ch)
-            {
-                case 1:
-                    TC = menu.takeTransitCities(count);
-                    route.findFlightsWithTransitCities(originInput.c_str(), destInput.c_str(), dateInput.c_str(), dateInput1.c_str(), TC, count);
-                    break;
-
-                case 2:
-                    cout << "\033[1;34m\n\tEnter the name of the airline: \033[0m";
-                    getline(cin, airline);
-                    route.listAllFlightsWithinDataRangeandPreferredAirline(originInput.c_str(), destInput.c_str(), dateInput.c_str(), dateInput1.c_str(), airline);
-                    break;
-                
-                case 3:
-                    TC = menu.takeTransitCities(count);
-                    cout << "\033[1;34m\n\tEnter the name of the airline: \033[0m";
-                    getline(cin, airline);
-                    route.filterByTransitCitiesAndAirline(originInput.c_str(), destInput.c_str(), dateInput.c_str(), dateInput1.c_str(), TC, count, airline);
-                    break;
-
-                default:
-                    cout << "\033[1;31m\n\tInvalid choice!\033[0m";
-                    break;
-            }
-        }
-
+    if (directFlights.isEmpty() && indirectFlights.isEmpty()) {
+        cout << "\033[1;31mNo flights found for the given criteria.\033[0m\n";
+        return;
     }
 
+    char preferenceChoice;
+    cout << "\033[1;34m\nWould you like to apply any preferences? (Y/n): \033[0m";
+    cin >> preferenceChoice;
 
+    if (preferenceChoice == 'Y' || preferenceChoice == 'y') {
+        // Collect user preferences
+        int preferenceType;
+        string preferredAirline;
+        string* transitCities = nullptr;
+        int transitCount = 0;
+
+        cout << "\033[1;33m\n\t\tPreferences Menu:\033[0m\n";
+        cout << "1. Number of Transit Cities\n";
+        cout << "2. Preferred Airline\n";
+        cout << "3. Both Transit Cities and Airline\n";
+        cout << "\033[1;34mEnter your choice: \033[0m";
+        cin >> preferenceType;
+
+        switch (preferenceType) {
+            case 1: {
+                Menu menu;
+                transitCities = menu.takeTransitCities(transitCount);
+                currentState.availableFlights = route.findFlightsWithTransitCities(origin.c_str(), destination.c_str(), fromDate.c_str(), toDate.c_str(), transitCities, transitCount);
+                break;
+            }
+            case 2: {
+                cout << "\033[1;34mEnter the preferred airline: \033[0m";
+                cin.ignore();
+                getline(cin, preferredAirline);
+                currentState.availableFlights = route.listAllFlightsWithinDataRangeandPreferredAirline(origin.c_str(), destination.c_str(), fromDate.c_str(), toDate.c_str(), preferredAirline);
+                break;
+            }
+            case 3: {
+                Menu menu;
+                transitCities = menu.takeTransitCities(transitCount);
+                cout << "\033[1;34mEnter the preferred airline: \033[0m";
+                cin.ignore();
+                getline(cin, preferredAirline);
+                currentState.availableFlights = route.filterByTransitCitiesAndAirline(origin.c_str(), destination.c_str(), fromDate.c_str(), toDate.c_str(), transitCities, transitCount, preferredAirline);
+                break;
+            }
+            default:
+                cout << "\033[1;31mInvalid choice!\033[0m\n";
+                return;
+        }
+
+        // Push updated state to stack
+        bookingStack.Push(currentState);
+
+        // Display filtered flights
+        cout << "\033[1;36mFiltered Flights:\033[0m\n";
+        currentState.availableFlights.Display();
+    }
+
+    // Allow the user to book a flight
+    char bookChoice;
+    cout << "\033[1;34m\nWould you like to book a flight? (Y/n): \033[0m";
+    cin >> bookChoice;
+
+    if (bookChoice == 'Y' || bookChoice == 'y') {
+        int flightIndex;
+        cout << "\033[1;34mEnter the index of the flight you want to book: \033[0m";
+        cin >> flightIndex;
+
+        LinkedList::FlightNode* selectedFlightNode = nullptr;
+
+        if (flightIndex < directFlights.size()) {
+            selectedFlightNode = directFlights.getNodeAt(flightIndex);
+        } else {
+            flightIndex -= directFlights.size();
+            selectedFlightNode = indirectFlights.getNodeAt(flightIndex);
+        }
+
+        if (selectedFlightNode) {
+            currentState.selectedFlight = selectedFlightNode->flight;
+            cout << "\033[1;32mFlight booked successfully!\033[0m\n";
+            cout << "Booking Details:\n";
+            cout << "From: " << currentState.selectedFlight.origin << "\n";
+            cout << "To: " << currentState.selectedFlight.destination << "\n";
+            cout << "Date: " << currentState.selectedFlight.date << "\n";
+            cout << "Price: $" << currentState.selectedFlight.price << "\n";
+            cout << "Airline: " << currentState.selectedFlight.airline << "\n";
+
+            // Clear stack after booking
+            while (!bookingStack.IsEmpty()) {
+                bookingStack.Pop();
+            }
+            return;
+        } else {
+            cout << "\033[1;31mInvalid flight index.\033[0m\n";
+        }
+    }
+
+    // Allow the user to undo preferences
+    char undoChoice;
+    cout << "\033[1;34mWould you like to undo preferences? (Y/n): \033[0m";
+    cin >> undoChoice;
+
+    if (undoChoice == 'Y' || undoChoice == 'y') {
+        if (!bookingStack.IsEmpty()) {
+            bookingStack.Pop();
+            if (!bookingStack.IsEmpty()) {
+                currentState = bookingStack.Top();
+                cout << "\033[1;32mPreferences undone. Showing flights from the previous state:\033[0m\n";
+                currentState.availableFlights.Display();
+            } else {
+                cout << "\033[1;31mNo preferences to undo.\033[0m\n";
+            }
+        } else {
+            cout << "\033[1;31mNo actions to undo.\033[0m\n";
+        }
+    }
+}
     void draw() 
     {
         window.clear(sf::Color::White);
@@ -493,9 +570,7 @@ public:
                 string toDate = bookingGUI.getToDateInput();
 
                 Route route(flightGraph);
-                LinkedList indirectFlights = route.listAllFlightsWithinDateRange(origin.c_str(), destination.c_str(), fromDate.c_str(), toDate.c_str());
-                cout<<"here";
-                indirectFlights.Display();
+                LinkedList indirectFlights = route.listIndirectFlightsWithinDateRange(origin.c_str(), destination.c_str(), fromDate.c_str(), toDate.c_str());
 
                 sf::Vector2u windowSize = mainWindow.getSize();
 

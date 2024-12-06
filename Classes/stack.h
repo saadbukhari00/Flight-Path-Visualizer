@@ -1,26 +1,47 @@
-#include"main.h"
-class Stack{
-private:
-        struct Node{
-            Flight flightdata;
-            Node * next;
-        };
-        Node * top;
-        int size;
-        int currentElements;
-public:
+#ifndef STACK_H
+#define STACK_H
 
-    Stack(void);
-    Stack(int s);
+#include "main.h"
+#include "list.h"
 
-    void Push(const Flight&);
-    Flight Pop(void);
-    Flight Top(void);
-    void Clear(void);
-    bool isEmpty(void);
-    bool isFull(void);
-    void Display(void);
-    int Size(void);
-    ~Stack(void);
+struct BookingState {
+    string origin;
+    string destination;
+    string fromDate;
+    string toDate;
+    string *transitCities;
+    string preferredAirline;
+    LinkedList availableFlights; 
+    Flight selectedFlight;       
 
+    BookingState() {}
+    BookingState(const string& ori, const string& dest, const string& from, const string& to)
+        : origin(ori), destination(dest), fromDate(from), toDate(to) {}
 };
+class Stack {
+private:
+private:
+    struct Node {
+        BookingState state;
+        Node* next;
+
+        Node(const BookingState& st, Node* nxt) : state(st), next(nxt) {}
+    };
+
+    Node* top;                       
+    int size;                                             
+
+public:
+    Stack();
+
+
+    void Push(const BookingState& state);
+    void Pop();
+    BookingState Top() const;
+
+    bool IsEmpty() const;
+    int Size() const;
+    ~Stack();
+};
+
+#endif

@@ -34,6 +34,45 @@
         }
     }
 
+int LinkedList::size() 
+{
+    int count = 0;
+    FlightNode* curr = head;
+    while (curr) {
+        count++;
+        curr = curr->next;
+    }
+    return count;
+}
+
+LinkedList::FlightNode* LinkedList::getFlightByIndex(int index) 
+{
+    FlightNode* curr = head;
+    int count = 0;
+    while (curr) {
+        if (count == index) {
+            return curr;
+        }
+        count++;
+        curr = curr->next;
+    }
+    return NULL;
+}
+
+LinkedList::FlightNode* LinkedList::getNodeAt(int index) 
+{
+    return getFlightByIndex(index);
+}
+
+void LinkedList::merge(LinkedList& list) 
+{
+    FlightNode* curr = list.getHead();
+    while (curr) {
+        insert(curr->flight);
+        curr = curr->next;
+    }
+}
+
 void LinkedList::Display() 
 {
     if (head == NULL) 

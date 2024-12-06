@@ -1,3 +1,6 @@
+#ifndef LIST_H
+#define LIST_H
+
 #include"main.h"
 
 class LinkedList
@@ -13,13 +16,22 @@ public:
     };
     LinkedList(void);
     FlightNode * getHead(void) { return head; }
+
+    int size(void);
+    FlightNode * getFlightByIndex(int index);
+    FlightNode * getNodeAt(int index);
+
+    void merge(LinkedList&);
+
     void insert(Flight&);
     void remove(string);
     void Display(void);
-    void DisplayIndirect(void);
+    
     void clear(void);
     Flight getHeadFlight(void) { return head->flight; }
     bool isEmpty(void) { return head == NULL; }
 private:
     FlightNode * head;
 };
+
+#endif

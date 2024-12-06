@@ -8,7 +8,7 @@
 #include<fstream>
 #include <cstring>
 #include <sstream>
-#include<cmath>
+#include <cmath>
 #include <SFML/Graphics.hpp>
 
 using namespace std;
@@ -60,5 +60,6 @@ struct Flight
     
 
 };
+
 
 #endif
