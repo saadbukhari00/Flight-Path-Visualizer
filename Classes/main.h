@@ -12,6 +12,16 @@
 #include <SFML/Graphics.hpp>
 
 using namespace std;
+
+struct Airplane 
+{
+    sf::ConvexShape shape;      // The triangle to represent the airplane
+    sf::Vector2f startPosition;
+    sf::Vector2f targetPosition;
+    float speed;
+    bool isMoving;
+};
+
 struct Flight 
 {
     char origin[50];
