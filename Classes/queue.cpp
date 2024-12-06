@@ -81,64 +81,64 @@
         }
     }
 
-    void Queue::PriorityDequeue()
+    Flight Queue::PriorityDequeue()
+{
+    if (isEmpty())
     {
-        if(isEmpty())
+        cout << "\n\tThe Queue is Empty\n\tCannot Dequeue further\n";
+    }
+
+    Node* next = front->next;
+    Node* maxPriority = front;
+
+    // Find the node with the highest priority (smallest priority value)
+    while (next)
+    {
+        if (next->priority < maxPriority->priority)
         {
-            cout<<"\n\tThe Queue is Empty\n\tCannot Dequeue further\n";
+            maxPriority = next;
         }
-        else
+        next = next->next;
+    }
+
+    Node* curr = front;
+    Node* prev = nullptr;
+
+    // Find the position of the maxPriority node
+    while (curr->next && curr != maxPriority)
+    {
+        prev = curr;
+        curr = curr->next;
+    }
+
+    // Store the flight data to be returned
+    Flight dequeueFlight = curr->flightData;
+
+    // Remove the maxPriority node from the queue
+    if (front == maxPriority)  // If the maxPriority node is the front
+    {
+        front = front->next;
+        if (front == nullptr) // If queue becomes empty
         {
-            Node * next = front->next;
-
-            Node * maxPriority = front;
-
-            while(next)
-            {
-                if(next->priority < maxPriority->priority)
-                {
-                    maxPriority = next;
-                }
-                next = next->next;
-            }
-
-            Node * curr = front;
-            Node * prev = NULL;
-
-            while(curr->next && curr != maxPriority)
-            {
-                prev = curr;
-                curr = curr->next;
-            }
-
-            if(rear == maxPriority)
-            {
-                rear = prev;
-                if(rear == NULL)
-                {
-                    front = NULL;
-                    return;
-                }
-                delete curr;
-                rear->next = NULL;
-                
-            }
-            else if(front == maxPriority)
-            {
-                front = front->next;
-                if(front == NULL)
-                {
-                    rear = NULL;
-                }
-                delete curr;
-            }
-            else
-            {
-                prev->next = curr->next;
-                delete curr;
-            }
+            rear = nullptr;
         }
     }
+    else if (rear == maxPriority)  // If the maxPriority node is the rear
+    {
+        rear = prev;
+        rear->next = nullptr;
+    }
+    else  // If the maxPriority node is in the middle
+    {
+        prev->next = curr->next;
+    }
+
+    // Delete the dequeued node
+    delete curr;
+
+    return dequeueFlight;
+}
+
 
     Flight Queue::Front()
     {

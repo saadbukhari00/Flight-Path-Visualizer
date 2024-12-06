@@ -1,3 +1,6 @@
+#ifndef QUEUE_H
+#define QUEUE_H
+
 #include"main.h"
 
 class Queue{
@@ -16,10 +19,12 @@ public:
     void PriorityEnqueue(const Flight&, int);
     void enqueue(const Flight&);
     void Dequeue();
-    void PriorityDequeue();
+    Flight PriorityDequeue();
     Flight Front();
     Flight Rear();
     bool isEmpty();
     void clear();
     void display();
 };
+
+#endif
