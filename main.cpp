@@ -4,28 +4,23 @@ g++ -I/opt/homebrew/opt/sfml/include -L/opt/homebrew/opt/sfml/lib main.cpp Class
 */
 
 /* added by Huzaifa for compilation on my system
- g++ -o FlightPathVisualizer main.cpp Classes/FileHandling.cpp Classes/FlightGraph.cpp Classes/route.cpp Classes/list.cpp Classes/menu.cpp -lsfml-graphics -lsfml-window -lsfml-system
+g++ -o FlightPathVisualizer main.cpp Classes/FileHandling.cpp Classes/FlightGraph.cpp Classes/route.cpp Classes/list.cpp Classes/menu.cpp Classes/stack.cpp Classes/layover.cpp Classes/queue.cpp -lsfml-graphics -lsfml-window -lsfml-system
 */
 
 #include "Classes/main.h"
 #include "Classes/heap.h"
 #include "Classes/stack.h"
-#include "Classes/queue.h"
 #include "Classes/route.h"
 #include "Classes/FlightGraph.h"
 #include "Classes/menu.h"
+#include "Classes/queue.h"
+#include "Classes/layover.h" 
+#include "Classes/mainGUI.h"
 
 
 
 // airplane struct to store airplane information
-struct Airplane 
-{
-    sf::ConvexShape shape;      // The triangle to represent the airplane
-    sf::Vector2f startPosition;
-    sf::Vector2f targetPosition;
-    float speed;
-    bool isMoving;
-};
+
 
 // Function to calculate the angle (in degrees) between two points
 float calculateAngle(const sf::Vector2f& start, const sf::Vector2f& target) 
@@ -63,6 +58,8 @@ class FlightBookingGUI
 {
 private:
     sf::RenderWindow& window;
+    sf::RenderWindow& mainWindow;
+    MainGUI mainGUI;
     sf::Font font;
     sf::Text resultText;
 
@@ -80,7 +77,7 @@ private:
     bool isDateFocused1;
 
 public:
-    FlightBookingGUI(sf::RenderWindow& win, FlightGraph& graph) : window(win), flightGraph(graph)
+    FlightBookingGUI(sf::RenderWindow& mainwin,sf::RenderWindow& win, MainGUI& mainGUI ,FlightGraph& graph) : mainWindow(mainwin), window(win),mainGUI(mainGUI),flightGraph(graph)
     {
         selectedOriginIndex = -1;
         selectedDestIndex = -1;
@@ -230,9 +227,7 @@ public:
                      } 
                     else 
                     {
-                        Stack bookingStack;
-                        handleSearch(originInput, destInput, dateInput, dateInput1, bookingStack);
-                        window.close();         
+                        window.close();
                     }
                 }
             }
@@ -271,6 +266,7 @@ public:
 
 void handleSearch(const string& origin, const string& destination, const string& fromDate, const string& toDate, Stack& bookingStack) 
 {
+
     Route route(flightGraph);
 
     // Initial booking state
@@ -284,16 +280,116 @@ void handleSearch(const string& origin, const string& destination, const string&
     LinkedList directFlights = route.listDirectFlightsWithinDateRange(origin.c_str(), destination.c_str(), fromDate.c_str(), toDate.c_str());
     LinkedList indirectFlights = route.listIndirectFlightsWithinDateRange(origin.c_str(), destination.c_str(), fromDate.c_str(), toDate.c_str());
 
-    if (directFlights.isEmpty() && indirectFlights.isEmpty()) {
+
+    if (directFlights.isEmpty() && indirectFlights.isEmpty()) 
+    {
         cout << "\033[1;31mNo flights found for the given criteria.\033[0m\n";
         return;
     }
+    sf::Vector2u windowSize = mainWindow.getSize();
+
+    if (!indirectFlights.isEmpty())
+{
+    // Initialize the airplane
+    Airplane airplane;
+    airplane.shape.setPointCount(3);
+    airplane.shape.setPoint(0, sf::Vector2f(0, -10)); // Top vertex of the triangle
+    airplane.shape.setPoint(1, sf::Vector2f(-5, 10)); // Bottom left vertex
+    airplane.shape.setPoint(2, sf::Vector2f(5, 10)); // Bottom right vertex
+    airplane.shape.setFillColor(sf::Color::Red);
+    airplane.speed = 200.f; // Speed of the airplane
+    airplane.isMoving = true;
+
+    sf::VertexArray path(sf::LineStrip); // To trace the path
+
+    // Linked list traversal
+    LinkedList::FlightNode* currentNode = indirectFlights.getHead(); // Start from the head of the linked list
+
+    while (currentNode) // While there are waypoints
+    {
+        sf::Vector2f positionOrigin = flightGraph.getCityPosition(currentNode->flight.origin);        // Origin
+        sf::Vector2f positionDestination = flightGraph.getCityPosition(currentNode->flight.destination); // Destination
+        
+        sf::Vector2f scaledPos = sf::Vector2f(positionOrigin.x * windowSize.x, positionOrigin.y * windowSize.y);
+        sf::Vector2f scaledDes = sf::Vector2f(positionDestination.x * windowSize.x, positionDestination.y * windowSize.y);
+
+        airplane.startPosition = scaledPos;
+        airplane.targetPosition = scaledDes;
+        airplane.shape.setPosition(airplane.startPosition);
+        airplane.shape.setRotation(calculateAngle(airplane.startPosition, airplane.targetPosition));
+
+        // Move airplane from current origin to destination
+        sf::Clock clock;
+        airplane.isMoving= true;
+        while (airplane.isMoving)
+        {
+            float deltaTime = clock.restart().asSeconds();
+            updateAirplanePosition(airplane, deltaTime);
+
+            // Add current position to path for visualization
+            path.append(sf::Vertex(airplane.shape.getPosition(), sf::Color::Black));
+
+            // Clear the window and draw the airplane
+            mainWindow.clear();
+            mainGUI.draw();
+            mainWindow.draw(path);         // Draw the path
+            mainWindow.draw(airplane.shape); // Draw the airplane
+            mainWindow.display();
+
+            sf::sleep(sf::milliseconds(1)); // Control update frequency
+        }
+
+        // Move to the next node in the linked list
+        currentNode = currentNode->next;
+    }
+}               
+                char ch;
+                cout<<"Proceed to see direct path (y)";
+                cin >> ch;
+                Airplane airplane;
+                airplane.shape.setPointCount(3);
+                airplane.shape.setPoint(0, sf::Vector2f(0, -10)); // Top vertex of the triangle
+                airplane.shape.setPoint(1, sf::Vector2f(-5, 10)); // Bottom left vertex
+                airplane.shape.setPoint(2, sf::Vector2f(5, 10)); // Bottom right vertex
+                airplane.shape.setFillColor(sf::Color::Red);
+                sf::Vector2f positionOrigin = flightGraph.getCityPosition(origin);
+                sf::Vector2f positionDestination = flightGraph.getCityPosition(destination);
+                sf::Vector2f scaledPos = sf::Vector2f(positionOrigin.x * windowSize.x, positionOrigin.y * windowSize.y);
+                sf::Vector2f scaledDes = sf::Vector2f(positionDestination.x * windowSize.x, positionDestination.y * windowSize.y);
+                airplane.speed = 25.f; // Speed of the airplane
+                airplane.isMoving = true;
+                airplane.targetPosition = scaledDes;
+                airplane.startPosition = scaledPos;
+                airplane.shape.setPosition(airplane.startPosition);
+                airplane.shape.setRotation(calculateAngle(airplane.startPosition, airplane.targetPosition));
+
+                mainGUI.addAirplane(airplane);
+                sf::Clock clock;
+                sf::VertexArray path(sf::LineStrip); // To trace the path
+
+                while (airplane.isMoving) // Main loop for updating and rendering
+                {
+                    float deltaTime = clock.restart().asSeconds();
+                    updateAirplanePosition(airplane, deltaTime);
+
+                    // Clear the window and draw the airplane
+                    path.append(sf::Vertex(airplane.shape.getPosition(), sf::Color::Blue));
+                    mainGUI.draw();
+                    mainWindow.draw(path);
+                    mainWindow.draw(airplane.shape);
+                    mainWindow.display();
+
+                    sf::sleep(sf::milliseconds(1)); // sleep to control frequency
+                }
+                cout<<"Proceed";
+                cin>>ch;
 
     char preferenceChoice;
     cout << "\033[1;34m\nWould you like to apply any preferences? (Y/n): \033[0m";
     cin >> preferenceChoice;
 
-    if (preferenceChoice == 'Y' || preferenceChoice == 'y') {
+    if (preferenceChoice == 'Y' || preferenceChoice == 'y') 
+    {
         // Collect user preferences
         int preferenceType;
         string preferredAirline;
@@ -307,7 +403,8 @@ void handleSearch(const string& origin, const string& destination, const string&
         cout << "\033[1;34mEnter your choice: \033[0m";
         cin >> preferenceType;
 
-        switch (preferenceType) {
+        switch (preferenceType) 
+        {
             case 1: {
                 Menu menu;
                 transitCities = menu.takeTransitCities(transitCount);
@@ -347,22 +444,29 @@ void handleSearch(const string& origin, const string& destination, const string&
     char bookChoice;
     cout << "\033[1;34m\nWould you like to book a flight? (Y/n): \033[0m";
     cin >> bookChoice;
-
-    if (bookChoice == 'Y' || bookChoice == 'y') {
+    
+    Layover layover;
+    if (bookChoice == 'Y' || bookChoice == 'y') 
+    {
         int flightIndex;
         cout << "\033[1;34mEnter the index of the flight you want to book: \033[0m";
         cin >> flightIndex;
 
         LinkedList::FlightNode* selectedFlightNode = nullptr;
 
-        if (flightIndex < directFlights.size()) {
+        if (flightIndex < directFlights.size()) 
+        {
             selectedFlightNode = directFlights.getNodeAt(flightIndex);
-        } else {
+        } else 
+        {  
             flightIndex -= directFlights.size();
             selectedFlightNode = indirectFlights.getNodeAt(flightIndex);
+            
+            layover.enqueue(selectedFlightNode->flight);
         }
 
-        if (selectedFlightNode) {
+        if (selectedFlightNode) 
+        {
             currentState.selectedFlight = selectedFlightNode->flight;
             cout << "\033[1;32mFlight booked successfully!\033[0m\n";
             cout << "Booking Details:\n";
@@ -397,7 +501,8 @@ void handleSearch(const string& origin, const string& destination, const string&
             } else {
                 cout << "\033[1;31mNo preferences to undo.\033[0m\n";
             }
-        } else {
+        } else 
+        {
             cout << "\033[1;31mNo actions to undo.\033[0m\n";
         }
     }
@@ -460,70 +565,7 @@ void handleSearch(const string& origin, const string& destination, const string&
     }
 };
 
-class MainGUI {
-private:
-    sf::RenderWindow& mainWindow;
-    sf::Font font;
-    sf::RectangleShape bookFlightButton;
-    sf::Text buttonText;
-    FlightGraph& flightGraph;
-    Airplane airplane; // Adding airplane as a member variable
 
-public:
-    MainGUI(sf::RenderWindow& window, FlightGraph& graph)
-        : mainWindow(window), flightGraph(graph), airplane() {
-        font.loadFromFile("Assets/Aller_Bd.ttf");
-
-        // Configure the Book Flight button
-        bookFlightButton.setSize(sf::Vector2f(150, 50));
-        bookFlightButton.setPosition(10, 10);
-        bookFlightButton.setFillColor(sf::Color::Green);
-
-        buttonText.setFont(font);
-        buttonText.setCharacterSize(20);
-        buttonText.setFillColor(sf::Color::Black);
-        buttonText.setString("Book Flight");
-        buttonText.setPosition(25, 20);
-    }
-
-    bool handleEvents() {
-        sf::Event event;
-        while (mainWindow.pollEvent(event)) {
-            if (event.type == sf::Event::Closed) {
-                mainWindow.close();
-                return false;
-            }
-            if (event.type == sf::Event::MouseButtonPressed) {
-                sf::Vector2f mousePos(event.mouseButton.x, event.mouseButton.y);
-                if (bookFlightButton.getGlobalBounds().contains(mousePos)) {
-                    return true; // Switch to booking window
-                }
-            }
-        }
-        return false;
-    }
-
-    void addAirplane(const Airplane& newAirplane)
-    {
-        airplane = newAirplane; // Store the airplane passed from the search
-    }
-
-
-    void draw() 
-    {
-        mainWindow.clear(sf::Color::White);
-
-        // Draw flight graph
-        sf::Texture mapTexture;
-        mapTexture.loadFromFile("Assets/world_map.png");
-        flightGraph.displayOnMap(mainWindow, mapTexture);
-
-        // Draw Book Flight button
-        mainWindow.draw(bookFlightButton);
-        mainWindow.draw(buttonText);
-        mainWindow.display();
-    }
-};
 
 class FlightVisualizerApp {
 private:
@@ -556,7 +598,7 @@ public:
             {
                 // display new window after button is pressed
                 sf::RenderWindow bookingWindow(sf::VideoMode(800, 600), "Flight Booking");
-                FlightBookingGUI bookingGUI(bookingWindow, flightGraph);
+                FlightBookingGUI bookingGUI(mainWindow,bookingWindow,mainGUI, flightGraph);
                 
                 while (bookingWindow.isOpen())
                 {
@@ -569,6 +611,9 @@ public:
                 string fromDate = bookingGUI.getFromDateInput();
                 string toDate = bookingGUI.getToDateInput();
 
+                Stack bookingStack;
+                bookingGUI.handleSearch(origin, destination, fromDate, toDate , bookingStack);
+/*
                 Route route(flightGraph);
                 LinkedList indirectFlights = route.listIndirectFlightsWithinDateRange(origin.c_str(), destination.c_str(), fromDate.c_str(), toDate.c_str());
 
@@ -669,7 +714,7 @@ if (!indirectFlights.isEmpty())
                     sf::sleep(sf::milliseconds(1)); // sleep to control frequency
                 }
                 cout<<"Proceed";
-                cin>>ch;
+                cin>>ch;*/
                 }
                 }
             
