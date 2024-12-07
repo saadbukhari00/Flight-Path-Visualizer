@@ -6,6 +6,116 @@
 Route::Route(FlightGraph& graph)
     : flightGraph(graph) {}
 
+
+struct QueueElement {
+    int totalTime;
+    int cityIndex;
+    int lastArrivalTime;
+    int* path;     // Dynamic array to store the path
+    int pathLength;
+    
+
+    QueueElement(int maxCities) 
+    {
+        path = new int[maxCities];
+        pathLength = 0;
+    }
+
+    ~QueueElement() {
+        delete[] path;
+    }
+
+    // Copy constructor for managing dynamic memory
+    QueueElement(const QueueElement& other, int maxCities) 
+    {
+        totalTime = other.totalTime;
+        cityIndex = other.cityIndex;
+        lastArrivalTime = other.lastArrivalTime;
+        pathLength = other.pathLength;
+
+        path = new int[maxCities];
+        for (int i = 0; i < pathLength; ++i) 
+        {
+            path[i] = other.path[i];
+        }
+    }
+
+    // Assignment operator for managing dynamic memory
+    QueueElement& operator=(const QueueElement& other) 
+    {
+        if (this != &other) 
+        {
+            delete[] path;
+
+            totalTime = other.totalTime;
+            cityIndex = other.cityIndex;
+            lastArrivalTime = other.lastArrivalTime;
+            pathLength = other.pathLength;
+
+            path = new int[pathLength];
+            for (int i = 0; i < pathLength; ++i) {
+                path[i] = other.path[i];
+            }
+        }
+        return *this;
+    }
+};
+
+
+//For cheapestr flight
+struct QueueElement2 
+{
+    int totalCost;       // Total cost for this path
+    int cityIndex;       // Current city index
+    int* path;           // Dynamic array for the path
+    int pathLength;
+
+    QueueElement2(int maxCities) 
+    {
+        path = new int[maxCities];
+        pathLength = 0;
+        totalCost = INT_MAX; // Initialize cost to infinity
+    }
+
+    ~QueueElement2() 
+    {
+        delete[] path;
+    }
+
+    QueueElement2(const QueueElement2& other, int maxCities) 
+    {
+        totalCost = other.totalCost;
+        cityIndex = other.cityIndex;
+        pathLength = other.pathLength;
+
+        path = new int[maxCities];
+        for (int i = 0; i < pathLength; ++i) 
+        {
+            path[i] = other.path[i];
+        }
+    }
+
+    QueueElement2& operator=(const QueueElement2& other) 
+    {
+        if (this != &other) 
+        {
+            delete[] path;
+
+            totalCost = other.totalCost;
+            cityIndex = other.cityIndex;
+            pathLength = other.pathLength;
+
+            path = new int[pathLength];
+            for (int i = 0; i < pathLength; ++i) 
+            {
+                path[i] = other.path[i];
+            }
+        }
+        return *this;
+    }
+};
+
+
 void Route::initializeArrays(int* distances, int* previous, bool* visited, int size) 
 {
     for (int i = 0; i < size; i++) 
@@ -30,171 +140,321 @@ int Route::findMinDistanceIndex(int* distances, bool* visited, int size)
     return minIndex;
 }
 
-void Route::findShortestRoute(const char* startCity, const char* endCity) 
+void Route::shortestPath(const char* originCity, const char* destinationCity, const char* startDate, const char* endDate) 
 {
-    int startIndex = flightGraph.getCityIndex(startCity);
-    int endIndex = flightGraph.getCityIndex(endCity);
+    const int MAX_CITIES = flightGraph.getNumVertices();
+    int originIndex = flightGraph.getCityIndex(originCity);
+    int destinationIndex = flightGraph.getCityIndex(destinationCity);
 
-    if (startIndex == -1 || endIndex == -1) 
+    if (originIndex == -1 || destinationIndex == -1) 
     {
-        cout << "\033[1;31mInvalid city name(s): " << startCity << " or " << endCity << "\033[0m\n";
+        std::cout << "\033[1;31mInvalid city name(s): " << originCity << " or " << destinationCity << "\033[0m\n";
         return;
     }
 
-    int numCities = flightGraph.getNumVertices();
-    int* distances = new int[numCities];
-    int* previous = new int[numCities];
-    bool* visited = new bool[numCities];
+    // Array-based priority queue
+    QueueElement* priorityQueue[MAX_CITIES];
+    int queueSize = 0;
 
-    initializeArrays(distances, previous, visited, numCities);
-
-    distances[startIndex] = 0;
-
-    for (int i = 0; i < numCities - 1; i++) 
+    // Distance array to track minimum time to each city
+    int minTime[MAX_CITIES];
+    for (int i = 0; i < MAX_CITIES; ++i) 
     {
-        int currentIndex = findMinDistanceIndex(distances, visited, numCities);
-        if (currentIndex == -1) break; // No reachable unvisited nodes left
-
-        visited[currentIndex] = true;
-
-        Edge* edge = flightGraph.getVertices()[currentIndex].head;
-        while (edge) {
-            int neighbor = edge->destination;
-            if (!visited[neighbor] && distances[currentIndex] + edge->flightData->distance < distances[neighbor]) {
-                distances[neighbor] = distances[currentIndex] + edge->flightData->distance;
-                previous[neighbor] = currentIndex;
-            }
-            edge = edge->next;
-        }
+        minTime[i] = INT_MAX;
     }
 
-    if (distances[endIndex] == INT_MAX) 
+    // Initialize with the origin city
+    minTime[originIndex] = 0;
+    priorityQueue[queueSize++] = new QueueElement(MAX_CITIES);
+    priorityQueue[0]->totalTime = 0;
+    priorityQueue[0]->cityIndex = originIndex;
+    priorityQueue[0]->lastArrivalTime = 0;
+    priorityQueue[0]->path[0] = originIndex;
+    priorityQueue[0]->pathLength = 1;
+
+    int* bestPath = new int[MAX_CITIES];
+    int bestPathLength = 0;
+
+    while (queueSize > 0) 
     {
-        cout << "\033[1;31mNo route available from " << startCity << " to " << endCity << ".\033[0m\n";
-    } 
-    else 
-    {
-        cout << "\033[1;33m";
-        cout << "\n\t\tShortest Route from " << startCity << " to " << endCity << "\n";
-        cout << "  \t _____________________________________________________________________\n";
-        cout << "\t| Date     | Airline | Departure Time| Arrival Time| Price | Distance |\n";
-        cout << "\t|__________|_________|_______________|_____________|_______|__________|\n";
-        int current = endIndex;
-        while (current != -1) 
+        // Find the element with the smallest totalTime
+        int minIndex = 0;
+        for (int i = 1; i < queueSize; ++i) 
         {
-            Edge* edge = flightGraph.getVertices()[current].head;
-            while (edge) 
+            if (priorityQueue[i]->totalTime < priorityQueue[minIndex]->totalTime) 
             {
-                if (previous[current] == edge->destination) 
-                {
-                    cout << "\t";
-                    cout << "|" << std::setw(6) << edge->flightData->date << " |" 
-                    << setw(8) << edge->flightData->airline << " |" 
-                    << setw(14) << edge->flightData->departureTime << " |" 
-                    << setw(12) << edge->flightData->arrivalTime << " |" 
-                    << setw(6) << edge->flightData->price << " |" 
-                    << setw(9) << edge->flightData->distance << " |\n";
-                        break;
-                }
-                edge = edge->next;
+                minIndex = i;
             }
-            current = previous[current];
         }
 
-        cout << "\t|__________|_________|_______________|_____________|_______|__________|\033[0m\n";
-    }
+        // Extract the minimum element
+        QueueElement* current = priorityQueue[minIndex];
+        queueSize--;
+        for (int i = minIndex; i < queueSize; ++i) 
+        {
+            priorityQueue[i] = priorityQueue[i + 1];
+        }
 
-    delete[] distances;
-    delete[] previous;
-    delete[] visited;
-}
-void Route::findCheapestRoute(const char* startCity, const char* endCity) 
-{
-    int startIndex = flightGraph.getCityIndex(startCity);
-    int endIndex = flightGraph.getCityIndex(endCity);
+        // Stop if we reach the destination
+        if (current->cityIndex == destinationIndex) 
+        {
+            bestPathLength = current->pathLength;
+            for (int i = 0; i < bestPathLength; ++i) 
+            {
+                bestPath[i] = current->path[i];
+            }
+            delete current;
+            break;
+        }
 
-    if (startIndex == -1 || endIndex == -1) 
-    {
-        cout << "\033[1;31mInvalid city name(s): " << startCity << " or " << endCity << "\033[0m\n";
-        return;
-    }
-
-    int numCities = flightGraph.getNumVertices();
-    int* costs = new int[numCities];
-    int* previous = new int[numCities];
-    bool* visited = new bool[numCities];
-
-    initializeArrays(costs, previous, visited, numCities);
-
-    costs[startIndex] = 0;
-
-    for (int i = 0; i < numCities - 1; i++) 
-    {
-        int currentIndex = findMinDistanceIndex(costs, visited, numCities);
-        if (currentIndex == -1) break; // No reachable unvisited nodes left
-
-        visited[currentIndex] = true;
-
-        Edge* edge = flightGraph.getVertices()[currentIndex].head;
+        // Traverse all outgoing edges (flights) from the current city
+        Edge* edge = flightGraph.getVertices()[current->cityIndex].head;
         while (edge) 
         {
-            int neighbor = edge->destination;
-            if (!visited[neighbor] && costs[currentIndex] + edge->flightData->price < costs[neighbor]) 
+            Flight* flight = edge->flightData;
+
+            // Date and time constraints
+            if (!isWithinDateRange(flight->date, startDate, endDate)) 
             {
-                costs[neighbor] = costs[currentIndex] + edge->flightData->price;
-                previous[neighbor] = currentIndex;
+                edge = edge->next;
+                continue;
+            }
+
+            // Format for departure and arrival times (e.g., "2019-12-02 08:00")
+            std::string depTime = std::string(flight->date) + " " + std::string(flight->departureTime);
+	    std::string arrTime = std::string(flight->date) + " " + std::string(flight->arrivalTime);
+
+
+            int travelTime = calculateTravelTime(depTime, arrTime);
+
+            // Ensure the flight departure is after the last arrival time
+            if (travelTime < current->lastArrivalTime) 
+            {
+                edge = edge->next;
+                continue;
+            }
+
+            // Calculate the new total time
+            int newTotalTime = current->totalTime + travelTime;
+
+            // If this path is better, update and push it into the queue
+            if (newTotalTime < minTime[edge->destination]) 
+            {
+                minTime[edge->destination] = newTotalTime;
+
+                QueueElement* newElement = new QueueElement(MAX_CITIES);
+                newElement->totalTime = newTotalTime;
+                newElement->cityIndex = edge->destination;
+                newElement->lastArrivalTime = travelTime; // Set the last arrival time
+                newElement->pathLength = current->pathLength;
+                for (int i = 0; i < current->pathLength; ++i) 
+                {
+                    newElement->path[i] = current->path[i];
+                }
+                newElement->path[newElement->pathLength++] = edge->destination;
+
+                priorityQueue[queueSize++] = newElement;
+            }
+
+            edge = edge->next;
+        }
+
+        delete current;
+    }
+
+	// Display the result
+if (bestPathLength > 0) {
+    std::cout << "\033[1;36mShortest Path Found:\033[0m\n";
+    for (int i = 0; i < bestPathLength - 1; ++i) {
+        int currentCityIndex = bestPath[i];
+        int nextCityIndex = bestPath[i + 1];
+
+        // Get flight information between the current and next city
+        Edge* edge = flightGraph.getVertices()[currentCityIndex].head;
+        while (edge) {
+            Flight* flight = edge->flightData;
+
+            // If the next city is the destination of this edge, print the details
+            if (strcmp(flight->destination, flightGraph.getCityName(nextCityIndex)) == 0)
+            {
+                std::cout << "Flight from " 
+                          << flightGraph.getCityName(currentCityIndex) << " to "
+                          << flightGraph.getCityName(nextCityIndex) << ":\n"
+                          << "Departure Time: " << flight->departureTime << "\n"
+                          << "Arrival Time: " << flight->arrivalTime << "\n"
+                          << "Date: " << flight->date << "\n"
+                          << "Airline: " << flight->airline << "\n"
+                          << "Price: " << flight->price << " USD\n\n";
+                break;
+            }
+            edge = edge->next;
+        }
+    }
+} else {
+    std::cout << "\033[1;31mNo path found between " << originCity << " and " << destinationCity
+              << " within the given date range.\033[0m\n";
+}
+
+
+
+    delete[] bestPath;
+}
+
+
+void Route::cheapestFlight(const char* originCity, const char* destinationCity, const char* startDate, const char* endDate) 
+{
+    const int MAX_CITIES = flightGraph.getNumVertices();
+
+    int originIndex = flightGraph.getCityIndex(originCity);
+    int destinationIndex = flightGraph.getCityIndex(destinationCity);
+
+    if (originIndex == -1 || destinationIndex == -1) 
+    {
+        std::cout << "\033[1;31mInvalid city name(s): " << originCity << " or " << destinationCity << "\033[0m\n";
+        return;
+    }
+
+    // Array-based priority queue
+    QueueElement2* priorityQueue[MAX_CITIES];
+    int queueSize = 0;
+
+    // Distance array to track minimum cost to each city
+    int minCost[MAX_CITIES];
+    for (int i = 0; i < MAX_CITIES; ++i) 
+    {
+        minCost[i] = INT_MAX;
+    }
+
+    // Initialize with the origin city
+    minCost[originIndex] = 0;
+    priorityQueue[queueSize++] = new QueueElement2(MAX_CITIES);
+    priorityQueue[0]->totalCost = 0;
+    priorityQueue[0]->cityIndex = originIndex;
+    priorityQueue[0]->path[0] = originIndex;
+    priorityQueue[0]->pathLength = 1;
+
+    int* bestPath = new int[MAX_CITIES];
+    int bestPathLength = 0;
+
+    while (queueSize > 0) 
+    {
+        // Find the element with the smallest totalCost
+        int minIndex = 0;
+        for (int i = 1; i < queueSize; ++i) 
+        {
+            if (priorityQueue[i]->totalCost < priorityQueue[minIndex]->totalCost) 
+            {
+                minIndex = i;
+            }
+        }
+
+        // Extract the minimum element
+        QueueElement2* current = priorityQueue[minIndex];
+        queueSize--;
+        for (int i = minIndex; i < queueSize; ++i) 
+        {
+            priorityQueue[i] = priorityQueue[i + 1];
+        }
+
+        // Stop if we reach the destination
+        if (current->cityIndex == destinationIndex) 
+        {
+            bestPathLength = current->pathLength;
+            for (int i = 0; i < bestPathLength; ++i) 
+            {
+                bestPath[i] = current->path[i];
+            }
+            delete current;
+            break;
+        }
+
+        // Traverse all outgoing edges (flights) from the current city
+        Edge* edge = flightGraph.getVertices()[current->cityIndex].head;
+        while (edge) {
+            Flight* flight = edge->flightData;
+
+            // Date constraint
+            if (!isWithinDateRange(flight->date, startDate, endDate)) {
+                edge = edge->next;
+                continue;
+            }
+
+            // Calculate new total cost
+            int newTotalCost = current->totalCost + flight->price;
+
+            // If this path is cheaper, update and push it into the queue
+            if (newTotalCost < minCost[edge->destination]) 
+            {
+                minCost[edge->destination] = newTotalCost;
+
+                QueueElement2* newElement = new QueueElement2(MAX_CITIES);
+                newElement->totalCost = newTotalCost;
+                newElement->cityIndex = edge->destination;
+                newElement->pathLength = current->pathLength;
+                for (int i = 0; i < current->pathLength; ++i) 
+                {
+                    newElement->path[i] = current->path[i];
+                }
+                newElement->path[newElement->pathLength++] = edge->destination;
+
+                priorityQueue[queueSize++] = newElement;
+            }
+
+            edge = edge->next;
+        }
+
+        delete current;
+    }
+
+    // Display the result
+if (bestPathLength > 0) {
+    std::cout << "\033[1;36mCheapest Flight Found:\033[0m\n";
+
+    // Loop through the best path and display flight details
+    for (int i = 0; i < bestPathLength - 1; ++i) 
+    {
+        int currentCityIndex = bestPath[i];
+        int nextCityIndex = bestPath[i + 1];
+
+        // Find the flight between the current and next city
+        Edge* edge = flightGraph.getVertices()[currentCityIndex].head;
+        while (edge) {
+            Flight* flight = edge->flightData;
+
+            // Check if the destination of the flight matches the next city in the path
+            if (strcmp(flight->destination, flightGraph.getCityName(nextCityIndex)) == 0) {
+                // Display flight details
+                std::cout << "Flight from " << flight->origin << " to " << flight->destination << ":\n";
+                std::cout << "Airline: " << flight->airline << "\n";
+                std::cout << "Date: " << flight->date << "\n";
+                std::cout << "Departure Time: " << flight->departureTime << "\n";
+                std::cout << "Arrival Time: " << flight->arrivalTime << "\n";
+                std::cout << "Price: $" << flight->price << "\n";
+                std::cout << "Distance: " << flight->distance << " km\n";
+                std::cout << endl << endl;
+                break;  // We found the flight, so we can exit the loop
             }
             edge = edge->next;
         }
     }
 
-    if (costs[endIndex] == INT_MAX) 
-    {
-        cout << "\033[1;31mNo route available from " << startCity << " to " << endCity << ".\033[0m\n";
-    } 
-    else 
-    {
-        cout << "\033[1;33m";
-        cout << "\n\t\tCheapest Route from " << startCity << " to " << endCity << "\n";
-        cout << "  \t _____________________________________________________________________\n";
-        cout << "\t| Date     | Airline | Departure Time| Arrival Time| Price | Distance |\n";
-        cout << "\t|__________|_________|_______________|_____________|_______|__________|\n";
-        int current = endIndex;
-        while (current != -1) 
-        {
-            Edge* edge = flightGraph.getVertices()[current].head;
-            while (edge) 
-            {
-                if (previous[current] == edge->destination) 
-                {
-                    cout << "\t";
-                    cout << "|" << std::setw(6) << edge->flightData->date << " |" 
-                    << setw(8) << edge->flightData->airline << " |" 
-                    << setw(14) << edge->flightData->departureTime << " |" 
-                    << setw(12) << edge->flightData->arrivalTime << " |" 
-                    << setw(6) << edge->flightData->price << " |" 
-                    << setw(9) << edge->flightData->distance << " |\n";
-                    break;
-                }
-                edge = edge->next;
-            }
-            current = previous[current];
-        }
-
-        cout << "\t|__________|_________|_______________|_____________|_______|__________|\033[0m\n";
-    }
-
-    delete[] costs;
-    delete[] previous;
-    delete[] visited;
+    // Display total cost
+    std::cout << "Total Cost: $" << minCost[destinationIndex] << "\n";
+} 
+else 
+{
+    std::cout << "\033[1;31mNo flight found between " << originCity << " and " << destinationCity
+              << " within the given date range.\033[0m\n";
 }
+
+
+    delete[] bestPath;
+}
+
+
+
 void Route::listShortestAndCheapest(const char* startCity, const char* endCity)
 {
-    Menu menu;
-    
-    findShortestRoute(startCity, endCity);
-
-    findCheapestRoute(startCity, endCity);
 }
 
 LinkedList Route::listDirectFlightsWithinDateRange(const char* originCity, const char* destinationCity, const char* startDate, const char* endDate)
@@ -693,4 +953,27 @@ bool Route::isWithinDateRange(const char* flightDate, const char* startDate, con
 
     return flight >= start && flight <= end;
     
+}
+
+
+// Function to calculate travel time between two time stamps with full date information
+int Route::calculateTravelTime(const std::string& departure, const std::string& arrival) 
+{
+    std::tm depTime = {}, arrTime = {};
+    
+    // Parse date and time (format: YYYY-MM-DD HH:MM)
+    strptime(departure.c_str(), "%Y-%m-%d %H:%M", &depTime);
+    strptime(arrival.c_str(), "%Y-%m-%d %H:%M", &arrTime);
+    
+    // Convert to time_t for easier calculations (seconds since epoch)
+    time_t depEpoch = mktime(&depTime);
+    time_t arrEpoch = mktime(&arrTime);
+    
+    // If arrival time is earlier than departure, we assume it's the next day
+    if (arrEpoch < depEpoch) {
+        arrEpoch += 24 * 60 * 60;  // Add 24 hours to arrival time
+    }
+
+    // Return the difference in minutes
+    return difftime(arrEpoch, depEpoch) / 60;
 }

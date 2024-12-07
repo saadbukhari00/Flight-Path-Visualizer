@@ -18,8 +18,8 @@ private:
 public:
     Route(FlightGraph& graph);
 
-    void findShortestRoute(const char* startCity, const char* endCity);
-    void findCheapestRoute(const char* startCity, const char* endCity);
+    void shortestPath(const char* originCity, const char* destinationCity, const char* startDate, const char* endDate);
+    void cheapestFlight(const char* originCity, const char* destinationCity, const char* startDate, const char* endDate);
     void listShortestAndCheapest(const char* startCity, const char* endCity);
 
     LinkedList listDirectFlightsWithinDateRange(const char* originCity, const char* destinationCity, const char* startDate, const char* endDate);
@@ -35,6 +35,7 @@ public:
     RouteList listIndirectRoutesWithinDateRange(const char* originCity, const char* destinationCity, const char* startDate, const char* endDate);
     void dfsBuildRoutes(int currentIndex,int destinationIndex,const char* startDate,const char* endDate,bool* visited,LinkedList& currentRoute,RouteList& allRoutes); 
     int compareTimes(const char* time1, const char* time2);
+    int calculateTravelTime(const string& departure, const string& arrival);
 };
 
 #endif // ROUTE_H
