@@ -30,10 +30,14 @@ void HotelsList::displayHotels()
     }
 
     HotelNode * temp = head;
+    cout << "Hotels List:" << endl;
     while (temp != nullptr)
     {
-        cout << "Hotel Name: " << temp->hotel.cityName << endl;
-        cout << "Hotel Price: $" << temp->hotel.price << endl;
+        cout << "Hotel Name: " << temp->hotel.name << endl;
+        cout << "City Name: " << temp->hotel.city << endl;
+        cout << "Price Per Night: " << temp->hotel.pricePerNight << endl;
+        cout << "--------------------------------" << endl;
+        temp = temp->next;
     }
 }
 
@@ -49,7 +53,7 @@ void HotelsList::deleteHotel(const char* cityName)
     HotelNode * prev = nullptr;
     while (temp != nullptr)
     {
-        if (strcmp(temp->hotel.cityName, cityName) == 0)
+        if (strcmp(temp->hotel.city, cityName) == 0)
         {
             if (prev == nullptr)
             {

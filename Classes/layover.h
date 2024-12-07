@@ -4,30 +4,41 @@
 #include "main.h"
 #include "queue.h"
 #include "list.h"
+#include <iostream>
+#include <cstring>
 
 class Layover
 {
+private:
+    Queue flightsQueue; // Queue of Flight objects
 
-Flight flight;
-Queue flightsQueue;
+    int timeStringToMinutes(const char* time) {
+        int hours = (time[0] - '0') * 10 + (time[1] - '0'); 
+        int minutes = (time[3] - '0') * 10 + (time[4] - '0'); 
+        return hours * 60 + minutes;
+    }
 
+    int convertDateToComparableFormat(const char* date)
+    {
+        int day, month, year;
+        char delimiter1, delimiter2;
+
+        std::stringstream dateStream(date);
+        dateStream >> day >> delimiter1 >> month >> delimiter2 >> year;
+
+        // Convert date into an integer like YYYYMMDD
+        return year * 10000 + month * 100 + day;
+    }
 public:
-void enqueue(Flight&);
-Flight dequeue();
-
-int timeStringToMinutes(const char* time) {
-    int hours = (time[0] - '0') * 10 + (time[1] - '0'); // First two characters for hours
-    int minutes = (time[3] - '0') * 10 + (time[4] - '0'); // Last two characters for minutes
-    return hours * 60 + minutes;
-}
-
-int calculateLayoverTime(const char* arrival, const char* departure) {
-    int arrivalMinutes = timeStringToMinutes(arrival);
-    int departureMinutes = timeStringToMinutes(departure);
-    return departureMinutes - arrivalMinutes;
-}
-
-
+    int calculateLayoverTime(const char* arrival, const char* departure) {
+        int arrivalMinutes = timeStringToMinutes(arrival);
+        int departureMinutes = timeStringToMinutes(departure);
+        return departureMinutes - arrivalMinutes;
+    }
+    void enqueue(Flight &f);
+    Flight dequeue();
+    int calculateTotalLayoverTime();
+    void printLayoverDetails();
 };
 
 #endif

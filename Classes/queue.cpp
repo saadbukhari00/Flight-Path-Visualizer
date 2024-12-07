@@ -62,23 +62,18 @@
 
     }
 
-    void Queue::Dequeue()
+    Flight Queue::dequeue()
     {
         if(isEmpty())
         {
             cout<<"\n\tThe Queue is Empty\n\tCannot Dequeue further\n";
         }
-        else
-        {
-            Node * deletingNode = front;
-            front = front->next;
-            delete deletingNode;
 
-            if(front == NULL)
-            {
-                rear = NULL;
-            }
-        }
+        Node * temp = front;
+        Flight dequeueFlight = front->flightData;
+        front = front->next;
+        delete temp;
+        return dequeueFlight;
     }
 
     Flight Queue::PriorityDequeue()

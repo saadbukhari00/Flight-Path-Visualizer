@@ -1,3 +1,6 @@
+#ifndef HOTELSLIST_H
+#define HOTELSLIST_H
+
 #include "main.h"
 #include "FileHandling.h"
 
@@ -27,3 +30,5 @@ private:
     HotelNode * head;
     FileHandling& fileHandler;
 };
+
+#endif

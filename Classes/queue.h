@@ -18,7 +18,7 @@ public:
     ~Queue();
     void PriorityEnqueue(const Flight&, int);
     void enqueue(const Flight&);
-    void Dequeue();
+    Flight dequeue();
     Flight PriorityDequeue();
     Flight Front();
     Flight Rear();

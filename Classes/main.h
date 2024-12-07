@@ -73,19 +73,66 @@ struct Flight
 
 struct Hotel{
 public:
-    char cityName[50];
-    float price;
+    char city[50];
+    char name[100];
+    float pricePerNight;
 
     Hotel()
     {
-        strcpy(cityName, "");
-        price = 0;
+        strcpy(city, "");
+        strcpy(name, "");
+        pricePerNight = 0;
     }
 
-    Hotel(const char* cityName, float price)
+    Hotel(const char* city, const char* name, float pricePerNight)
     {
-        strcpy(this->cityName, cityName);
-        this->price = price;
+        strcpy(this->city, city);
+        strcpy(this->name, name);
+        this->pricePerNight = pricePerNight;
+    }
+
+    void allocateHotelNamesRandomly(const char * city)
+    {
+        if(strcmp(city, "Islamabad") == 0)
+        {
+            strcpy(name, "Serena Hotel");
+        }
+        else if(strcmp(city, "NewYork") == 0)
+        {
+            strcpy(name, "Hilton Hotel");
+        }
+        else if(strcmp(city, "Paris") == 0)
+        {
+            strcpy(name, "Ritz Hotel");
+        }
+        else if(strcmp(city, "Tokyo") == 0)
+        {
+            strcpy(name, "Tokyo Hotel");
+        }
+        else if(strcmp(city, "London") == 0)
+        {
+            strcpy(name, "London Hotel");
+        }
+        else if(strcmp(city, "Singapore") == 0)
+        {
+            strcpy(name, "Singapore Hotel");
+        }
+        else if(strcmp(city, "HongKong") == 0)
+        {
+            strcpy(name, "HongKong Hotel");
+        }
+        else if(strcmp(city, "Berlin") == 0)
+        {
+            strcpy(name, "Berlin Hotel");
+        }
+        else if(strcmp(city, "Seoul") == 0)
+        {
+            strcpy(name, "Seoul Hotel");
+        }
+        else if(strcmp(city, "Amsterdam") == 0)
+        {
+            strcpy(name, "Amsterdam Hotel");
+        }
     }
 };
 

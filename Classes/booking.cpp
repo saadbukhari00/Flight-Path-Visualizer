@@ -1,4 +1,8 @@
 #include "booking.h"
+#include "layover.h"       // Ensure Layover class is included
+#include "HotelsList.h"    // Ensure HotelsList class is included
+#include "HotelBooking.h"  // Ensure HotelBooking class is included
+#include "FileHandling.h"  // For fileHandler if needed
 
 void FlightBook::bookFlightOption(LinkedList &directFlights, RouteList &indirectRoutes) {
     // Display direct flights
@@ -10,11 +14,7 @@ void FlightBook::bookFlightOption(LinkedList &directFlights, RouteList &indirect
 
     // Display indirect routes
     cout << "\nAvailable Indirect Routes (Multi-leg Journeys):\n";
-    // We'll write a display function for RouteList that shows each route as a single option
     indirectRoutes.Display(); 
-    // assume displaySummaries() prints something like:
-    // Route #0: Islamabad -> Dubai -> London (2 legs)
-    // Route #1: New York -> Paris -> Berlin -> Tokyo (3 legs)
 
     int totalOptions = directCount + indirectRoutes.countRoutes();
 
@@ -52,10 +52,8 @@ void FlightBook::bookFlightOption(LinkedList &directFlights, RouteList &indirect
             return;
         }
 
-        // The routeNode->route.legs contains all the flights for this multi-leg journey
-        // Book them all
+        // Book all flights in this multi-leg route
         confirmBooking(routeNode->route.legs); 
-        // where confirmBooking(LinkedList&) loops over all flights in the route and finalizes them
     }
 }
 
@@ -67,7 +65,7 @@ void FlightBook::confirmBooking(Flight &flight) {
     cout << "Price: $" << flight.price << "\n";
     cout << "Airline: " << flight.airline << "\n";
     cout << "Flight booked successfully!\n";
-    // Here you could store booking in a stack, queue, or any booking log as required.
+    // No layovers for a direct flight, so no hotel booking needed here.
 }
 
 void FlightBook::confirmBooking(LinkedList &legs) {
@@ -91,5 +89,44 @@ void FlightBook::confirmBooking(LinkedList &legs) {
     cout << "Total Price: $" << totalPrice << "\n";
     cout << "Total Distance: " << totalDistance << " km\n";
     cout << "Multi-leg route booked successfully!\n";
-    // Again, store the booking if required.
+
+    // Now handle layovers:
+    // We need to check time difference between arrival of one flight and departure of the next.
+    if (legs.size() > 1) {
+        cout << "\n\033[1;36mLayover Information:\033[0m\n";
+        Layover layoverCalculator; // For calculating layover times
+        LinkedList::FlightNode* leg = legs.getHead();
+
+        // Initialize HotelsList and HotelBooking for possible hotel booking
+        FileHandling fileHandler(200,50); // adjust as needed
+        HotelsList hotelsList(fileHandler);
+        hotelsList.populateHotelsList(); // ensure this populates one hotel per city
+        HotelBooking hotelBooking(hotelsList);
+
+        while (leg && leg->next) {
+            Flight &currentFlight = leg->flight;
+            Flight &nextFlight = leg->next->flight;
+
+            int layoverTime = layoverCalculator.calculateLayoverTime(currentFlight.arrivalTime, nextFlight.departureTime);
+            int hours = layoverTime / 60;
+            int minutes = layoverTime % 60;
+
+            cout << "Layover at " << currentFlight.destination << ": " 
+                 << hours << " hours " << minutes << " minutes.\n";
+
+            // If layover > 12 hours (720 minutes), offer hotel booking
+            if (layoverTime > 720) {
+                cout << "\033[1;33mLong layover detected in " << currentFlight.destination << " ("
+                     << hours << "h " << minutes << "m). Would you like to book a hotel? (Y/n): \033[0m";
+                char hChoice;
+                cin >> hChoice;
+                if (tolower(hChoice) == 'y') {
+                    // Book a hotel in this city
+                    hotelBooking.bookHotelInCity(currentFlight.destination);
+                }
+            }
+
+            leg = leg->next;
+        }
+    }
 }

@@ -17,7 +17,8 @@ g++ -o FlightPathVisualizer main.cpp Classes/FileHandling.cpp Classes/FlightGrap
 #include "Classes/layover.h" 
 #include "Classes/mainGUI.h"
 #include "Classes/booking.h"
-
+#include "Classes/HotelsList.h"
+#include "Classes/HotelBooking.h"
 
 
 // airplane struct to store airplane information
@@ -621,11 +622,16 @@ void handleSearch(const string& origin, const string& destination, const string&
     }
 
     // Display options
+
+preferencesundone:
+
     displayAvailableOptions(directFlights, indirectRoutes, origin, destination);
     
     route.shortestPath(origin.c_str(), destination.c_str(), fromDate.c_str(), toDate.c_str(), directFlights, indirectRoutes);
     route.cheapestFlight(origin.c_str(), destination.c_str(), fromDate.c_str(), toDate.c_str(), directFlights, indirectRoutes);
     
+
+    Layover layover;
 
     // Ask if user wants preferences
     cout << "\nWould you like to apply any preferences? (Y/n): ";
@@ -637,30 +643,36 @@ void handleSearch(const string& origin, const string& destination, const string&
         // After applying preferences, display updated options
         displayAvailableOptions(currentState.directFlights, currentState.indirectRoutes, origin, destination);
     }
-
-    // Now let the user book
-    cout << "\nWould you like to book a flight/route? (Y/n): ";
-    cin >> choice;
-    if (tolower(choice) == 'y') {
-        flightBook.bookFlightOption(currentState.directFlights, currentState.indirectRoutes);
-    }
-
+        
     // Undo Preferences
     cout << "Would you like to undo preferences? (Y/n): ";
     cin >> choice;
-    if (tolower(choice) == 'y') {
-        if (!bookingStack.IsEmpty()) {
+    if (tolower(choice) == 'y') 
+    {
+        if (!bookingStack.IsEmpty()) 
+        {
             bookingStack.Pop(); // remove current (with prefs)
-            if (!bookingStack.IsEmpty()) {
+            if (!bookingStack.IsEmpty()) 
+            {
                 currentState = bookingStack.Top();
                 cout << "Preferences undone. Showing flights/routes from the previous state:\n";
-                displayAvailableOptions(currentState.directFlights, currentState.indirectRoutes, origin, destination);
-            } else {
+                goto preferencesundone;
+            } 
+            else 
+            {
                 cout << "No previous state to revert to.\n";
             }
         } else {
             cout << "No preferences to undo.\n";
         }
+    }
+
+    // Now let the user book
+    cout << "\nWould you like to book a flight/route? (Y/n): ";
+    cin >> choice;
+    if (tolower(choice) == 'y') 
+    {
+        flightBook.bookFlightOption(currentState.directFlights, currentState.indirectRoutes);
     }
 }
     

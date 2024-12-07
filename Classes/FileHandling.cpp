@@ -54,7 +54,7 @@
     }
     
     Hotel* FileHandling::readHotelsFile() {
-        const char* fileName = "HotelCharges_perday.txt";
+        const char* fileName = "Assets/HotelCharges_perday.txt";
         ifstream file(fileName);
         if(!file.is_open()) 
         {
@@ -69,7 +69,7 @@
                 cout << "Error: Maximum hotel capacity reached.\n";
                 break;
             }
-            sscanf(line, "%s %f", hotels[hotelCount].cityName, &hotels[hotelCount].price);
+            sscanf(line, "%s %f", hotels[hotelCount].city, &hotels[hotelCount].pricePerNight);
             hotelCount++;
         }
         file.close();
