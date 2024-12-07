@@ -19,10 +19,11 @@ public:
     RouteList() : head(NULL) {}
 
     void insertRoute(FlightRoute& newRoute);
-    void displayRoutes();
+    void Display();
     void clear();
     int countRoutes();
     RouteNode* getRouteByIndex(int idx);
+    RouteNode* getHead() { return head; }
     bool hasRoutes() { return head != NULL; }
 private:
     RouteNode* head;

@@ -99,21 +99,20 @@ void LinkedList::merge(LinkedList& list)
 
 void LinkedList::Display() 
 {
-    if (head == NULL) 
-    {
-        cout << "The list is empty\n";
-        return;
-    }
-
-    cout << "\t ________________________________________________________________________________________________________________________\n";
-    cout << "\t|  IDX  | Origin         | Destination    | Date      | Airline        | Departure Time | Arrival Time   | Price     | Distance  |\n";
-    cout << "\t|_______|________________|________________|___________|________________|________________|________________|___________|___________|\n";
+    // Table header with colors
+    cout << "\033[1;34m";
+    cout << "       ________________________________________________________________________________________________________________________________\n";
+    cout << "      |  IDX  | Origin         | Destination    | Date      | Airline        | Departure Time | Arrival Time   | Price     | Distance  |\n";
+    cout << "      |_______|________________|________________|___________|________________|________________|________________|___________|___________|\n";
+    cout << "\033[0m";
 
     FlightNode* curr = head;
     int index = 0;
     while (curr) 
     {
-        cout << "\t|" << setw(5) << index << " |" 
+        // Color each row alternatingly (optional)
+        // For simplicity, all rows same color here
+        cout << "      |\033[1;33m" << setw(6) << index << "\033[0m |" 
              << setw(15) << curr->flight.origin << " |" 
              << setw(15) << curr->flight.destination << " |" 
              << setw(10) << curr->flight.date << " |" 
@@ -125,7 +124,10 @@ void LinkedList::Display()
         curr = curr->next;
         index++;
     }
-    cout << "\t|_______|________________|________________|___________|________________|________________|________________|___________|___________|\033[0m\n";
+
+    cout << "\033[1;34m";
+    cout << "      |_______|________________|________________|___________|________________|________________|________________|___________|___________|\n";
+    cout << "\033[0m";
 }
 
 void LinkedList::DisplayIndirectFlights()

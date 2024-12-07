@@ -510,15 +510,26 @@ void handleSearch(const string& origin, const string& destination, const string&
     
 // A helper to display direct flights and indirect routes
 void displayAvailableOptions(LinkedList &directFlights, RouteList &indirectRoutes, const string &origin, const string &destination) {
-    cout << "\n\033[1;36mDirect Flights from " << origin << " to " << destination << "\033[0m\n";
-    directFlights.Display();
+    if(directFlights.isEmpty()) {
+        cout << "\033[1;31mNo Direct Flights available\033[0m\n";
+    } 
+    else {
+        cout << "\n\033[1;36mDirect Flights from " << origin << " to " << destination << "\033[0m\n";
+        directFlights.Display();
+    }
 
-    cout << "\n\033[1;36mIndirect Routes (Multi-Leg Journeys) from " << origin << " to " << destination << "\033[0m\n";
-    indirectRoutes.displayRoutes();
+    if(indirectRoutes.countRoutes() == 0) {
+        cout << "\033[1;31mNo Indirect Flights available\033[0m\n";
+        return;
+    }
+    else {
+        cout << "\n\033[1;36mIndirect Flights from " << origin << " to " << destination << "\033[0m\n";
+        indirectRoutes.Display();
+    }
 }
 
 // Example preference application logic
-void applyPreferences(Route &route, BookingState &currentState) {
+void applyPreferences(Route &route, BookingState &currentState, RouteList &indirectRoutes) {
     int preferenceType;
     cout << "\n\t\tPreferences Menu:\n"
          << "1. Number of Transit Cities\n"
@@ -538,34 +549,27 @@ void applyPreferences(Route &route, BookingState &currentState) {
     switch (preferenceType) {
         case 1:
             transitCities = menu.takeTransitCities(transitCount);
-            // Filtering direct flights if needed
-            // filteredFlights = route.findFlightsWithTransitCities(...) can return LinkedList,
-            // but for multi-leg routes, you'd need a similar function returning RouteList if desired.
+            // Direct flights are not filtered by transit cities, only by airline
 
-            // For simplicity, let's just handle direct flights here.
-            filteredFlights = route.findFlightsWithTransitCities(
-                currentState.origin.c_str(), currentState.destination.c_str(),
-                currentState.fromDate.c_str(), currentState.toDate.c_str(),
-                transitCities, transitCount
-            );
-
-            currentState.directFlights = filteredFlights;
-            // No change to indirectRoutes for now unless you implement a similar filtering function for RouteList
+            // For multi-leg routes, you'd need to filter by transit cities
+            filteredRoutes = route.filterByTransitCities(indirectRoutes, transitCities, transitCount);
+            currentState.indirectRoutes = filteredRoutes;
+            
             break;
         case 2:
             cout << "Enter the preferred airline: ";
             cin.ignore();
             getline(cin, preferredAirline);
             // Filter direct flights by airline
-            filteredFlights = route.listAllFlightsWithinDataRangeandPreferredAirline(
+            filteredFlights = route.listDirectFlightsWithinDataRangeandPreferredAirline(
                 currentState.origin.c_str(), currentState.destination.c_str(),
                 currentState.fromDate.c_str(), currentState.toDate.c_str(),
                 preferredAirline
             );
             currentState.directFlights = filteredFlights;
-            // If you want to filter indirectRoutes by airline, you need a similar function returning RouteList
-            // filteredRoutes = route.filterMultiLegRoutesByAirline(indirectRoutes, preferredAirline);
-            // currentState.indirectRoutes = filteredRoutes;
+              
+            filteredRoutes = route.filterMultiLegRoutesByAirline(indirectRoutes, preferredAirline);
+            currentState.indirectRoutes = filteredRoutes;
             break;
         case 3:
             transitCities = menu.takeTransitCities(transitCount);
@@ -574,13 +578,19 @@ void applyPreferences(Route &route, BookingState &currentState) {
             getline(cin, preferredAirline);
 
             // Filter direct flights
-            filteredFlights = route.filterByTransitCitiesAndAirline(
+            // Direct flights are not filtered by transit cities, only by airline
+            filteredFlights = route.listDirectFlightsWithinDataRangeandPreferredAirline(
                 currentState.origin.c_str(), currentState.destination.c_str(),
                 currentState.fromDate.c_str(), currentState.toDate.c_str(),
-                transitCities, transitCount, preferredAirline
+                preferredAirline
             );
             currentState.directFlights = filteredFlights;
-            // Similarly filter indirectRoutes if you have a method
+
+            // Filter multi-leg routes
+            filteredRoutes = route.filterByTransitCitiesAndAirline(
+                indirectRoutes, preferredAirline, transitCities, transitCount
+            );
+            currentState.indirectRoutes = filteredRoutes;
             break;
         default:
             cout << "Invalid choice!\n";
@@ -613,16 +623,15 @@ void handleSearch(const string& origin, const string& destination, const string&
     // Display options
     displayAvailableOptions(directFlights, indirectRoutes, origin, destination);
     
-    
-    route.shortestPath(origin.c_str(), destination.c_str(), fromDate.c_str(), toDate.c_str(), directFlights, indirectRoutes);
-    route.cheapestFlight(origin.c_str(), destination.c_str(), fromDate.c_str(), toDate.c_str(), directFlights, indirectRoutes);
+    route.displayShortestPathResult(origin.c_str(), destination.c_str(), directFlights, indirectRoutes);
+    route.displayCheapestFlightResult(origin.c_str(), destination.c_str(), directFlights, indirectRoutes);
 
     // Ask if user wants preferences
     cout << "\nWould you like to apply any preferences? (Y/n): ";
     char choice;
     cin >> choice;
     if (tolower(choice) == 'y') {
-        applyPreferences(route, currentState);
+        applyPreferences(route, currentState, indirectRoutes);
         bookingStack.Push(currentState);
         // After applying preferences, display updated options
         displayAvailableOptions(currentState.directFlights, currentState.indirectRoutes, origin, destination);

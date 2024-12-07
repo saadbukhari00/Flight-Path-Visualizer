@@ -22,20 +22,29 @@ public:
 
     void shortestPath(const char* originCity, const char* destinationCity, const char* startDate, const char* endDate, LinkedList& directFlights, RouteList& indirectRoutes);
     void cheapestFlight(const char* originCity, const char* destinationCity, const char* startDate, const char* endDate, LinkedList& directFlights, RouteList& indirectRoutes);
-    void listShortestAndCheapest(const char* startCity, const char* endCity);
+    
+    void displayCheapestFlightResult(const char* originCity, const char* destinationCity, LinkedList &cheapestPathFlights, LinkedList &directFlights, RouteList &indirectRoutes);
+    void displayShortestPathResult(const char* originCity, const char* destinationCity, LinkedList &shortestPathFlights, LinkedList &directFlights, RouteList &indirectRoutes);
 
     LinkedList listDirectFlightsWithinDateRange(const char* originCity, const char* destinationCity, const char* startDate, const char* endDate);
     LinkedList listIndirectFlightsWithinDateRange(const char* originCity, const char* destinationCity, const char* startDate, const char* endDate);
-    LinkedList listAllFlightsWithinDataRangeandPreferredAirline(const char* originCity, const char* destinationCity, const char* startDate, const char* endDate, string airline);
-    LinkedList findFlightsWithTransitCities(const char* originCity, const char* destinationCity, const char* startDate, const char* endDate, string* transitCities, int numberOfTransitCities);
-    LinkedList filterByTransitCitiesAndAirline( const char* originCity, const char* destinationCity, const char* startDate, const char* endDate, string* transitCities, int numberOfTransitCities, const string& preferredAirline);
 
-    bool isWithinDateRange(const char* flightDate, const char* startDate, const char* endDate);
-    int convertDateToComparableFormat(const char* date); 
-    bool findDirectAndIndirectFlights(const char* originCity, const char* destinationCity, const char* startDate, const char* endDate, LinkedList& indirectFlightsList);
+    LinkedList listDirectFlightsWithinDataRangeandPreferredAirline(const char* originCity, const char* destinationCity, const char* startDate, const char* endDate, string airline);
+    RouteList filterMultiLegRoutesByAirline(RouteList& indirectRoutes, const string& preferredAirline);
+
+    RouteList filterByTransitCities(RouteList& allRoutes, string* transitCities, int numberOfTransitCities);
+    
+    RouteList filterByTransitCitiesAndAirline(RouteList& allRoutes, const string& airline, string* transitCities, int numberOfTransitCities);
 
     RouteList listIndirectRoutesWithinDateRange(const char* originCity, const char* destinationCity, const char* startDate, const char* endDate);
     void dfsBuildRoutes(int currentIndex,int destinationIndex,const char* startDate,const char* endDate,bool* visited,LinkedList& currentRoute,RouteList& allRoutes); 
+    
+    void removeDuplicates(RouteList &allRoutes);
+    bool areRoutesIdentical(LinkedList &routeA, LinkedList &routeB);
+    bool isDuplicateRoute(RouteList &allRoutes, LinkedList &candidate);
+    bool isWithinDateRange(const char* flightDate, const char* startDate, const char* endDate);
+
+    int convertDateToComparableFormat(const char* date); 
     int compareTimes(const char* time1, const char* time2);
     int calculateTravelTime(const string& departure, const string& arrival);
 };

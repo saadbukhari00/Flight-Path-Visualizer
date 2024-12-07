@@ -11,7 +11,7 @@ void FlightBook::bookFlightOption(LinkedList &directFlights, RouteList &indirect
     // Display indirect routes
     cout << "\nAvailable Indirect Routes (Multi-leg Journeys):\n";
     // We'll write a display function for RouteList that shows each route as a single option
-    indirectRoutes.displayRoutes(); 
+    indirectRoutes.Display(); 
     // assume displaySummaries() prints something like:
     // Route #0: Islamabad -> Dubai -> London (2 legs)
     // Route #1: New York -> Paris -> Berlin -> Tokyo (3 legs)

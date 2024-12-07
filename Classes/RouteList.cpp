@@ -28,34 +28,50 @@ int RouteList::countRoutes() {
     return count;
 }
 
-RouteList::RouteNode* RouteList::getHead()
-{
-    return head;
-}
 
-
-void RouteList::displayRoutes() {
-    // Assume you have a function countRoutes() and a way to get RouteNode by index
+void RouteList::Display() {
     RouteNode* curr = head;
     int index = 0;
+    
     while (curr) {
-        // Summarize route: print origin, intermediate stops, final destination
-        // We'll extract it from curr->route.legs
         LinkedList::FlightNode* leg = curr->route.legs.getHead();
-        if (leg) {
-            cout << "Route #" << index << ": ";
-            // Print a chain like: Origin -> ... -> Final Destination
-            // Gather city names
-            cout << leg->flight.origin;
+        int legCount = curr->route.legs.size();
+
+        if (leg && legCount > 0) {
+            // Print route header
+            cout << "\033[1;33mRoute #" << index << ":\033[0m\n";
+            cout << "\033[1;34m"; // Set color for table lines
+            cout << "       ________________________________________________________________________________________________________________________________\n";
+            cout << "      |  Leg  | Origin         | Destination    | Date      | Airline        | Departure Time | Arrival Time   | Price     | Distance  |\n";
+            cout << "      |_______|________________|________________|___________|________________|________________|________________|___________|___________|\n";
+            cout << "\033[0m"; // Reset color
+
+            int legIndex = 0;
             LinkedList::FlightNode* temp = leg;
             while (temp) {
-                cout << " -> " << temp->flight.destination;
+                // Print each flight in a formatted row
+                cout << "      |\033[1;33m" << setw(6) << legIndex << "\033[0m |" 
+                     << setw(15) << temp->flight.origin << " |"
+                     << setw(15) << temp->flight.destination << " |"
+                     << setw(10) << temp->flight.date << " |"
+                     << setw(15) << temp->flight.airline << " |"
+                     << setw(15) << temp->flight.departureTime << " |"
+                     << setw(15) << temp->flight.arrivalTime << " |"
+                     << setw(10) << temp->flight.price << " |"
+                     << setw(10) << temp->flight.distance << " |\n";
+
                 temp = temp->next;
+                legIndex++;
             }
-            cout << " (" << curr->route.legs.size() << " legs)" << "\n";
+
+            cout << "\033[1;34m";
+            cout << "      |_______|________________|________________|___________|________________|________________|________________|___________|___________|\n";
+            cout << "\033[0m\n"; // Reset
         } else {
-            cout << "Route #" << index << ": No flights.\n";
+            // No flights in this route
+            cout << "\033[1;33mRoute #" << index << ":\033[0m \033[1;31mNo flights.\033[0m\n\n";
         }
+
         curr = curr->next;
         index++;
     }
