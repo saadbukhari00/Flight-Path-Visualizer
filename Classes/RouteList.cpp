@@ -28,6 +28,12 @@ int RouteList::countRoutes() {
     return count;
 }
 
+RouteList::RouteNode* RouteList::getHead()
+{
+    return head;
+}
+
+
 void RouteList::displayRoutes() {
     // Assume you have a function countRoutes() and a way to get RouteNode by index
     RouteNode* curr = head;

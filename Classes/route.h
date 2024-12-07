@@ -20,8 +20,8 @@ private:
 public:
     Route(FlightGraph& graph);
 
-    void shortestPath(const char* originCity, const char* destinationCity, const char* startDate, const char* endDate);
-    void cheapestFlight(const char* originCity, const char* destinationCity, const char* startDate, const char* endDate);
+    void shortestPath(const char* originCity, const char* destinationCity, const char* startDate, const char* endDate, LinkedList& directFlights, RouteList& indirectRoutes);
+    void cheapestFlight(const char* originCity, const char* destinationCity, const char* startDate, const char* endDate, LinkedList& directFlights, RouteList& indirectRoutes);
     void listShortestAndCheapest(const char* startCity, const char* endCity);
 
     LinkedList listDirectFlightsWithinDateRange(const char* originCity, const char* destinationCity, const char* startDate, const char* endDate);
