@@ -23,7 +23,6 @@ public:
     void clear();
     int countRoutes();
     RouteNode* getRouteByIndex(int idx);
-    RouteNode* getHead() { return head; }
     bool hasRoutes() { return head != NULL; }
 private:
     RouteNode* head;
