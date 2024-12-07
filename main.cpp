@@ -16,6 +16,7 @@ g++ -o FlightPathVisualizer main.cpp Classes/FileHandling.cpp Classes/FlightGrap
 #include "Classes/queue.h"
 #include "Classes/layover.h" 
 #include "Classes/mainGUI.h"
+#include "Classes/booking.h"
 
 
 
@@ -263,7 +264,7 @@ public:
     
     window.clear(sf::Color::White);  // Clear the window and proceed to next frame
 }
-
+/*
 void handleSearch(const string& origin, const string& destination, const string& fromDate, const string& toDate, Stack& bookingStack) 
 {
 
@@ -381,8 +382,6 @@ void handleSearch(const string& origin, const string& destination, const string&
 
                     sf::sleep(sf::milliseconds(1)); // sleep to control frequency
                 }
-                cout<<"Proceed";
-                cin>>ch;
 
     char preferenceChoice;
     cout << "\033[1;34m\nWould you like to apply any preferences? (Y/n): \033[0m";
@@ -506,7 +505,152 @@ void handleSearch(const string& origin, const string& destination, const string&
             cout << "\033[1;31mNo actions to undo.\033[0m\n";
         }
     }
+}*/
+    
+    
+// A helper to display direct flights and indirect routes
+void displayAvailableOptions(LinkedList &directFlights, RouteList &indirectRoutes, const string &origin, const string &destination) {
+    cout << "\n\033[1;36mDirect Flights from " << origin << " to " << destination << "\033[0m\n";
+    directFlights.Display();
+
+    cout << "\n\033[1;36mIndirect Routes (Multi-Leg Journeys) from " << origin << " to " << destination << "\033[0m\n";
+    indirectRoutes.displayRoutes();
 }
+
+// Example preference application logic
+void applyPreferences(Route &route, BookingState &currentState) {
+    int preferenceType;
+    cout << "\n\t\tPreferences Menu:\n"
+         << "1. Number of Transit Cities\n"
+         << "2. Preferred Airline\n"
+         << "3. Both Transit Cities and Airline\n"
+         << "Enter your choice: ";
+    cin >> preferenceType;
+
+    string preferredAirline;
+    string *transitCities = nullptr;
+    int transitCount = 0;
+    Menu menu;
+
+    LinkedList filteredFlights;    // If needed
+    RouteList filteredRoutes;      // If you decide to filter multi-leg routes as well
+
+    switch (preferenceType) {
+        case 1:
+            transitCities = menu.takeTransitCities(transitCount);
+            // Filtering direct flights if needed
+            // filteredFlights = route.findFlightsWithTransitCities(...) can return LinkedList,
+            // but for multi-leg routes, you'd need a similar function returning RouteList if desired.
+
+            // For simplicity, let's just handle direct flights here.
+            filteredFlights = route.findFlightsWithTransitCities(
+                currentState.origin.c_str(), currentState.destination.c_str(),
+                currentState.fromDate.c_str(), currentState.toDate.c_str(),
+                transitCities, transitCount
+            );
+
+            currentState.directFlights = filteredFlights;
+            // No change to indirectRoutes for now unless you implement a similar filtering function for RouteList
+            break;
+        case 2:
+            cout << "Enter the preferred airline: ";
+            cin.ignore();
+            getline(cin, preferredAirline);
+            // Filter direct flights by airline
+            filteredFlights = route.listAllFlightsWithinDataRangeandPreferredAirline(
+                currentState.origin.c_str(), currentState.destination.c_str(),
+                currentState.fromDate.c_str(), currentState.toDate.c_str(),
+                preferredAirline
+            );
+            currentState.directFlights = filteredFlights;
+            // If you want to filter indirectRoutes by airline, you need a similar function returning RouteList
+            // filteredRoutes = route.filterMultiLegRoutesByAirline(indirectRoutes, preferredAirline);
+            // currentState.indirectRoutes = filteredRoutes;
+            break;
+        case 3:
+            transitCities = menu.takeTransitCities(transitCount);
+            cout << "Enter the preferred airline: ";
+            cin.ignore();
+            getline(cin, preferredAirline);
+
+            // Filter direct flights
+            filteredFlights = route.filterByTransitCitiesAndAirline(
+                currentState.origin.c_str(), currentState.destination.c_str(),
+                currentState.fromDate.c_str(), currentState.toDate.c_str(),
+                transitCities, transitCount, preferredAirline
+            );
+            currentState.directFlights = filteredFlights;
+            // Similarly filter indirectRoutes if you have a method
+            break;
+        default:
+            cout << "Invalid choice!\n";
+            return;
+    }
+}
+
+void handleSearch(const string& origin, const string& destination, const string& fromDate, const string& toDate, Stack& bookingStack) {
+    Route route(flightGraph);
+    FlightBook flightBook;
+
+    // Initial State
+    BookingState currentState(origin, destination, fromDate, toDate);
+
+    // Get initial direct flights and multi-leg routes
+    LinkedList directFlights = route.listDirectFlightsWithinDateRange(origin.c_str(), destination.c_str(), fromDate.c_str(), toDate.c_str());
+    RouteList indirectRoutes = route.listIndirectRoutesWithinDateRange(origin.c_str(), destination.c_str(), fromDate.c_str(), toDate.c_str());
+
+    // Store in currentState
+    currentState.directFlights = directFlights;
+    currentState.indirectRoutes = indirectRoutes;
+
+    bookingStack.Push(currentState);
+
+    if (directFlights.isEmpty() && (indirectRoutes.countRoutes() == 0)) {
+        cout << "No flights or routes found for the given criteria.\n";
+        return;
+    }
+
+    // Display options
+    displayAvailableOptions(directFlights, indirectRoutes, origin, destination);
+
+    // Ask if user wants preferences
+    cout << "\nWould you like to apply any preferences? (Y/n): ";
+    char choice;
+    cin >> choice;
+    if (tolower(choice) == 'y') {
+        applyPreferences(route, currentState);
+        bookingStack.Push(currentState);
+        // After applying preferences, display updated options
+        displayAvailableOptions(currentState.directFlights, currentState.indirectRoutes, origin, destination);
+    }
+
+    // Now let the user book
+    cout << "\nWould you like to book a flight/route? (Y/n): ";
+    cin >> choice;
+    if (tolower(choice) == 'y') {
+        flightBook.bookFlightOption(currentState.directFlights, currentState.indirectRoutes);
+    }
+
+    // Undo Preferences
+    cout << "Would you like to undo preferences? (Y/n): ";
+    cin >> choice;
+    if (tolower(choice) == 'y') {
+        if (!bookingStack.IsEmpty()) {
+            bookingStack.Pop(); // remove current (with prefs)
+            if (!bookingStack.IsEmpty()) {
+                currentState = bookingStack.Top();
+                cout << "Preferences undone. Showing flights/routes from the previous state:\n";
+                displayAvailableOptions(currentState.directFlights, currentState.indirectRoutes, origin, destination);
+            } else {
+                cout << "No previous state to revert to.\n";
+            }
+        } else {
+            cout << "No preferences to undo.\n";
+        }
+    }
+}
+    
+    
     void draw() 
     {
         window.clear(sf::Color::White);

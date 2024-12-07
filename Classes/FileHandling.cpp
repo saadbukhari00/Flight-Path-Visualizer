@@ -69,7 +69,7 @@
                 cout << "Error: Maximum hotel capacity reached.\n";
                 break;
             }
-            sscanf(line, "%s %d", hotels[hotelCount].city, &hotels[hotelCount].chargePerDay);
+            sscanf(line, "%s %f", hotels[hotelCount].cityName, &hotels[hotelCount].price);
             hotelCount++;
         }
         file.close();
@@ -81,6 +81,13 @@
             return nullptr;
         }
         return &flights[index];
+    }
+
+    Hotel* FileHandling::getHotelByIndex(int index) {
+        if (index < 0 || index >= hotelCount) {
+            return nullptr;
+        }
+        return &hotels[index];
     }
 
     FileHandling::~FileHandling() {

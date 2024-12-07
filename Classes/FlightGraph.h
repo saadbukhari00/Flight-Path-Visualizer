@@ -57,7 +57,6 @@ public:
     void displayHighlightedRoutes(sf::RenderWindow& window);
     
     const char* getCityName(int cityIndex) const;
-
 };
 
 #endif 

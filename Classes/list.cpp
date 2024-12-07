@@ -64,6 +64,30 @@ LinkedList::FlightNode* LinkedList::getNodeAt(int index)
     return getFlightByIndex(index);
 }
 
+Flight* LinkedList::getLastFlight() {
+    if (!head) return NULL;
+    FlightNode* curr = head;
+    while (curr->next) {
+        curr = curr->next;
+    }
+    return &(curr->flight);
+}
+
+void LinkedList::removeLast() {
+    if (!head) return;
+    if (!head->next) {
+        delete head;
+        head = NULL;
+        return;
+    }
+    FlightNode* curr = head;
+    while (curr->next && curr->next->next) {
+        curr = curr->next;
+    }
+    delete curr->next;
+    curr->next = NULL;
+}
+
 void LinkedList::merge(LinkedList& list) 
 {
     FlightNode* curr = list.getHead();
@@ -81,10 +105,16 @@ void LinkedList::Display()
         return;
     }
 
+    cout << "\t ________________________________________________________________________________________________________________________\n";
+    cout << "\t|  IDX  | Origin         | Destination    | Date      | Airline        | Departure Time | Arrival Time   | Price     | Distance  |\n";
+    cout << "\t|_______|________________|________________|___________|________________|________________|________________|___________|___________|\n";
+
     FlightNode* curr = head;
-    while (curr) {
-        cout << "\t";
-        cout << "|" << setw(15) << curr->flight.origin << " |" 
+    int index = 0;
+    while (curr) 
+    {
+        cout << "\t|" << setw(5) << index << " |" 
+             << setw(15) << curr->flight.origin << " |" 
              << setw(15) << curr->flight.destination << " |" 
              << setw(10) << curr->flight.date << " |" 
              << setw(15) << curr->flight.airline << " |" 
@@ -93,6 +123,33 @@ void LinkedList::Display()
              << setw(10) << curr->flight.price << " |" 
              << setw(10) << curr->flight.distance << " |\n";
         curr = curr->next;
+        index++;
+    }
+    cout << "\t|_______|________________|________________|___________|________________|________________|________________|___________|___________|\033[0m\n";
+}
+
+void LinkedList::DisplayIndirectFlights()
+{
+    if (head == NULL)
+    {
+        cout << "No indirect flights available.\n";
+        return;
+    }
+
+    FlightNode* curr = head;
+    int index = 0;
+    cout << "\nIndirect Flights:\n";
+    while (curr) 
+    {
+        cout << "Flight #" << index << ":\n";
+        cout << curr->flight.origin << " -> " << curr->flight.destination << "\n";
+        cout << "Date: " << curr->flight.date << ", Airline: " << curr->flight.airline
+             << ", Departure: " << curr->flight.departureTime 
+             << ", Arrival: " << curr->flight.arrivalTime 
+             << ", Price: " << curr->flight.price 
+             << ", Distance: " << curr->flight.distance << "\n\n";
+        curr = curr->next;
+        index++;
     }
 }
 

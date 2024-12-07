@@ -3,7 +3,7 @@
 
 #include "main.h"
 #include "list.h"
-
+#include "RouteList.h"
 struct BookingState {
     string origin;
     string destination;
@@ -11,6 +11,8 @@ struct BookingState {
     string toDate;
     string *transitCities;
     string preferredAirline;
+    LinkedList directFlights;
+    RouteList indirectRoutes;
     LinkedList availableFlights; 
     Flight selectedFlight;       
 

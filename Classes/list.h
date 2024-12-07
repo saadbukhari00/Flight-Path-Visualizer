@@ -20,12 +20,15 @@ public:
     int size(void);
     FlightNode * getFlightByIndex(int index);
     FlightNode * getNodeAt(int index);
-
+    Flight * getLastFlight(void);
+    void removeLast(void);
     void merge(LinkedList&);
 
     void insert(Flight&);
     void remove(string);
+
     void Display(void);
+    void DisplayIndirectFlights(void);
     
     void clear(void);
     Flight getHeadFlight(void) { return head->flight; }

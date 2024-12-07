@@ -2,13 +2,9 @@
 #define ROUTE_H
 
 #include "FlightGraph.h"
-#include <climits>
-#include <cstring>
-#include <iostream>
-#include <ctime>
-#include <sstream>
-#include <iomanip>
+#include "main.h"
 #include "list.h"
+#include "RouteList.h"
 
 class Route 
 {
@@ -36,6 +32,9 @@ public:
     int convertDateToComparableFormat(const char* date); 
     bool findDirectAndIndirectFlights(const char* originCity, const char* destinationCity, const char* startDate, const char* endDate, LinkedList& indirectFlightsList);
 
+    RouteList listIndirectRoutesWithinDateRange(const char* originCity, const char* destinationCity, const char* startDate, const char* endDate);
+    void dfsBuildRoutes(int currentIndex,int destinationIndex,const char* startDate,const char* endDate,bool* visited,LinkedList& currentRoute,RouteList& allRoutes); 
+    int compareTimes(const char* time1, const char* time2);
 };
 
 #endif // ROUTE_H

@@ -3,12 +3,6 @@
 
 #include "main.h"
 
-struct Hotel 
-{
-    char city[50];
-    int chargePerDay;
-};
-
 class FileHandling {
 private:
     Flight* flights;
@@ -26,6 +20,7 @@ public:
     Hotel* readHotelsFile();
 
     Flight* getFlightByIndex(int);
+    Hotel* getHotelByIndex(int);
     ~FileHandling();
 };
 

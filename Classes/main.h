@@ -71,5 +71,22 @@ struct Flight
 
 };
 
+struct Hotel{
+public:
+    char cityName[50];
+    float price;
+
+    Hotel()
+    {
+        strcpy(cityName, "");
+        price = 0;
+    }
+
+    Hotel(const char* cityName, float price)
+    {
+        strcpy(this->cityName, cityName);
+        this->price = price;
+    }
+};
 
 #endif
