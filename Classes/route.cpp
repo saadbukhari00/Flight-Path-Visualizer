@@ -892,34 +892,61 @@ void Route::dfsBuildRoutes(
     visited[currentIndex] = true;
     Edge* edge = flightGraph.getVertices()[currentIndex].head;
     Flight* lastFlight = currentRoute.getLastFlight();
-    const char* lastArrivalTime = lastFlight ? lastFlight->arrivalTime : NULL;
+
+    // Store the last flight's date and arrival time to ensure chronological progress
+    int lastDateComparable = -1;
+    const char* lastArrivalTime = NULL;
+    if (lastFlight) {
+        lastDateComparable = convertDateToComparableFormat(lastFlight->date);
+        lastArrivalTime = lastFlight->arrivalTime;
+    }
 
     while (edge) {
         int nextCity = edge->destination;
         if (!visited[nextCity]) {
-            if (isWithinDateRange(edge->flightData->date, startDate, endDate)) {
-                // Check time feasibility
-                if (lastArrivalTime == NULL || compareTimes(edge->flightData->departureTime, lastArrivalTime) >= 0) {
-                    // Insert this flight into currentRoute
-                    Flight nextFlight(
-                        flightGraph.getCityName(currentIndex),
-                        flightGraph.getCityName(nextCity),
-                        edge->flightData->airline,
-                        edge->flightData->date,
-                        edge->flightData->departureTime,
-                        edge->flightData->arrivalTime,
-                        edge->flightData->price,
-                        edge->flightData->distance
-                    );
+            Flight* nextFlightData = edge->flightData;
 
-                    currentRoute.insert(nextFlight);
+            // Check if next flight's date is within the given range
+            if (isWithinDateRange(nextFlightData->date, startDate, endDate)) {
+                // Chronological checks:
+                int nextDateComparable = convertDateToComparableFormat(nextFlightData->date);
 
-                    // Recurse
-                    dfsBuildRoutes(nextCity, destinationIndex, startDate, endDate, visited, currentRoute, allRoutes);
-
-                    // Backtrack
-                    currentRoute.removeLast();
+                // If we have a last flight, ensure dates and times make sense
+                if (lastFlight) {
+                    // If the next flight date is before the last flight date, skip
+                    if (nextDateComparable < lastDateComparable) {
+                        edge = edge->next;
+                        continue;
+                    }
+                    // If same date, ensure departure is after arrival
+                    if (nextDateComparable == lastDateComparable) {
+                        if (compareTimes(nextFlightData->departureTime, lastArrivalTime) < 0) {
+                            edge = edge->next;
+                            continue;
+                        }
+                    }
+                    // If nextDateComparable > lastDateComparable, it's a later date, so it's fine
                 }
+
+                // Passed chronological checks, insert this flight and recurse
+                Flight nextFlight(
+                    flightGraph.getCityName(currentIndex),
+                    flightGraph.getCityName(nextCity),
+                    nextFlightData->airline,
+                    nextFlightData->date,
+                    nextFlightData->departureTime,
+                    nextFlightData->arrivalTime,
+                    nextFlightData->price,
+                    nextFlightData->distance
+                );
+
+                currentRoute.insert(nextFlight);
+
+                // Recurse deeper
+                dfsBuildRoutes(nextCity, destinationIndex, startDate, endDate, visited, currentRoute, allRoutes);
+
+                // Backtrack
+                currentRoute.removeLast();
             }
         }
         edge = edge->next;
