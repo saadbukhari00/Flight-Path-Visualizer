@@ -23,8 +23,6 @@ public:
     void shortestPath(const char* originCity, const char* destinationCity, const char* startDate, const char* endDate, LinkedList& directFlights, RouteList& indirectRoutes);
     void cheapestFlight(const char* originCity, const char* destinationCity, const char* startDate, const char* endDate, LinkedList& directFlights, RouteList& indirectRoutes);
     
-    void displayCheapestFlightResult(const char* originCity, const char* destinationCity, LinkedList &cheapestPathFlights, LinkedList &directFlights, RouteList &indirectRoutes);
-    void displayShortestPathResult(const char* originCity, const char* destinationCity, LinkedList &shortestPathFlights, LinkedList &directFlights, RouteList &indirectRoutes);
 
     LinkedList listDirectFlightsWithinDateRange(const char* originCity, const char* destinationCity, const char* startDate, const char* endDate);
     LinkedList listIndirectFlightsWithinDateRange(const char* originCity, const char* destinationCity, const char* startDate, const char* endDate);

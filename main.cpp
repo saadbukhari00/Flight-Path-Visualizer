@@ -623,8 +623,9 @@ void handleSearch(const string& origin, const string& destination, const string&
     // Display options
     displayAvailableOptions(directFlights, indirectRoutes, origin, destination);
     
-    route.displayShortestPathResult(origin.c_str(), destination.c_str(), directFlights, indirectRoutes);
-    route.displayCheapestFlightResult(origin.c_str(), destination.c_str(), directFlights, indirectRoutes);
+    route.shortestPath(origin.c_str(), destination.c_str(), fromDate.c_str(), toDate.c_str(), directFlights, indirectRoutes);
+    route.cheapestFlight(origin.c_str(), destination.c_str(), fromDate.c_str(), toDate.c_str(), directFlights, indirectRoutes);
+    
 
     // Ask if user wants preferences
     cout << "\nWould you like to apply any preferences? (Y/n): ";

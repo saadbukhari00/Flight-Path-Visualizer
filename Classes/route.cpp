@@ -140,184 +140,6 @@ int Route::findMinDistanceIndex(int* distances, bool* visited, int size)
     return minIndex;
 }
 
-// A helper function to display a list of flights in a table
-void displayFlightList(const LinkedList &flights, const char* headerColor, const char* headerTitle) {
-    if (flights.isEmpty()) {
-        std::cout << "\033[1;31mNo " << headerTitle << " found.\033[0m\n";
-        return;
-    }
-
-    std::cout << headerColor << headerTitle << "\033[0m\n";
-    std::cout << "       _______________________________________________________________________________________________________________\n";
-    std::cout << "      |  IDX  | Origin         | Destination    | Date      | Airline        | Departure Time | Arrival Time   | Price     |\n";
-    std::cout << "      |_______|________________|________________|___________|________________|________________|________________|___________|\n";
-
-    LinkedList::FlightNode* curr = flights.getHead();
-    int index = 0;
-    while (curr) {
-        const Flight &f = curr->flight;
-        std::cout << "      |" << std::setw(6) << index << " |"
-                  << std::setw(15) << f.origin << " |"
-                  << std::setw(15) << f.destination << " |"
-                  << std::setw(10) << f.date << " |"
-                  << std::setw(15) << f.airline << " |"
-                  << std::setw(15) << f.departureTime << " |"
-                  << std::setw(15) << f.arrivalTime << " |"
-                  << std::setw(10) << f.price << " |\n";
-        curr = curr->next;
-        index++;
-    }
-    std::cout << "      |_______|________________|________________|___________|________________|________________|________________|___________|\n\n";
-}
-
-void Route::displayShortestPathResult(const char* originCity, const char* destinationCity,
-                                      LinkedList &shortestPathFlights,
-                                      LinkedList &directFlights, 
-                                      RouteList &indirectRoutes) 
-{
-    if (shortestPathFlights.isEmpty()) {
-        std::cout << "\033[1;31mNo shortest path found from " << originCity << " to " << destinationCity 
-                  << " within the given date range.\033[0m\n";
-        return;
-    }
-
-    // Display the shortest path flights
-    displayFlightList(shortestPathFlights, "\033[1;36m", "Shortest Path Found");
-
-    // Now attempt to find matches for each flight in shortestPathFlights
-    LinkedList::FlightNode* node = shortestPathFlights.getHead();
-    int legIndex = 0;
-    while (node) {
-        const Flight &f = node->flight;
-        bool foundDirect = false, foundIndirect = false;
-
-        // Check direct flights
-        LinkedList::FlightNode* dCurr = directFlights.getHead();
-        int dIndex = 0;
-        while (dCurr) {
-            const Flight &df = dCurr->flight;
-            if (strcmp(df.origin, f.origin) == 0 &&
-                strcmp(df.destination, f.destination) == 0 &&
-                strcmp(df.date, f.date) == 0 &&
-                strcmp(df.departureTime, f.departureTime) == 0 &&
-                strcmp(df.arrivalTime, f.arrivalTime) == 0) {
-                std::cout << "\033[1;33mLeg " << legIndex << ": Matches Direct Flight Index: " << dIndex << "\033[0m\n";
-                foundDirect = true;
-                break;
-            }
-            dCurr = dCurr->next;
-            dIndex++;
-        }
-
-        // If not direct, check indirect routes
-        if (!foundDirect) {
-            RouteList::RouteNode* rCurr = indirectRoutes.getHead();
-            int rIndex = 0;
-            while (rCurr) {
-                LinkedList::FlightNode* iLeg = rCurr->route.legs.getHead();
-                while (iLeg) {
-                    const Flight &iflight = iLeg->flight;
-                    if (strcmp(iflight.origin, f.origin) == 0 &&
-                        strcmp(iflight.destination, f.destination) == 0 &&
-                        strcmp(iflight.date, f.date) == 0 &&
-                        strcmp(iflight.departureTime, f.departureTime) == 0 &&
-                        strcmp(iflight.arrivalTime, f.arrivalTime) == 0) {
-                        std::cout << "\033[1;33mLeg " << legIndex << ": Matches Indirect Route Index: " << rIndex << "\033[0m\n";
-                        foundIndirect = true;
-                        break;
-                    }
-                    iLeg = iLeg->next;
-                }
-                if (foundIndirect) break;
-                rCurr = rCurr->next;
-                rIndex++;
-            }
-        }
-
-        if (!foundDirect && !foundIndirect) {
-            std::cout << "\033[1;33mLeg " << legIndex << ": No direct or indirect match found.\033[0m\n";
-        }
-
-        node = node->next;
-        legIndex++;
-    }
-    std::cout << "\n";
-}
-
-void Route::displayCheapestFlightResult(const char* originCity, const char* destinationCity,
-                                        LinkedList &cheapestPathFlights,
-                                        LinkedList &directFlights, 
-                                        RouteList &indirectRoutes)
-{
-    if (cheapestPathFlights.isEmpty()) {
-        std::cout << "\033[1;31mNo cheapest path found from " << originCity << " to " << destinationCity 
-                  << " within the given date range.\033[0m\n";
-        return;
-    }
-
-    // Display the cheapest path flights
-    displayFlightList(cheapestPathFlights, "\033[1;36m", "Cheapest Flight Found");
-
-    // Attempt to find matches for each leg
-    LinkedList::FlightNode* node = cheapestPathFlights.getHead();
-    int legIndex = 0;
-    while (node) {
-        const Flight &f = node->flight;
-        bool foundDirect = false, foundIndirect = false;
-
-        // Check direct flights
-        LinkedList::FlightNode* dCurr = directFlights.getHead();
-        int dIndex = 0;
-        while (dCurr) {
-            const Flight &df = dCurr->flight;
-            if (strcmp(df.origin, f.origin) == 0 &&
-                strcmp(df.destination, f.destination) == 0 &&
-                strcmp(df.date, f.date) == 0 &&
-                strcmp(df.departureTime, f.departureTime) == 0 &&
-                strcmp(df.arrivalTime, f.arrivalTime) == 0) {
-                std::cout << "\033[1;33mLeg " << legIndex << ": Matches Direct Flight Index: " << dIndex << "\033[0m\n";
-                foundDirect = true;
-                break;
-            }
-            dCurr = dCurr->next;
-            dIndex++;
-        }
-
-        // If not direct, check indirect routes
-        if (!foundDirect) {
-            RouteList::RouteNode* rCurr = indirectRoutes.getHead();
-            int rIndex = 0;
-            while (rCurr) {
-                LinkedList::FlightNode* iLeg = rCurr->route.legs.getHead();
-                while (iLeg) {
-                    const Flight &iflight = iLeg->flight;
-                    if (strcmp(iflight.origin, f.origin) == 0 &&
-                        strcmp(iflight.destination, f.destination) == 0 &&
-                        strcmp(iflight.date, f.date) == 0 &&
-                        strcmp(iflight.departureTime, f.departureTime) == 0 &&
-                        strcmp(iflight.arrivalTime, f.arrivalTime) == 0) {
-                        std::cout << "\033[1;33mLeg " << legIndex << ": Matches Indirect Route Index: " << rIndex << "\033[0m\n";
-                        foundIndirect = true;
-                        break;
-                    }
-                    iLeg = iLeg->next;
-                }
-                if (foundIndirect) break;
-                rCurr = rCurr->next;
-                rIndex++;
-            }
-        }
-
-        if (!foundDirect && !foundIndirect) {
-            std::cout << "\033[1;33mLeg " << legIndex << ": No direct or indirect match found.\033[0m\n";
-        }
-
-        node = node->next;
-        legIndex++;
-    }
-    std::cout << "\n";
-}
-
 void Route::shortestPath(const char* originCity, const char* destinationCity, const char* startDate, const char* endDate, LinkedList& directFlights, RouteList& indirectRoutes)
 {
     const int MAX_CITIES = flightGraph.getNumVertices();
@@ -439,73 +261,66 @@ void Route::shortestPath(const char* originCity, const char* destinationCity, co
         delete current;
     }
 
-    // Display the result only once for the best path
-    if (bestPathLength > 0) 
+if (bestPathLength > 0) 
     {
-        std::cout << "\033[1;36mShortest Path Found:\033[0m\n";
+        std::cout << "\033[1;36;1mShortest Path Found:\033[0m\n"; // Bold & Cyan
         for (int i = 0; i < bestPathLength - 1; ++i) 
         {
             int currentCityIndex = bestPath[i];
             int nextCityIndex = bestPath[i + 1];
 
-            // Get flight information between the current and next city
             Edge* edge = flightGraph.getVertices()[currentCityIndex].head;
             while (edge) 
             {
                 Flight* flight = edge->flightData;
-
-                // If the next city is the destination of this edge, print the details
                 if (strcmp(flight->destination, flightGraph.getCityName(nextCityIndex)) == 0)
                 {
-                    std::cout << "Flight from " 
-                              << flightGraph.getCityName(currentCityIndex) << " to "
-                              << flightGraph.getCityName(nextCityIndex) << ":\n"
-                              << "Departure Time: " << flight->departureTime << "\n"
-                              << "Arrival Time: " << flight->arrivalTime << "\n"
-                              << "Date: " << flight->date << "\n"
-                              << "Airline: " << flight->airline << "\n"
-                              << "Price: " << flight->price << " USD\n";
+                    std::cout << "\n\033[1;34mFlight Segment:\033[0m\n";
+                    std::cout << "From: " << flightGraph.getCityName(currentCityIndex) << " → " 
+                              << flightGraph.getCityName(nextCityIndex) << "\n"
+                              << "Departure: " << flight->departureTime << " | Arrival: " << flight->arrivalTime << "\n"
+                              << "Date: " << flight->date << ", Airline: " << flight->airline << ", Price: " << flight->price << " USD\n";
 
-                    // Compare with direct flights
+                    // Check direct flights
                     bool foundDirect = false;
                     LinkedList::FlightNode* directCurr = directFlights.getHead();
                     int index = 0;
                     while (directCurr) 
                     {
                         if (strcmp(directCurr->flight.origin, flightGraph.getCityName(currentCityIndex)) == 0 &&
-    strcmp(directCurr->flight.destination, flightGraph.getCityName(nextCityIndex)) == 0 &&
-    strcmp(directCurr->flight.date, flight->date) == 0 &&
-    strcmp(directCurr->flight.departureTime, flight->departureTime) == 0 &&
-    strcmp(directCurr->flight.arrivalTime, flight->arrivalTime) == 0)
+                            strcmp(directCurr->flight.destination, flightGraph.getCityName(nextCityIndex)) == 0 &&
+                            strcmp(directCurr->flight.date, flight->date) == 0 &&
+                            strcmp(directCurr->flight.departureTime, flight->departureTime) == 0 &&
+                            strcmp(directCurr->flight.arrivalTime, flight->arrivalTime) == 0)
                         {
-                            std::cout << "\tDirect Flight Index: " << index << "\n";
+                            std::cout << "\033[1;33m\t→ Direct Flight Index:\033[0m " << index << "\n";
                             foundDirect = true;
                             break;
                         }
                         directCurr = directCurr->next;
                         index++;
                     }
-                    
+
+                    // If not direct, check indirect routes (print only one route index)
                     if (!foundDirect)
                     {
-                        // Compare with indirect routes
                         bool foundIndirect = false;
                         RouteList::RouteNode* indirectCurr = indirectRoutes.getHead();
                         int indirectIndex = 0;
-                        while (indirectCurr) 
+                        while (indirectCurr && !foundIndirect) 
                         {
                             LinkedList::FlightNode* indirectLeg = indirectCurr->route.legs.getHead();
                             while (indirectLeg) 
                             {
                                 if (strcmp(indirectLeg->flight.origin, flightGraph.getCityName(currentCityIndex)) == 0 &&
-    strcmp(indirectLeg->flight.destination, flightGraph.getCityName(nextCityIndex)) == 0 &&
-    strcmp(indirectLeg->flight.date, flight->date) == 0 &&
-    strcmp(indirectLeg->flight.departureTime, flight->departureTime) == 0 &&
-    strcmp(indirectLeg->flight.arrivalTime, flight->arrivalTime) == 0)
+                                    strcmp(indirectLeg->flight.destination, flightGraph.getCityName(nextCityIndex)) == 0 &&
+                                    strcmp(indirectLeg->flight.date, flight->date) == 0 &&
+                                    strcmp(indirectLeg->flight.departureTime, flight->departureTime) == 0 &&
+                                    strcmp(indirectLeg->flight.arrivalTime, flight->arrivalTime) == 0)
                                 {
-                                    std::cout << "\tIndirect Route Index: " << indirectIndex << "\n";
+                                    std::cout << "\033[1;33m\t→ Indirect Route Index:\033[0m " << indirectIndex << "\n";
                                     foundIndirect = true;
-                                    break;
+                                    break; // Stop after first indirect route match
                                 }
                                 indirectLeg = indirectLeg->next;
                             }
@@ -515,7 +330,7 @@ void Route::shortestPath(const char* originCity, const char* destinationCity, co
 
                         if (!foundDirect && !foundIndirect)
                         {
-                            std::cout << "\tNo direct or indirect match found.\n";
+                            std::cout << "\033[1;31m\tNo direct or indirect match found.\033[0m\n";
                         }
                     }
                     std::cout << "\n";
@@ -640,33 +455,26 @@ void Route::cheapestFlight(const char* originCity, const char* destinationCity, 
     }
 
     // Display the result
-if (bestPathLength > 0) {
-    std::cout << "\033[1;36mCheapest Flight Found:\033[0m\n";
+    if (bestPathLength > 0) {
+        std::cout << "\033[1;36;1mCheapest Flight Found:\033[0m\n"; // Bold & Cyan
 
-    // Loop through the best path and display flight details
-    for (int i = 0; i < bestPathLength - 1; ++i) 
-    {
-        int currentCityIndex = bestPath[i];
-        int nextCityIndex = bestPath[i + 1];
+        for (int i = 0; i < bestPathLength - 1; ++i) 
+        {
+            int currentCityIndex = bestPath[i];
+            int nextCityIndex = bestPath[i + 1];
 
-        // Find the flight between the current and next city
-        Edge* edge = flightGraph.getVertices()[currentCityIndex].head;
-        while (edge) {
-            Flight* flight = edge->flightData;
+            Edge* edge = flightGraph.getVertices()[currentCityIndex].head;
+            while (edge) {
+                Flight* flight = edge->flightData;
+                if (strcmp(flight->destination, flightGraph.getCityName(nextCityIndex)) == 0) {
+                    std::cout << "\n\033[1;34mCheapest Flight Segment:\033[0m\n";
+                    std::cout << "From: " << flightGraph.getCityName(currentCityIndex) << " → " 
+                              << flightGraph.getCityName(nextCityIndex) << "\n"
+                              << "Departure: " << flight->departureTime << " | Arrival: " << flight->arrivalTime << "\n"
+                              << "Date: " << flight->date << ", Airline: " << flight->airline 
+                              << ", Price: $" << flight->price << ", Distance: " << flight->distance << " km\n";
 
-            // Check if the destination of the flight matches the next city in the path
-            if (strcmp(flight->destination, flightGraph.getCityName(nextCityIndex)) == 0) {
-                // Display flight details
-                std::cout << "Flight from " << flight->origin << " to " << flight->destination << ":\n";
-                std::cout << "Airline: " << flight->airline << "\n";
-                std::cout << "Date: " << flight->date << "\n";
-                std::cout << "Departure Time: " << flight->departureTime << "\n";
-                std::cout << "Arrival Time: " << flight->arrivalTime << "\n";
-                std::cout << "Price: $" << flight->price << "\n";
-                std::cout << "Distance: " << flight->distance << " km\n";
-                std::cout << endl << endl;
-             
-             // Compare with direct flights
+                    // Check direct flights
                     bool foundDirect = false;
                     LinkedList::FlightNode* directCurr = directFlights.getHead();
                     int index = 0;
@@ -678,21 +486,21 @@ if (bestPathLength > 0) {
                             strcmp(directCurr->flight.departureTime, flight->departureTime) == 0 &&
                             strcmp(directCurr->flight.arrivalTime, flight->arrivalTime) == 0)
                         {
-                            std::cout << "\tDirect Flight Index: " << index << "\n";
+                            std::cout << "\033[1;33m\t→ Direct Flight Index:\033[0m " << index << "\n";
                             foundDirect = true;
                             break;
                         }
                         directCurr = directCurr->next;
                         index++;
                     }
-                    
+
+                    // If not direct, check indirect routes (only one route index)
                     if (!foundDirect)
                     {
-                        // Compare with indirect routes
                         bool foundIndirect = false;
                         RouteList::RouteNode* indirectCurr = indirectRoutes.getHead();
                         int indirectIndex = 0;
-                        while (indirectCurr) 
+                        while (indirectCurr && !foundIndirect) 
                         {
                             LinkedList::FlightNode* indirectLeg = indirectCurr->route.legs.getHead();
                             while (indirectLeg) 
@@ -703,9 +511,9 @@ if (bestPathLength > 0) {
                                     strcmp(indirectLeg->flight.departureTime, flight->departureTime) == 0 &&
                                     strcmp(indirectLeg->flight.arrivalTime, flight->arrivalTime) == 0)
                                 {
-                                    std::cout << "\tIndirect Route Index: " << indirectIndex << "\n";
+                                    std::cout << "\033[1;33m\t→ Indirect Route Index:\033[0m " << indirectIndex << "\n";
                                     foundIndirect = true;
-                                    break;
+                                    break; // Only print first indirect match
                                 }
                                 indirectLeg = indirectLeg->next;
                             }
@@ -715,7 +523,7 @@ if (bestPathLength > 0) {
 
                         if (!foundDirect && !foundIndirect)
                         {
-                            std::cout << "\tNo direct or indirect match found.\n";
+                            std::cout << "\033[1;31m\tNo direct or indirect match found.\033[0m\n";
                         }
                     }
                     std::cout << "\n";
@@ -1120,7 +928,8 @@ void Route::dfsBuildRoutes(
     visited[currentIndex] = false;
 }
 
-void Route::removeDuplicates(RouteList &allRoutes) {
+void Route::removeDuplicates(RouteList &allRoutes) 
+{
     RouteList uniqueRoutes;
     RouteList::RouteNode* curr = allRoutes.getHead();
     while (curr) {
@@ -1215,6 +1024,7 @@ bool Route::isWithinDateRange(const char* flightDate, const char* startDate, con
     return flight >= start && flight <= end;
     
 }
+
 
 // Function to calculate travel time between two time stamps with full date information
 int Route::calculateTravelTime(const std::string& departure, const std::string& arrival) 
