@@ -36,17 +36,17 @@ void HotelBooking::bookHotelInCity(const char* cityName) {
         if (strcmp(curr->hotel.city, cityName) == 0) {
             // Found the hotel for that city
             Hotel &selectedHotel = curr->hotel;
-            std::cout << "\n\033[1;32mHotel Booking Confirmed!\033[0m\n";
+            cout << "\n\033[1;32mHotel Booking Confirmed!\033[0m\n";
             
-            std::cout << "Hotel Name: " << selectedHotel.name << "\n";
-            std::cout << "City: " << selectedHotel.city << "\n";
-            std::cout << "Price Per Night: " << selectedHotel.pricePerNight << " USD\n";
-            std::cout << "Enjoy your stay!\n\n";
+            cout << "Hotel Name: " << selectedHotel.name << "\n";
+            cout << "City: " << selectedHotel.city << "\n";
+            cout << "Price Per Night: " << selectedHotel.pricePerNight << " USD\n";
+            cout << "Enjoy your stay!\n\n";
             return;
         }
         curr = curr->next;
     }
 
     // If we reach here, no hotel found for that city
-    std::cout << "\033[1;31mNo hotels available in " << cityName << ".\033[0m\n";
+    cout << "\033[1;31mNo hotels available in " << cityName << ".\033[0m\n";
 }
