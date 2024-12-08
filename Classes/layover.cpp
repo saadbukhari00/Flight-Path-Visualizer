@@ -1,6 +1,7 @@
 #include "layover.h"
 
 void Layover::enqueue(Flight &f) {
+    
     flightsQueue.enqueue(f);
 }
 
@@ -72,6 +73,7 @@ int Layover::calculateTotalLayoverTime() {
 
     return totalLayover;
 }
+
 
 void Layover::printLayoverDetails() {
     // Similar to totalLayoverTime, but print each layover

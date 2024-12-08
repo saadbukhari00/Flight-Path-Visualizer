@@ -29,16 +29,26 @@ private:
         // Convert date into an integer like YYYYMMDD
         return year * 10000 + month * 100 + day;
     }
+
 public:
-    int calculateLayoverTime(const char* arrival, const char* departure) {
+
+    int calculateLayoverTime(const char* arrival, const char* departure) 
+    {
         int arrivalMinutes = timeStringToMinutes(arrival);
         int departureMinutes = timeStringToMinutes(departure);
         return departureMinutes - arrivalMinutes;
     }
+
+    bool isEmpty()
+    {
+        return flightsQueue.isEmpty();
+    }    
+    
     void enqueue(Flight &f);
     Flight dequeue();
     int calculateTotalLayoverTime();
     void printLayoverDetails();
+
 };
 
 #endif
