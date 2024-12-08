@@ -356,17 +356,17 @@ void displayInDirectFlightsOnMap(string origin, string destination, RouteList& i
 
             // Determine path color
             sf::Color pathColor;
-            if (curr->shortest && curr->cheapest)
+            if (leg->flight.shortest && leg->flight.cheapest)
             {
                 pathColor = sf::Color::Green;
                 airplane.speed = 50.f;
             }
-            else if (curr->cheapest)
+            else if (leg->flight.cheapest)
             {
                 pathColor = sf::Color::Red;
                 airplane.speed = 50.f;
             }
-            else if(curr->shortest)
+            else if(leg->flight.shortest)
             {
                 pathColor = sf::Color::Magenta;
                 airplane.speed = 50.f;
@@ -444,17 +444,17 @@ void displayTransitCitiesAndIndirectFlights(string origin, string destination, R
 
             // Determine path color
             sf::Color pathColor;
-            if (curr->shortest && curr->cheapest)
+            if (leg->flight.cheapest && leg->flight.shortest)
             {
                 pathColor = sf::Color::Green;
                 airplane.speed = 50.f;
             }
-            else if (curr->cheapest)
+            else if (leg->flight.cheapest)
             {
                 pathColor = sf::Color::Red;
                 airplane.speed = 50.f;
             }
-            else if (curr->shortest)
+            else if (leg->flight.shortest)
             {
                 pathColor = sf::Color::Magenta;
                 airplane.speed = 50.f;
@@ -510,7 +510,7 @@ void displayTransitCitiesAndIndirectFlights(string origin, string destination, R
     
 
 void displayAvailableOptions(LinkedList &directFlights, RouteList &indirectRoutes, const string &origin, const string &destination) {
-    char fazoolMe;
+    
     if(directFlights.isEmpty()) {
         cout << "\033[1;31mNo Direct Flights available\033[0m\n";
     } 
@@ -518,9 +518,7 @@ void displayAvailableOptions(LinkedList &directFlights, RouteList &indirectRoute
         cout << "\n\033[1;36mDirect Flights from " << origin << " to " << destination << "\033[0m\n";
         directFlights.Display();
         displayDirectFlightsonMap(origin,destination,directFlights);
-
-        cout<<"\n\tEnter any character to Proceed to see indirect flights";
-        cin>>fazoolMe;
+        pauseForTakeOff(5);
     }
 
     if(indirectRoutes.countRoutes() == 0) {
@@ -532,9 +530,7 @@ void displayAvailableOptions(LinkedList &directFlights, RouteList &indirectRoute
         cout << "\n\033[1;36mIndirect Flights from " << origin << " to " << destination << "\033[0m\n";
         indirectRoutes.Display();
         displayInDirectFlightsOnMap(origin,destination,indirectRoutes);
-
-        cout<<"\n\tEnter any character to Proceed";
-        cin>>fazoolMe;
+        pauseForTakeOff(5);
     }
 }
 
@@ -552,6 +548,7 @@ void applyPreferences(Route &route, BookingState &currentState, RouteList &indir
     string *transitCities = nullptr;
     int transitCount = 0;
     Menu menu;
+    int cases = 0;
 
     LinkedList filteredFlights;    // If needed
     RouteList filteredRoutes;      // If you decide to filter multi-leg routes as well
@@ -567,7 +564,7 @@ void applyPreferences(Route &route, BookingState &currentState, RouteList &indir
             
             if(!filteredRoutes.isEmpty())
             {
-                displayTransitCitiesAndIndirectFlights(originInput.c_str(),destInput.c_str(),filteredRoutes,transitCities);
+                cases = 1;
             }
             break;
     
@@ -588,7 +585,7 @@ void applyPreferences(Route &route, BookingState &currentState, RouteList &indir
 
             if(!filteredRoutes.isEmpty())
             {
-                displayInDirectFlightsOnMap(originInput.c_str(),destInput.c_str(),filteredRoutes);
+                cases = 2;
             }
             break;
         case 3:
@@ -612,7 +609,7 @@ void applyPreferences(Route &route, BookingState &currentState, RouteList &indir
 
             if(!filteredRoutes.isEmpty())
             {
-                displayTransitCitiesAndIndirectFlights(originInput.c_str(),destInput.c_str(),filteredRoutes,transitCities);
+                cases = 3;             
             }    
 
             break;
@@ -663,6 +660,7 @@ void applyPreferences(Route &route, BookingState &currentState, RouteList &indir
                 leg = leg->next;
             }
             rnode = rnode->next;
+             
         }
     }
 
@@ -688,6 +686,15 @@ void applyPreferences(Route &route, BookingState &currentState, RouteList &indir
         currentState.directFlights,
         currentState.indirectRoutes
     );
+
+    if(cases == 1 || cases == 3)
+    {
+        displayTransitCitiesAndIndirectFlights(originInput.c_str(),destInput.c_str(),currentState.indirectRoutes,transitCities);
+    }
+    else if(cases == 2)
+    {
+        displayInDirectFlightsOnMap(originInput.c_str(),destInput.c_str(),currentState.indirectRoutes);
+    }
 
 }
 
@@ -715,19 +722,20 @@ void handleSearch(const string& origin, const string& destination, const string&
 
 preferencesundone:
     
-    route.shortestPath(origin.c_str(), destination.c_str(), fromDate.c_str(), toDate.c_str(), directFlights, indirectRoutes);
-    route.cheapestFlight(origin.c_str(), destination.c_str(), fromDate.c_str(), toDate.c_str(), directFlights, indirectRoutes);
-    displayAvailableOptions(directFlights, indirectRoutes, origin, destination);
+    route.shortestPath(origin.c_str(), destination.c_str(), fromDate.c_str(), toDate.c_str(), currentState.directFlights, currentState.indirectRoutes);
+    route.cheapestFlight(origin.c_str(), destination.c_str(), fromDate.c_str(), toDate.c_str(), currentState.directFlights, currentState.indirectRoutes);
+    displayAvailableOptions(currentState.directFlights, currentState.indirectRoutes, origin, destination);
 
     // Ask if user wants preferences
     cout << "\nWould you like to apply any preferences? (Y/n): ";
     char choice;
     cin >> choice;
-    if (tolower(choice) == 'y') {
+    if (tolower(choice) == 'y') 
+    {
         applyPreferences(route, currentState, indirectRoutes);
         bookingStack.Push(currentState);
         // After applying preferences, display updated options
-        displayAvailableOptions(currentState.directFlights, currentState.indirectRoutes, origin, destination);
+       //displayAvailableOptions(currentState.directFlights, currentState.indirectRoutes, origin, destination);
     }
         
     // Undo Preferences
@@ -740,7 +748,7 @@ preferencesundone:
             bookingStack.Pop(); // remove current (with prefs)
             if (!bookingStack.IsEmpty()) 
             {
-                currentState = bookingStack.Top();
+                currentState = bookingStack.Top();;
                 cout << "Preferences undone. Showing flights/routes from the previous state:\n";
                 goto preferencesundone;
             } 
