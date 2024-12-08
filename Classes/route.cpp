@@ -262,7 +262,7 @@ void Route::shortestPath(const char* originCity, const char* destinationCity, co
     }
 
     if (bestPathLength > 0) {
-        std::cout << "\033[1;36;1mShortest Path Found:\033[0m\n"; // Bold & Cyan
+        cout << "\033[1;36;1mShortest Path Found:\033[0m\n"; // Bold & Cyan
 
         for (int i = 0; i < bestPathLength - 1; ++i) {
             int currentCityIndex = bestPath[i];
@@ -287,7 +287,8 @@ void Route::shortestPath(const char* originCity, const char* destinationCity, co
                             strcmp(directCurr->flight.destination, flightGraph.getCityName(nextCityIndex)) == 0 &&
                             strcmp(directCurr->flight.date, flight->date) == 0 &&
                             strcmp(directCurr->flight.departureTime, flight->departureTime) == 0 &&
-                            strcmp(directCurr->flight.arrivalTime, flight->arrivalTime) == 0) {
+                            strcmp(directCurr->flight.arrivalTime, flight->arrivalTime) == 0) 
+                            {
                             directCurr->flight.shortest = true;
                             
                             cout << "\033[1;33m\t→ Direct Route Index:\033[0m " << index << "\n";
@@ -308,18 +309,17 @@ void Route::shortestPath(const char* originCity, const char* destinationCity, co
                         while (indirectCurr && !foundIndirect) {
                             LinkedList::FlightNode* indirectLeg = indirectCurr->route.legs.getHead();
 
-                            while (indirectLeg) {
+                            while (indirectLeg) 
+                            {
                                 if (strcmp(indirectLeg->flight.origin, flightGraph.getCityName(currentCityIndex)) == 0 &&
                                     strcmp(indirectLeg->flight.destination, flightGraph.getCityName(nextCityIndex)) == 0 &&
                                     strcmp(indirectLeg->flight.date, flight->date) == 0 &&
                                     strcmp(indirectLeg->flight.departureTime, flight->departureTime) == 0 &&
                                     strcmp(indirectLeg->flight.arrivalTime, flight->arrivalTime) == 0) {
                                     
-                                    indirectCurr->shortest = true;
-
                                     // Update the last leg found
                                     lastIndirectLeg = indirectLeg;
-
+                                    
                                     foundIndirect = true;
                                     break; // Only print first indirect match
                                 }
@@ -331,12 +331,14 @@ void Route::shortestPath(const char* originCity, const char* destinationCity, co
                         }
 
                         // After exiting the loop, if lastIndirectLeg is not nullptr, print the index
-                        if (lastIndirectLeg) {
-                            cout << "\033[1;33m\t→ Indirect Route Index:\033[0m " << indirectIndex - 1 << "\n";
+                        if (lastIndirectLeg) 
+                        {
+                            lastIndirectLeg->flight.shortest = true;
+                            cout << "\033[1;33m\t→ Indirect Route Index:\033[0m " << indirectIndex - 1 << "\n";                        
                         }
                     }
 
-                    std::cout << "\n";
+                    cout << "\n";
                     break;
                 }
                 edge = edge->next;
@@ -513,8 +515,6 @@ void Route::cheapestFlight(const char* originCity, const char* destinationCity, 
                                     strcmp(indirectLeg->flight.departureTime, flight->departureTime) == 0 &&
                                     strcmp(indirectLeg->flight.arrivalTime, flight->arrivalTime) == 0) {
                                     
-                                    indirectCurr->cheapest = true;
-
                                     // Update the last leg found
                                     lastIndirectLeg = indirectLeg;
                                     
@@ -528,12 +528,14 @@ void Route::cheapestFlight(const char* originCity, const char* destinationCity, 
                         }
 
                         // After exiting the loop, if lastIndirectLeg is not nullptr, print the index
-                        if (lastIndirectLeg) {
-                            cout << "\033[1;33m\t→ Indirect Route Index:\033[0m " << indirectIndex - 1 << "\n";
+                        if (lastIndirectLeg) 
+                        {
+                            lastIndirectLeg->flight.cheapest = true;
+                            cout << "\033[1;33m\t→ Indirect Route Index:\033[0m " << indirectIndex - 1 << "\n";                            
                         }
                     }
 
-                    std::cout << "\n";
+                    cout << "\n";
                     break;
                 }
                 edge = edge->next;
