@@ -214,9 +214,30 @@ void FlightGraph::displayOnMap(sf::RenderWindow& window, const sf::Texture& mapT
         cityPoint.setPosition(scaledPos - sf::Vector2f(cityPoint.getRadius(), cityPoint.getRadius()));
         window.draw(cityPoint);
 
+        
         sf::Text cityName(coordinates[i].city, font, 12);
-        cityName.setPosition(scaledPos + sf::Vector2f(10, -10));
         cityName.setFillColor(sf::Color::Black);
+
+        if (strcmp(coordinates[i].city,"London")==0)
+        {
+            
+            cityName.setPosition(scaledPos - sf::Vector2f(50, 10));  
+        }
+        else if (strcmp(coordinates[i].city,"Paris" )== 0)
+        {
+            
+            cityName.setPosition(scaledPos + sf::Vector2f(0, 10));  
+        }
+        else if (strcmp(coordinates[i].city,"Berlin") == 0)
+        {       
+            
+            cityName.setPosition(scaledPos - sf::Vector2f(0, 20));  
+        }
+        else
+        {          
+            cityName.setPosition(scaledPos + sf::Vector2f(10, -10));  
+        }
+        
         window.draw(cityName);
     }
 }

@@ -418,6 +418,7 @@ void FlightBook::displayDirectFlightsonMap(Flight& flight)
             "Origin: " + currentOrigin + "\n" +
             "Destination: " + currentDestination + "\n" +
             "AirLine: " + flight.airline + "\n" +
+            "Date: " + flight.date + "\n" +
             "Arrival Time: " + flight.arrivalTime + "\n" +
             "Departure Time: " + flight.departureTime + "\n" +
             "Shortest: " + (flight.shortest ? "Yes" : "No") + "\n" +
@@ -661,6 +662,7 @@ void FlightBook::displayInDirectFlightsOnMap(LinkedList::FlightNode* leg, RouteL
             "Origin: " + currentOrigin + "\n" +
             "Destination: " + destination + "\n" +
             "AirLine: " + leg->flight.airline + "\n" +
+            "Date: " + leg->flight.date + "\n" +
             "Arrival Time: " + leg->flight.arrivalTime + "\n" +
             "Departure Time: " + leg->flight.departureTime + "\n" +
             "Shortest: " + (curr->shortest ? "Yes" : "No") + "\n" +

@@ -4,7 +4,7 @@ g++ -I/opt/homebrew/opt/sfml/include -L/opt/homebrew/opt/sfml/lib main.cpp Class
 */
 
 /* added by Huzaifa for compilation on my system
-g++ -o FlightPathVisualizer main.cpp Classes/FileHandling.cpp Classes/FlightGraph.cpp Classes/route.cpp Classes/list.cpp Classes/menu.cpp Classes/stack.cpp Classes/layover.cpp Classes/queue.cpp -lsfml-graphics -lsfml-window -lsfml-system
+g++ -o FlightPathVisualizer main.cpp Classes/*.cpp -lsfml-graphics -lsfml-window -lsfml-system
 */
 
 //23I-2001 Saad Bukhari
@@ -292,6 +292,7 @@ void displayDirectFlightsonMap(string origin, string destination, LinkedList& di
             "Origin: " + currentOrigin + "\n" +
             "Destination: " + currentDestination + "\n" +
             "AirLine: " + currentNode->flight.airline + "\n" +
+            "Date: " + currentNode->flight.date + "\n" +
             "Shortest: " + (currentNode->flight.shortest ? "Yes" : "No") + "\n" +
             "Cheapest: " + (currentNode->flight.cheapest ? "Yes" : "No")
         );
@@ -395,6 +396,7 @@ void displayInDirectFlightsOnMap(string origin, string destination, RouteList& i
             flightDetails.setString(
             "Origin: " + currentOrigin + "\n" +
             "Destination: " + currentDestination + "\n" +
+            "Date: " + leg->flight.date + "\n" +
             "AirLine: " + leg->flight.airline + "\n" +
             "Shortest: " + (curr->shortest ? "Yes" : "No") + "\n" +
             "Cheapest: " + (curr->cheapest ? "Yes" : "No")
@@ -512,6 +514,7 @@ void displayTransitCitiesAndIndirectFlights(string origin, string destination, R
             "Origin: " + currentOrigin + "\n" +
             "Destination: " + currentDestination + "\n" +
             "AirLine: " + leg->flight.airline + "\n" +
+            "Date: " + leg->flight.date + "\n" +
             "Shortest: " + (curr->shortest ? "Yes" : "No") + "\n" +
             "Cheapest: " + (curr->cheapest ? "Yes" : "No")
         );
@@ -771,8 +774,10 @@ void applyPreferences(Route &route, BookingState &currentState, RouteList &indir
     }
     else if(cases == 2)
     {
-        displayDirectFlightsonMap(originInput.c_str(),destInput.c_str(),currentState.directFlights);
-        displayInDirectFlightsOnMap(originInput.c_str(),destInput.c_str(),currentState.indirectRoutes);
+        if(!currentState.directFlights.isEmpty())
+            displayDirectFlightsonMap(originInput.c_str(),destInput.c_str(),currentState.directFlights);
+        if(!currentState.indirectRoutes.isEmpty())
+            displayInDirectFlightsOnMap(originInput.c_str(),destInput.c_str(),currentState.indirectRoutes);
     }
 
 }
