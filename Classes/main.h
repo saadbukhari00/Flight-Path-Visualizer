@@ -1,6 +1,5 @@
 #ifndef MAIN_H
 #define MAIN_H
-
 #include<iostream>
 #include<cstdlib>
 #include<ctime>
@@ -9,6 +8,7 @@
 #include <cstring>
 #include <sstream>
 #include <cmath>
+#include <iomanip>
 #include <SFML/Graphics.hpp>
 
 using namespace std;
@@ -22,6 +22,7 @@ struct Airplane
     bool isMoving;
 };
 
+
 struct Flight 
 {
     char origin[50];
@@ -32,7 +33,8 @@ struct Flight
     char arrivalTime[50];
     int price;
     int distance;
-
+    bool cheapest;
+    bool shortest;
 
     Flight()
     {
@@ -44,6 +46,8 @@ struct Flight
         strcpy(arrivalTime, "");
         distance = 0;
         price = 0;
+        cheapest = false;
+        shortest = false;
     }
 
     Flight(const char* origin, const char* destination, const char* airline, const char* date, const char* departureTime, const char* arrivalTime, int price, int distance)
