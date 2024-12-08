@@ -14,9 +14,12 @@ public:
     struct RouteNode {
         FlightRoute route;
         RouteNode* next;
-
+        bool cheapest;
+        bool shortest;
         RouteNode()
         {
+            cheapest = false;
+            shortest = false;
             next = NULL;
         }
     };

@@ -321,9 +321,10 @@ void Route::shortestPath(const char* originCity, const char* destinationCity, co
                                     strcmp(indirectLeg->flight.date, flight->date) == 0 &&
                                     strcmp(indirectLeg->flight.departureTime, flight->departureTime) == 0 &&
                                     strcmp(indirectLeg->flight.arrivalTime, flight->arrivalTime) == 0) {
-
+                                    
                                     lastIndirectLeg = indirectLeg;
                                     foundIndirect = true;
+                                    
                                     // Instead of printing here, store the index
                                     foundIndirectIndex = indirectIndex;
                                     break; // Only print first indirect match
@@ -344,12 +345,15 @@ void Route::shortestPath(const char* originCity, const char* destinationCity, co
         }
 
         // After finishing all segments, print the indirect route index once if found
-        if (foundIndirectIndex != -1) {
+        if (foundIndirectIndex != -1) 
+        {
+            RouteList::RouteNode* route = indirectRoutes.getRouteByIndex(foundIndirectIndex);
+            route->shortest = true;
             cout << "\033[1;33m\t→ Indirect Route Index:\033[0m " << foundIndirectIndex << "\n";
         }
 
     } else {
-        std::cout << "\033[1;31mNo path found between " << originCity << " and " << destinationCity
+        cout << "\033[1;31mNo path found between " << originCity << " and " << destinationCity
                 << " within the given date range.\033[0m\n";
     }
 
@@ -554,7 +558,10 @@ if (bestPathLength > 0) {
         }
 
         // After finishing all segments, print the indirect route index once if found
-        if (foundIndirectIndex != -1) {
+        if (foundIndirectIndex != -1) 
+        {
+            RouteList::RouteNode* route = indirectRoutes.getRouteByIndex(foundIndirectIndex);
+            route->cheapest = true;
             cout << "\033[1;33m\t→ Indirect Route Index:\033[0m " << foundIndirectIndex << "\n";
         }
 

@@ -584,17 +584,17 @@ void FlightBook::displayInDirectFlightsOnMap(LinkedList::FlightNode* leg, RouteL
     float currentLength = 0.0f;
 
     sf::Color pathColor;
-    if (leg->flight.shortest && leg->flight.cheapest)
+    if (curr->cheapest && curr->shortest)
     {
         pathColor = sf::Color::Green;
         airplane.speed = 25.f;
     }
-    else if (leg->flight.cheapest)
+    else if (curr->cheapest)
     {
         pathColor = sf::Color::Red;
         airplane.speed = 25.f;
     }
-    else if (leg->flight.shortest)
+    else if (curr->shortest)
     {
         pathColor = sf::Color::Magenta;
         airplane.speed = 25.f;
@@ -623,8 +623,8 @@ void FlightBook::displayInDirectFlightsOnMap(LinkedList::FlightNode* leg, RouteL
             "AirLine: " + leg->flight.airline + "\n" +
             "Arrival Time: " + leg->flight.arrivalTime + "\n" +
             "Departure Time: " + leg->flight.departureTime + "\n" +
-            "Shortest: " + (leg->flight.shortest ? "Yes" : "No") + "\n" +
-            "Cheapest: " + (leg->flight.cheapest ? "Yes" : "No")
+            "Shortest: " + (curr->shortest ? "Yes" : "No") + "\n" +
+            "Cheapest: " + (curr->cheapest ? "Yes" : "No")
         );
 
     
