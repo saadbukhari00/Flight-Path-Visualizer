@@ -19,41 +19,10 @@ g++ -o FlightPathVisualizer main.cpp Classes/FileHandling.cpp Classes/FlightGrap
 #include "Classes/booking.h"
 #include "Classes/HotelsList.h"
 #include "Classes/HotelBooking.h"
-
-
-// airplane struct to store airplane information
+#include "Classes/utils.h"
 
 
 // Function to calculate the angle (in degrees) between two points
-float calculateAngle(const sf::Vector2f& start, const sf::Vector2f& target) 
-{
-    return atan2(target.y - start.y, target.x - start.x) * 180.f / 3.14159f;
-}
-
-// Function to normalize a vector (make its magnitude = 1)
-sf::Vector2f normalize(const sf::Vector2f& vector) 
-{
-    float magnitude = sqrt(vector.x * vector.x + vector.y * vector.y);
-    return magnitude == 0 ? sf::Vector2f(0, 0) : sf::Vector2f(vector.x / magnitude, vector.y / magnitude);
-}
-
-// Update airplane position based on direction and speed
-void updateAirplanePosition(Airplane& airplane, float deltaTime) {
-    if (airplane.isMoving) 
-    {
-        sf::Vector2f direction = normalize(airplane.targetPosition - airplane.shape.getPosition());
-        airplane.shape.move(direction * airplane.speed * deltaTime);
-
-        // Check if the airplane has reached or is very close to the target position
-        sf::Vector2f currentPosition = airplane.shape.getPosition();
-        if (fabs(currentPosition.x - airplane.targetPosition.x) < 1.f &&
-            fabs(currentPosition.y - airplane.targetPosition.y) < 1.f) 
-            {
-            airplane.shape.setPosition(airplane.targetPosition);
-            airplane.isMoving = false;
-        }
-    }
-}
 
 
 class FlightBookingGUI 
@@ -507,25 +476,309 @@ void handleSearch(const string& origin, const string& destination, const string&
         }
     }
 }*/
-    
+
+void displayDirectFlightsonMap(string origin, string destination, LinkedList& directFlight)
+{
+    sf::Vector2u windowSize = mainWindow.getSize();
+
+    // Initialize the airplane
+    Airplane airplane;
+    airplane.shape.setPointCount(3);
+    airplane.shape.setPoint(0, sf::Vector2f(0, -10)); // Top vertex
+    airplane.shape.setPoint(1, sf::Vector2f(-5, 10)); // Bottom left
+    airplane.shape.setPoint(2, sf::Vector2f(5, 10)); // Bottom right
+    airplane.shape.setFillColor(sf::Color::Red);
+    airplane.speed = 100.f; // Speed of the airplane
+
+    LinkedList::FlightNode* currentNode = directFlight.getHead();
+
+    while (currentNode) // Loop through each flight
+    {
+        airplane.speed = 100.f;
+        string currentOrigin = currentNode->flight.origin;
+        string currentDestination = currentNode->flight.destination;
+
+        // Get positions of the origin and destination
+        sf::Vector2f positionOrigin = flightGraph.getCityPosition(currentOrigin);
+        sf::Vector2f positionDestination = flightGraph.getCityPosition(currentDestination);
+        sf::Vector2f scaledPos = sf::Vector2f(positionOrigin.x * windowSize.x, positionOrigin.y * windowSize.y);
+        sf::Vector2f scaledDes = sf::Vector2f(positionDestination.x * windowSize.x, positionDestination.y * windowSize.y);
+
+        // Set airplane starting and target positions
+        airplane.startPosition = scaledPos;
+        airplane.targetPosition = scaledDes;
+        airplane.shape.setPosition(airplane.startPosition);
+        airplane.shape.setRotation(calculateAngle(airplane.startPosition, airplane.targetPosition));
+
+        // Initialize the path for the current flight
+        sf::VertexArray path(sf::LineStrip);
+
+        // Determine path color
+        sf::Color pathColor;
+        if(currentNode->flight.shortest && currentNode->flight.cheapest)
+        {
+            pathColor = sf::Color::Green;
+            airplane.speed = 50.f;
+        }
+        else if (currentNode->flight.shortest)
+        {
+            pathColor = sf::Color::Magenta; // Shortest flight
+            airplane.speed = 50.f;
+        }
+        else if (currentNode->flight.cheapest)
+        {
+            airplane.speed = 50.f;
+            pathColor = sf::Color::Red; // Cheapest flight
+        }
+        else
+            pathColor = sf::Color::Black; // Default
+
+        // Animate the airplane for this flight
+        sf::Clock clock;
+        airplane.isMoving = true;
+        while (airplane.isMoving)
+        {
+            float deltaTime = clock.restart().asSeconds();
+            updateAirplanePosition(airplane, deltaTime);
+
+            // Add the current position to the path
+            path.append(sf::Vertex(airplane.shape.getPosition(), pathColor));
+
+            // Clear the window and render everything
+            mainWindow.clear();
+            mainGUI.draw();              
+            mainWindow.draw(path);       
+            mainWindow.draw(airplane.shape); 
+            mainWindow.display();
+
+            sf::sleep(sf::milliseconds(1)); // Control update frequency
+        }
+
+        currentNode = currentNode->next; // Move to the next flight
+    }
+}
+
+
+
+void displayInDirectFlightsOnMap(string origin, string destination, RouteList& indirectRoutes)
+{
+    sf::Vector2u windowSize = mainWindow.getSize();
+
+    // Initialize the airplane
+    Airplane airplane;
+    airplane.shape.setPointCount(3);
+    airplane.shape.setPoint(0, sf::Vector2f(0, -10)); // Top vertex of the triangle
+    airplane.shape.setPoint(1, sf::Vector2f(-5, 10)); // Bottom left vertex
+    airplane.shape.setPoint(2, sf::Vector2f(5, 10)); // Bottom right vertex
+    airplane.shape.setFillColor(sf::Color::Red);
+    airplane.speed = 100.f; // Speed of the airplane
+
+    RouteList::RouteNode* curr = indirectRoutes.getHead();
+
+    while (curr) // Loop through each route
+    {
+        airplane.speed = 100.f;
+        LinkedList::FlightNode* leg = curr->route.legs.getHead();
+        sf::VertexArray path(sf::LineStrip); 
+        while (leg) 
+        {
+            airplane.speed = 100.f;
+            // Get origin and destination positions
+            sf::Vector2f positionOrigin = flightGraph.getCityPosition(leg->flight.origin);
+            sf::Vector2f positionDestination = flightGraph.getCityPosition(leg->flight.destination);
+            sf::Vector2f scaledPos = sf::Vector2f(positionOrigin.x * windowSize.x, positionOrigin.y * windowSize.y);
+            sf::Vector2f scaledDes = sf::Vector2f(positionDestination.x * windowSize.x, positionDestination.y * windowSize.y);
+
+            // Set airplane starting and target positions
+            airplane.startPosition = scaledPos;
+            airplane.targetPosition = scaledDes;
+            airplane.shape.setPosition(airplane.startPosition);
+            airplane.shape.setRotation(calculateAngle(airplane.startPosition, airplane.targetPosition));
+
+            
+            airplane.isMoving = true;
+
+            // Determine path color
+            sf::Color pathColor;
+            if (curr->shortest && curr->cheapest)
+            {
+                pathColor = sf::Color::Green;
+                airplane.speed = 50.f;
+            }
+            else if (curr->cheapest)
+            {
+                pathColor = sf::Color::Red;
+                airplane.speed = 50.f;
+            }
+            else if(curr->shortest)
+            {
+                pathColor = sf::Color::Magenta;
+                airplane.speed = 50.f;
+            }
+            else
+                pathColor = sf::Color::Black;
+
+            // Animate the airplane for this leg
+            sf::Clock clock;
+            while (airplane.isMoving)
+            {
+                float deltaTime = clock.restart().asSeconds();
+                updateAirplanePosition(airplane, deltaTime);
+
+                // Add current airplane position to path
+                path.append(sf::Vertex(airplane.shape.getPosition(), pathColor));
+
+                // Clear the window and render everything
+                mainWindow.clear();
+                mainGUI.draw();              // Draw GUI
+                mainWindow.draw(path);       // Draw the path for the current leg
+                mainWindow.draw(airplane.shape); // Draw the airplane
+                mainWindow.display();
+
+                sf::sleep(sf::milliseconds(1)); // Control update frequency
+            }
+
+            leg = leg->next; // Move to the next leg
+        }
+
+        curr = curr->next; // Move to the next route
+    }
+}
+
+void displayTransitCitiesAndIndirectFlights(string origin, string destination, RouteList& indirectRoutes, string* transitCities)
+{
+    sf::Vector2u windowSize = mainWindow.getSize();
+
+    // Initialize the airplane
+    Airplane airplane;
+    airplane.shape.setPointCount(3);
+    airplane.shape.setPoint(0, sf::Vector2f(0, -10)); // Top vertex of the triangle
+    airplane.shape.setPoint(1, sf::Vector2f(-5, 10)); // Bottom left vertex
+    airplane.shape.setPoint(2, sf::Vector2f(5, 10)); // Bottom right vertex
+    airplane.shape.setFillColor(sf::Color::Red);
+    airplane.speed = 100.f; // Speed of the airplane
+
+    RouteList::RouteNode* curr = indirectRoutes.getHead();
+
+    // Set up the city point for drawing
+    sf::CircleShape cityPoint(5.f);
+
+    while (curr) // Loop through each route
+    {
+        airplane.speed = 100.f;
+        LinkedList::FlightNode* leg = curr->route.legs.getHead();
+        sf::VertexArray path(sf::LineStrip); 
+
+        while (leg) 
+        {
+            airplane.speed = 100.f;
+            // Get origin and destination positions
+            sf::Vector2f positionOrigin = flightGraph.getCityPosition(leg->flight.origin);
+            sf::Vector2f positionDestination = flightGraph.getCityPosition(leg->flight.destination);
+            sf::Vector2f scaledPos = sf::Vector2f(positionOrigin.x * windowSize.x, positionOrigin.y * windowSize.y);
+            sf::Vector2f scaledDes = sf::Vector2f(positionDestination.x * windowSize.x, positionDestination.y * windowSize.y);
+
+            // Set airplane starting and target positions
+            airplane.startPosition = scaledPos;
+            airplane.targetPosition = scaledDes;
+            airplane.shape.setPosition(airplane.startPosition);
+            airplane.shape.setRotation(calculateAngle(airplane.startPosition, airplane.targetPosition));
+
+            airplane.isMoving = true;
+
+            // Determine path color
+            sf::Color pathColor;
+            if (curr->shortest && curr->cheapest)
+            {
+                pathColor = sf::Color::Green;
+                airplane.speed = 50.f;
+            }
+            else if (curr->cheapest)
+            {
+                pathColor = sf::Color::Red;
+                airplane.speed = 50.f;
+            }
+            else if (curr->shortest)
+            {
+                pathColor = sf::Color::Magenta;
+                airplane.speed = 50.f;
+            }
+            else
+                pathColor = sf::Color::Black;
+
+            // Animate the airplane for this leg
+            sf::Clock clock;
+            while (airplane.isMoving)
+            {
+                float deltaTime = clock.restart().asSeconds();
+                updateAirplanePosition(airplane, deltaTime);
+
+                // Add current airplane position to path
+                path.append(sf::Vertex(airplane.shape.getPosition(), pathColor));
+
+                // Clear the window and render everything
+                mainWindow.clear();
+                mainGUI.draw();              // Draw GUI
+                mainWindow.draw(path);       // Draw the path for the current leg
+                mainWindow.draw(airplane.shape); // Draw the airplane
+
+                // Draw the city points for the transit cities in a different color
+                for (int i = 0; transitCities[i] != ""; i++) // Assuming the array is null-terminated
+                {
+                    if (leg->flight.origin == transitCities[i] || leg->flight.destination == transitCities[i]) 
+                    {
+                        cityPoint.setFillColor(sf::Color::Green); // Change color for transit cities
+                    } else 
+                    {
+                        cityPoint.setFillColor(sf::Color::Red); // Default color for other cities
+                    }
+
+                    sf::Vector2f cityPos = flightGraph.getCityPosition(transitCities[i]);
+                    sf::Vector2f scaledCityPos = sf::Vector2f(cityPos.x * windowSize.x, cityPos.y * windowSize.y);
+                    cityPoint.setPosition(scaledCityPos - sf::Vector2f(cityPoint.getRadius(), cityPoint.getRadius()));
+                    mainWindow.draw(cityPoint);
+                }
+
+                mainWindow.display();
+                sf::sleep(sf::milliseconds(1)); // Control update frequency
+            }
+
+            leg = leg->next; // Move to the next leg
+        }
+
+        curr = curr->next; // Move to the next route
+    }
+}
+
+
     
 // A helper to display direct flights and indirect routes
 void displayAvailableOptions(LinkedList &directFlights, RouteList &indirectRoutes, const string &origin, const string &destination) {
+    char fazoolMe;
     if(directFlights.isEmpty()) {
         cout << "\033[1;31mNo Direct Flights available\033[0m\n";
     } 
     else {
         cout << "\n\033[1;36mDirect Flights from " << origin << " to " << destination << "\033[0m\n";
         directFlights.Display();
+        displayDirectFlightsonMap(origin,destination,directFlights);
+
+        cout<<"\n\tEnter any character to Proceed to see indirect flights";
+        cin>>fazoolMe;
     }
 
     if(indirectRoutes.countRoutes() == 0) {
         cout << "\033[1;31mNo Indirect Flights available\033[0m\n";
         return;
     }
-    else {
+    else 
+    {
         cout << "\n\033[1;36mIndirect Flights from " << origin << " to " << destination << "\033[0m\n";
         indirectRoutes.Display();
+        displayInDirectFlightsOnMap(origin,destination,indirectRoutes);
+
+        cout<<"\n\tEnter any character to Proceed";
+        cin>>fazoolMe;
     }
 }
 
@@ -546,7 +799,7 @@ void applyPreferences(Route &route, BookingState &currentState, RouteList &indir
 
     LinkedList filteredFlights;    // If needed
     RouteList filteredRoutes;      // If you decide to filter multi-leg routes as well
-
+    LinkedList directFlights; // empty
     switch (preferenceType) {
         case 1:
             transitCities = menu.takeTransitCities(transitCount);
@@ -556,7 +809,15 @@ void applyPreferences(Route &route, BookingState &currentState, RouteList &indir
             filteredRoutes = route.filterByTransitCities(indirectRoutes, transitCities, transitCount);
             currentState.indirectRoutes = filteredRoutes;
             
+            if(!filteredRoutes.isEmpty())
+            {
+                route.shortestPath(originInput.c_str(), destInput.c_str(), dateInput.c_str(), dateInput1.c_str(), directFlights, filteredRoutes);
+                route.cheapestFlight(originInput.c_str(), destInput.c_str(), dateInput.c_str(), dateInput1.c_str(), directFlights, filteredRoutes);
+                displayTransitCitiesAndIndirectFlights(originInput.c_str(),destInput.c_str(),filteredRoutes,transitCities);
+
+            }
             break;
+    
         case 2:
             cout << "Enter the preferred airline: ";
             cin.ignore();
@@ -571,6 +832,11 @@ void applyPreferences(Route &route, BookingState &currentState, RouteList &indir
               
             filteredRoutes = route.filterMultiLegRoutesByAirline(indirectRoutes, preferredAirline);
             currentState.indirectRoutes = filteredRoutes;
+
+            if(!filteredRoutes.isEmpty())
+            {
+                displayInDirectFlightsOnMap(originInput.c_str(),destInput.c_str(),filteredRoutes);
+            }
             break;
         case 3:
             transitCities = menu.takeTransitCities(transitCount);
@@ -588,10 +854,14 @@ void applyPreferences(Route &route, BookingState &currentState, RouteList &indir
             currentState.directFlights = filteredFlights;
 
             // Filter multi-leg routes
-            filteredRoutes = route.filterByTransitCitiesAndAirline(
-                indirectRoutes, preferredAirline, transitCities, transitCount
-            );
+            filteredRoutes = route.filterByTransitCitiesAndAirline(indirectRoutes, preferredAirline, transitCities, transitCount);
             currentState.indirectRoutes = filteredRoutes;
+
+            if(!filteredRoutes.isEmpty())
+            {
+                displayTransitCitiesAndIndirectFlights(originInput.c_str(),destInput.c_str(),filteredRoutes,transitCities);
+            }    
+
             break;
         default:
             cout << "Invalid choice!\n";
@@ -601,7 +871,7 @@ void applyPreferences(Route &route, BookingState &currentState, RouteList &indir
 
 void handleSearch(const string& origin, const string& destination, const string& fromDate, const string& toDate, Stack& bookingStack) {
     Route route(flightGraph);
-    FlightBook flightBook;
+    FlightBook flightBook(mainWindow,window, mainGUI,flightGraph);
 
     // Initial State
     BookingState currentState(origin, destination, fromDate, toDate);
@@ -617,7 +887,7 @@ void handleSearch(const string& origin, const string& destination, const string&
     bookingStack.Push(currentState);
 
     if (directFlights.isEmpty() && (indirectRoutes.countRoutes() == 0)) {
-        cout << "No flights or routes found for the given criteria.\n";
+        cout << "No flights or routes found for the given criteria\n";
         return;
     }
 
@@ -625,11 +895,11 @@ void handleSearch(const string& origin, const string& destination, const string&
 
 preferencesundone:
 
-    displayAvailableOptions(directFlights, indirectRoutes, origin, destination);
+    
     
     route.shortestPath(origin.c_str(), destination.c_str(), fromDate.c_str(), toDate.c_str(), directFlights, indirectRoutes);
     route.cheapestFlight(origin.c_str(), destination.c_str(), fromDate.c_str(), toDate.c_str(), directFlights, indirectRoutes);
-    
+    displayAvailableOptions(directFlights, indirectRoutes, origin, destination);
 
     Layover layover;
 
@@ -672,7 +942,7 @@ preferencesundone:
     cin >> choice;
     if (tolower(choice) == 'y') 
     {
-        flightBook.bookFlightOption(currentState.directFlights, currentState.indirectRoutes);
+        flightBook.bookFlightOption(originInput,destInput,currentState.directFlights, currentState.indirectRoutes);
     }
 }
     
