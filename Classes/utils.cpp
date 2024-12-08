@@ -6,7 +6,11 @@ float calculateAngle(const sf::Vector2f& start, const sf::Vector2f& target)
 {
     return atan2(target.y - start.y, target.x - start.x) * 180.f / 3.14159f;
 }
-
+void pauseForTakeOff(int seconds) 
+{
+    this_thread::sleep_for(chrono::seconds(seconds));
+    
+}
 // Function to normalize a vector (make its magnitude = 1)
 sf::Vector2f normalize(const sf::Vector2f& vector) 
 {
