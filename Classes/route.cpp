@@ -148,7 +148,7 @@ void Route::shortestPath(const char* originCity, const char* destinationCity, co
 
     if (originIndex == -1 || destinationIndex == -1) 
     {
-        std::cout << "\033[1;31mInvalid city name(s): " << originCity << " or " << destinationCity << "\033[0m\n";
+        cout << "\033[1;31mInvalid city name(s): " << originCity << " or " << destinationCity << "\033[0m\n";
         return;
     }
 
@@ -221,8 +221,8 @@ void Route::shortestPath(const char* originCity, const char* destinationCity, co
             }
 
             // Format for departure and arrival times (e.g., "2019-12-02 08:00")
-            std::string depTime = std::string(flight->date) + " " + std::string(flight->departureTime);
-            std::string arrTime = std::string(flight->date) + " " + std::string(flight->arrivalTime);
+                string depTime = string(flight->date) + " " + string(flight->departureTime);
+                string arrTime = string(flight->date) + " " + string(flight->arrivalTime);
 
             int travelTime = calculateTravelTime(depTime, arrTime);
 
@@ -263,7 +263,7 @@ void Route::shortestPath(const char* originCity, const char* destinationCity, co
 
 if (bestPathLength > 0) 
     {
-        std::cout << "\033[1;36;1mShortest Path Found:\033[0m\n"; // Bold & Cyan
+        cout << "\033[1;36;1mShortest Path Found:\033[0m\n"; // Bold & Cyan
         for (int i = 0; i < bestPathLength - 1; ++i) 
         {
             int currentCityIndex = bestPath[i];
@@ -275,8 +275,8 @@ if (bestPathLength > 0)
                 Flight* flight = edge->flightData;
                 if (strcmp(flight->destination, flightGraph.getCityName(nextCityIndex)) == 0)
                 {
-                    std::cout << "\n\033[1;34mFlight Segment:\033[0m\n";
-                    std::cout << "From: " << flightGraph.getCityName(currentCityIndex) << " → " 
+                    cout << "\n\033[1;34mFlight Segment:\033[0m\n";
+                    cout << "From: " << flightGraph.getCityName(currentCityIndex) << " → " 
                               << flightGraph.getCityName(nextCityIndex) << "\n"
                               << "Departure: " << flight->departureTime << " | Arrival: " << flight->arrivalTime << "\n"
                               << "Date: " << flight->date << ", Airline: " << flight->airline << ", Price: " << flight->price << " USD\n";
@@ -293,7 +293,8 @@ if (bestPathLength > 0)
                             strcmp(directCurr->flight.departureTime, flight->departureTime) == 0 &&
                             strcmp(directCurr->flight.arrivalTime, flight->arrivalTime) == 0)
                         {
-                            std::cout << "\033[1;33m\t→ Direct Flight Index:\033[0m " << index << "\n";
+                            directCurr->flight.shortest = true;
+                            cout << "\033[1;33m\t→ Direct Flight Index:\033[0m " << index << "\n";
                             foundDirect = true;
                             break;
                         }
@@ -318,6 +319,7 @@ if (bestPathLength > 0)
                                     strcmp(indirectLeg->flight.departureTime, flight->departureTime) == 0 &&
                                     strcmp(indirectLeg->flight.arrivalTime, flight->arrivalTime) == 0)
                                 {
+                                    indirectCurr->shortest = true;
                                     std::cout << "\033[1;33m\t→ Indirect Route Index:\033[0m " << indirectIndex << "\n";
                                     foundIndirect = true;
                                     break; // Stop after first indirect route match
@@ -330,7 +332,7 @@ if (bestPathLength > 0)
 
                         if (!foundDirect && !foundIndirect)
                         {
-                            std::cout << "\033[1;31m\tNo direct or indirect match found.\033[0m\n";
+                            cout << "\033[1;31m\tNo direct or indirect match found.\033[0m\n";
                         }
                     }
                     std::cout << "\n";
@@ -466,9 +468,10 @@ void Route::cheapestFlight(const char* originCity, const char* destinationCity, 
             Edge* edge = flightGraph.getVertices()[currentCityIndex].head;
             while (edge) {
                 Flight* flight = edge->flightData;
-                if (strcmp(flight->destination, flightGraph.getCityName(nextCityIndex)) == 0) {
-                    std::cout << "\n\033[1;34mCheapest Flight Segment:\033[0m\n";
-                    std::cout << "From: " << flightGraph.getCityName(currentCityIndex) << " → " 
+                if (strcmp(flight->destination, flightGraph.getCityName(nextCityIndex)) == 0) 
+                {
+                        cout << "\n\033[1;34mCheapest Flight Segment:\033[0m\n";
+                        cout << "From: " << flightGraph.getCityName(currentCityIndex) << " → " 
                               << flightGraph.getCityName(nextCityIndex) << "\n"
                               << "Departure: " << flight->departureTime << " | Arrival: " << flight->arrivalTime << "\n"
                               << "Date: " << flight->date << ", Airline: " << flight->airline 
@@ -486,7 +489,8 @@ void Route::cheapestFlight(const char* originCity, const char* destinationCity, 
                             strcmp(directCurr->flight.departureTime, flight->departureTime) == 0 &&
                             strcmp(directCurr->flight.arrivalTime, flight->arrivalTime) == 0)
                         {
-                            std::cout << "\033[1;33m\t→ Direct Flight Index:\033[0m " << index << "\n";
+                            directCurr->flight.cheapest = true;
+                            cout << "\033[1;33m\t→ Direct Flight Index:\033[0m " << index << "\n";
                             foundDirect = true;
                             break;
                         }
@@ -511,7 +515,8 @@ void Route::cheapestFlight(const char* originCity, const char* destinationCity, 
                                     strcmp(indirectLeg->flight.departureTime, flight->departureTime) == 0 &&
                                     strcmp(indirectLeg->flight.arrivalTime, flight->arrivalTime) == 0)
                                 {
-                                    std::cout << "\033[1;33m\t→ Indirect Route Index:\033[0m " << indirectIndex << "\n";
+                                    indirectCurr->cheapest = true;
+                                    cout << "\033[1;33m\t→ Indirect Route Index:\033[0m " << indirectIndex << "\n";
                                     foundIndirect = true;
                                     break; // Only print first indirect match
                                 }
@@ -535,7 +540,7 @@ void Route::cheapestFlight(const char* originCity, const char* destinationCity, 
     } 
     else 
     {
-        std::cout << "\033[1;31mNo path found between " << originCity << " and " << destinationCity
+        cout << "\033[1;31mNo path found between " << originCity << " and " << destinationCity
                   << " within the given date range.\033[0m\n";
     }
 
