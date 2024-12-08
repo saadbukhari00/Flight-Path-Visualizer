@@ -45,6 +45,11 @@ public:
     int convertDateToComparableFormat(const char* date); 
     int compareTimes(const char* time1, const char* time2);
     int calculateTravelTime(const string& departure, const string& arrival);
+
+    int convertDateToInt(const string &dateStr);
+    bool isDateInRange(const string &flightDate, const string &fromDate, const string &toDate);
+    string convertDDMMYYYYToYYYYMMDD(const char* dateStr);
+
 };
 
 #endif // ROUTE_H

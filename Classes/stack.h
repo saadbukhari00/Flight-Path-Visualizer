@@ -9,11 +9,8 @@ struct BookingState {
     string destination;
     string fromDate;
     string toDate;
-    string *transitCities;
-    string preferredAirline;
     LinkedList directFlights;
     RouteList indirectRoutes;
-    LinkedList availableFlights; 
     Flight selectedFlight;       
 
     BookingState() {}

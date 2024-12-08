@@ -152,106 +152,109 @@ void Route::shortestPath(const char* originCity, const char* destinationCity, co
         return;
     }
 
-    // Array-based priority queue
+    struct QueueElement {
+        int totalTime;
+        int cityIndex;
+        time_t lastArrivalEpoch;
+        int* path;
+        int pathLength;
+
+        QueueElement(int maxCities) {
+            path = new int[maxCities];
+            pathLength = 0;
+            lastArrivalEpoch = 0; // initialize at origin
+            totalTime = 0;
+        }
+
+        ~QueueElement() { delete[] path; }
+    };
+
     QueueElement* priorityQueue[MAX_CITIES];
     int queueSize = 0;
-
-    // Distance array to track minimum time to each city
     int minTime[MAX_CITIES];
     for (int i = 0; i < MAX_CITIES; ++i) 
-    {
         minTime[i] = INT_MAX;
-    }
 
-    // Initialize with the origin city
-    minTime[originIndex] = 0;
+    // Initialize with origin
     priorityQueue[queueSize++] = new QueueElement(MAX_CITIES);
     priorityQueue[0]->totalTime = 0;
     priorityQueue[0]->cityIndex = originIndex;
-    priorityQueue[0]->lastArrivalTime = 0;
     priorityQueue[0]->path[0] = originIndex;
     priorityQueue[0]->pathLength = 1;
+    priorityQueue[0]->lastArrivalEpoch = 0; // Starting point with no arrival time (0 means start)
 
     int* bestPath = new int[MAX_CITIES];
     int bestPathLength = 0;
 
     while (queueSize > 0) 
     {
-        // Find the element with the smallest totalTime
+        // Find element with smallest totalTime
         int minIndex = 0;
-        for (int i = 1; i < queueSize; ++i) 
-        {
-            if (priorityQueue[i]->totalTime < priorityQueue[minIndex]->totalTime) 
-            {
+        for (int i = 1; i < queueSize; ++i) {
+            if (priorityQueue[i]->totalTime < priorityQueue[minIndex]->totalTime) {
                 minIndex = i;
             }
         }
 
-        // Extract the minimum element
         QueueElement* current = priorityQueue[minIndex];
         queueSize--;
-        for (int i = minIndex; i < queueSize; ++i) 
-        {
+        for (int i = minIndex; i < queueSize; ++i) {
             priorityQueue[i] = priorityQueue[i + 1];
         }
 
-        // Stop if we reach the destination
-        if (current->cityIndex == destinationIndex) 
-        {
+        if (current->cityIndex == destinationIndex) {
             bestPathLength = current->pathLength;
-            for (int i = 0; i < bestPathLength; ++i) 
-            {
+            for (int i = 0; i < bestPathLength; ++i) {
                 bestPath[i] = current->path[i];
             }
             delete current;
             break;
         }
 
-        // Traverse all outgoing edges (flights) from the current city
         Edge* edge = flightGraph.getVertices()[current->cityIndex].head;
-        while (edge) 
-        {
+        while (edge) {
             Flight* flight = edge->flightData;
-
-            // Date and time constraints
-            if (!isWithinDateRange(flight->date, startDate, endDate)) 
-            {
+            // Date range check
+            if (!isWithinDateRange(flight->date, startDate, endDate)) {
                 edge = edge->next;
                 continue;
             }
 
-            // Format for departure and arrival times (e.g., "2019-12-02 08:00")
-                string depTime = string(flight->date) + " " + string(flight->departureTime);
-                string arrTime = string(flight->date) + " " + string(flight->arrivalTime);
-
-            int travelTime = calculateTravelTime(depTime, arrTime);
-
-            // Ensure the flight departure is after the last arrival time
-            if (travelTime < current->lastArrivalTime) 
+            // Parse departure/arrival times into epochs
+            std::tm depTime = {}, arrTime = {};
             {
+                // Format: DD/MM/YYYY and HH:MM
+                // Convert to "YYYY-MM-DD HH:MM" first
+                string formattedDate = convertDDMMYYYYToYYYYMMDD(flight->date);
+                string dep = formattedDate + " " + flight->departureTime;
+                string arr = formattedDate + " " + flight->arrivalTime;
+
+                strptime(dep.c_str(), "%Y-%m-%d %H:%M", &depTime);
+                strptime(arr.c_str(), "%Y-%m-%d %H:%M", &arrTime);
+            }
+
+            time_t depEpoch = mktime(&depTime);
+            time_t arrEpoch = mktime(&arrTime);
+            if (current->lastArrivalEpoch > 0 && depEpoch < current->lastArrivalEpoch) {
+                // Flight departs before last arrival, skip
                 edge = edge->next;
                 continue;
             }
 
-            // Calculate the new total time
-            int newTotalTime = current->totalTime + travelTime;
+            int flightDurationMins = (int)difftime(arrEpoch, depEpoch) / 60;
+            int newTotalTime = current->totalTime + flightDurationMins;
 
-            // If this path is better, update and push it into the queue
-            if (newTotalTime < minTime[edge->destination]) 
-            {
+            if (newTotalTime < minTime[edge->destination]) {
                 minTime[edge->destination] = newTotalTime;
-
                 QueueElement* newElement = new QueueElement(MAX_CITIES);
                 newElement->totalTime = newTotalTime;
                 newElement->cityIndex = edge->destination;
-                newElement->lastArrivalTime = travelTime; // Set the last arrival time
+                newElement->lastArrivalEpoch = arrEpoch; // Store absolute arrival time
                 newElement->pathLength = current->pathLength;
-                for (int i = 0; i < current->pathLength; ++i) 
-                {
+                for (int i = 0; i < current->pathLength; ++i) {
                     newElement->path[i] = current->path[i];
                 }
                 newElement->path[newElement->pathLength++] = edge->destination;
-
                 priorityQueue[queueSize++] = newElement;
             }
 
@@ -357,7 +360,6 @@ void Route::shortestPath(const char* originCity, const char* destinationCity, co
 void Route::cheapestFlight(const char* originCity, const char* destinationCity, const char* startDate, const char* endDate, LinkedList& directFlights, RouteList& indirectRoutes)
 {
     const int MAX_CITIES = flightGraph.getNumVertices();
-
     int originIndex = flightGraph.getCityIndex(originCity);
     int destinationIndex = flightGraph.getCityIndex(destinationCity);
 
@@ -367,89 +369,105 @@ void Route::cheapestFlight(const char* originCity, const char* destinationCity, 
         return;
     }
 
-    // Array-based priority queue
+    struct QueueElement2 {
+        int totalCost;
+        int cityIndex;
+        time_t lastArrivalEpoch;
+        int* path;
+        int pathLength;
+
+        QueueElement2(int maxCities) {
+            path = new int[maxCities];
+            pathLength = 0;
+            totalCost = INT_MAX;
+            lastArrivalEpoch = 0;
+        }
+
+        ~QueueElement2() { delete[] path; }
+    };
+
     QueueElement2* priorityQueue[MAX_CITIES];
     int queueSize = 0;
-
-    // Distance array to track minimum cost to each city
     int minCost[MAX_CITIES];
     for (int i = 0; i < MAX_CITIES; ++i) 
-    {
         minCost[i] = INT_MAX;
-    }
 
-    // Initialize with the origin city
     minCost[originIndex] = 0;
     priorityQueue[queueSize++] = new QueueElement2(MAX_CITIES);
     priorityQueue[0]->totalCost = 0;
     priorityQueue[0]->cityIndex = originIndex;
     priorityQueue[0]->path[0] = originIndex;
     priorityQueue[0]->pathLength = 1;
+    priorityQueue[0]->lastArrivalEpoch = 0;
 
     int* bestPath = new int[MAX_CITIES];
     int bestPathLength = 0;
 
     while (queueSize > 0) 
     {
-        // Find the element with the smallest totalCost
         int minIndex = 0;
-        for (int i = 1; i < queueSize; ++i) 
-        {
-            if (priorityQueue[i]->totalCost < priorityQueue[minIndex]->totalCost) 
-            {
+        for (int i = 1; i < queueSize; ++i) {
+            if (priorityQueue[i]->totalCost < priorityQueue[minIndex]->totalCost) {
                 minIndex = i;
             }
         }
 
-        // Extract the minimum element
         QueueElement2* current = priorityQueue[minIndex];
         queueSize--;
-        for (int i = minIndex; i < queueSize; ++i) 
-        {
+        for (int i = minIndex; i < queueSize; ++i) {
             priorityQueue[i] = priorityQueue[i + 1];
         }
 
-        // Stop if we reach the destination
-        if (current->cityIndex == destinationIndex) 
-        {
+        if (current->cityIndex == destinationIndex) {
             bestPathLength = current->pathLength;
-            for (int i = 0; i < bestPathLength; ++i) 
-            {
+            for (int i = 0; i < bestPathLength; ++i) {
                 bestPath[i] = current->path[i];
             }
             delete current;
             break;
         }
 
-        // Traverse all outgoing edges (flights) from the current city
         Edge* edge = flightGraph.getVertices()[current->cityIndex].head;
         while (edge) {
             Flight* flight = edge->flightData;
-
-            // Date constraint
             if (!isWithinDateRange(flight->date, startDate, endDate)) {
                 edge = edge->next;
                 continue;
             }
 
-            // Calculate new total cost
+            // Parse departure/arrival times into epochs
+            std::tm depTime = {}, arrTime = {};
+            {
+                string formattedDate = convertDDMMYYYYToYYYYMMDD(flight->date);
+                string dep = formattedDate + " " + flight->departureTime;
+                string arr = formattedDate + " " + flight->arrivalTime;
+
+                strptime(dep.c_str(), "%Y-%m-%d %H:%M", &depTime);
+                strptime(arr.c_str(), "%Y-%m-%d %H:%M", &arrTime);
+            }
+
+            time_t depEpoch = mktime(&depTime);
+            time_t arrEpoch = mktime(&arrTime);
+
+            if (current->lastArrivalEpoch > 0 && depEpoch < current->lastArrivalEpoch) {
+                // Flight departs too early
+                edge = edge->next;
+                continue;
+            }
+
             int newTotalCost = current->totalCost + flight->price;
 
-            // If this path is cheaper, update and push it into the queue
-            if (newTotalCost < minCost[edge->destination]) 
-            {
+            if (newTotalCost < minCost[edge->destination]) {
                 minCost[edge->destination] = newTotalCost;
-
                 QueueElement2* newElement = new QueueElement2(MAX_CITIES);
                 newElement->totalCost = newTotalCost;
                 newElement->cityIndex = edge->destination;
+                newElement->lastArrivalEpoch = arrEpoch; // Store arrival epoch
                 newElement->pathLength = current->pathLength;
-                for (int i = 0; i < current->pathLength; ++i) 
-                {
+                for (int i = 0; i < current->pathLength; ++i) {
                     newElement->path[i] = current->path[i];
                 }
                 newElement->path[newElement->pathLength++] = edge->destination;
-
                 priorityQueue[queueSize++] = newElement;
             }
 
@@ -572,7 +590,11 @@ LinkedList Route::listDirectFlightsWithinDateRange(const char* originCity, const
 
     while (edge) 
     {
-        if (edge->destination == destinationIndex && isWithinDateRange(edge->flightData->date, startDate, endDate)) 
+        string sDate = startDate;
+        string eDate = endDate;
+        sDate.erase(remove_if(sDate.begin(), sDate.end(), ::isspace), sDate.end());
+        eDate.erase(remove_if(eDate.begin(), eDate.end(), ::isspace), eDate.end());
+        if (edge->destination == destinationIndex && isWithinDateRange(edge->flightData->date, sDate.c_str(), eDate.c_str())) 
         {
             foundFlights = true;
             Flight flight(
@@ -618,9 +640,13 @@ LinkedList Route::listIndirectFlightsWithinDateRange(const char* originCity, con
 
         while (intermediateEdge) 
         {
+            string sDate = startDate;
+            string eDate = endDate;
+            sDate.erase(remove_if(sDate.begin(), sDate.end(), ::isspace), sDate.end());
+            eDate.erase(remove_if(eDate.begin(), eDate.end(), ::isspace), eDate.end());
             if (intermediateEdge->destination == destinationIndex && 
-                isWithinDateRange(edge->flightData->date, startDate, endDate) && 
-                isWithinDateRange(intermediateEdge->flightData->date, startDate, endDate)) 
+                isWithinDateRange(edge->flightData->date, sDate.c_str(), eDate.c_str()) && 
+                isWithinDateRange(intermediateEdge->flightData->date, sDate.c_str(), eDate.c_str())) 
             {
                 // Create flights for each leg
                 Flight firstLegFlight(
@@ -681,8 +707,12 @@ LinkedList Route::listDirectFlightsWithinDataRangeandPreferredAirline(
 
         // Check if the edge leads directly to the destination city
         // and matches date range and airline
+        string sDate = startDate;
+        string eDate = endDate;
+        sDate.erase(remove_if(sDate.begin(), sDate.end(), ::isspace), sDate.end());
+        eDate.erase(remove_if(eDate.begin(), eDate.end(), ::isspace), eDate.end());
         if (edge->destination == destinationIndex && 
-            isWithinDateRange(flightData->date, startDate, endDate) && 
+            isWithinDateRange(flightData->date, sDate.c_str(), eDate.c_str()) && 
             flightData->airline == airline) 
         {
             foundFlights = true;
@@ -1041,11 +1071,19 @@ int Route::compareTimes(const char* time1, const char* time2) {
 
 int Route::convertDateToComparableFormat(const char* date)
 {
+    // Trim leading/trailing spaces
+    std::string dateStr(date);
+    dateStr.erase(std::remove_if(dateStr.begin(), dateStr.end(), ::isspace), dateStr.end());
+
     int day, month, year;
     char delimiter1, delimiter2;
 
-    std::stringstream dateStream(date);
-    dateStream >> day >> delimiter1 >> month >> delimiter2 >> year;
+    stringstream dateStream(dateStr);
+    if (!(dateStream >> day >> delimiter1 >> month >> delimiter2 >> year) 
+        || delimiter1 != '/' || delimiter2 != '/') {
+        // If parsing fails or format is not DD/MM/YYYY, return something large so it's out of range
+        return INT_MAX;
+    }
 
     // Convert date into an integer like YYYYMMDD
     return year * 10000 + month * 100 + day;
@@ -1061,6 +1099,35 @@ bool Route::isWithinDateRange(const char* flightDate, const char* startDate, con
     
 }
 
+int Route::convertDateToInt(const std::string &dateStr) {
+    // dateStr format: DD/MM/YYYY
+    // Extract day, month, year
+    int day, month, year;
+    char slash;
+    std::stringstream ss(dateStr);
+    ss >> day >> slash >> month >> slash >> year;
+    // Convert to an integer of form YYYYMMDD for easy comparison
+    return year * 10000 + month * 100 + day;
+}
+
+bool Route::isDateInRange(const std::string &flightDate, const std::string &fromDate, const std::string &toDate) {
+    int flightVal = convertDateToInt(flightDate);
+    int startVal = convertDateToInt(fromDate);
+    int endVal = convertDateToInt(toDate);
+
+    return (flightVal >= startVal && flightVal <= endVal);
+}
+
+string Route::convertDDMMYYYYToYYYYMMDD(const char* dateStr) {
+    int day, month, year;
+    char slash;
+    stringstream ss(dateStr);
+    ss >> day >> slash >> month >> slash >> year;
+    
+    char buffer[11]; // "YYYY-MM-DD" + null terminator
+    snprintf(buffer, sizeof(buffer), "%04d-%02d-%02d", year, month, day);
+    return string(buffer);
+}
 
 // Function to calculate travel time between two time stamps with full date information
 int Route::calculateTravelTime(const std::string& departure, const std::string& arrival) 

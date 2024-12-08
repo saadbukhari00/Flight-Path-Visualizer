@@ -720,11 +720,11 @@ void handleSearch(const string& origin, const string& destination, const string&
         return;
     }
 
-preferencesundone:
-    
     route.shortestPath(origin.c_str(), destination.c_str(), fromDate.c_str(), toDate.c_str(), currentState.directFlights, currentState.indirectRoutes);
     route.cheapestFlight(origin.c_str(), destination.c_str(), fromDate.c_str(), toDate.c_str(), currentState.directFlights, currentState.indirectRoutes);
     displayAvailableOptions(currentState.directFlights, currentState.indirectRoutes, origin, destination);
+
+preferencesundone:
 
     // Ask if user wants preferences
     cout << "\nWould you like to apply any preferences? (Y/n): ";
@@ -750,6 +750,9 @@ preferencesundone:
             {
                 currentState = bookingStack.Top();;
                 cout << "Preferences undone. Showing flights/routes from the previous state:\n";
+                route.shortestPath(origin.c_str(), destination.c_str(), fromDate.c_str(), toDate.c_str(), currentState.directFlights, currentState.indirectRoutes);
+                route.cheapestFlight(origin.c_str(), destination.c_str(), fromDate.c_str(), toDate.c_str(), currentState.directFlights, currentState.indirectRoutes);
+                displayAvailableOptions(currentState.directFlights, currentState.indirectRoutes, origin, destination);
                 goto preferencesundone;
             } 
             else 
@@ -877,109 +880,7 @@ public:
 
                 Stack bookingStack;
                 bookingGUI.handleSearch(origin, destination, fromDate, toDate , bookingStack);
-/*
-                Route route(flightGraph);
-                LinkedList indirectFlights = route.listIndirectFlightsWithinDateRange(origin.c_str(), destination.c_str(), fromDate.c_str(), toDate.c_str());
-
-                sf::Vector2u windowSize = mainWindow.getSize();
-
-
-if (!indirectFlights.isEmpty())
-{
-    // Initialize the airplane
-    Airplane airplane;
-    airplane.shape.setPointCount(3);
-    airplane.shape.setPoint(0, sf::Vector2f(0, -10)); // Top vertex of the triangle
-    airplane.shape.setPoint(1, sf::Vector2f(-5, 10)); // Bottom left vertex
-    airplane.shape.setPoint(2, sf::Vector2f(5, 10)); // Bottom right vertex
-    airplane.shape.setFillColor(sf::Color::Red);
-    airplane.speed = 200.f; // Speed of the airplane
-    airplane.isMoving = true;
-
-    sf::VertexArray path(sf::LineStrip); // To trace the path
-
-    // Linked list traversal
-    LinkedList::FlightNode* currentNode = indirectFlights.getHead(); // Start from the head of the linked list
-
-    while (currentNode) // While there are waypoints
-    {
-        sf::Vector2f positionOrigin = flightGraph.getCityPosition(currentNode->flight.origin);        // Origin
-        sf::Vector2f positionDestination = flightGraph.getCityPosition(currentNode->flight.destination); // Destination
-        
-        sf::Vector2f scaledPos = sf::Vector2f(positionOrigin.x * windowSize.x, positionOrigin.y * windowSize.y);
-        sf::Vector2f scaledDes = sf::Vector2f(positionDestination.x * windowSize.x, positionDestination.y * windowSize.y);
-
-        airplane.startPosition = scaledPos;
-        airplane.targetPosition = scaledDes;
-        airplane.shape.setPosition(airplane.startPosition);
-        airplane.shape.setRotation(calculateAngle(airplane.startPosition, airplane.targetPosition));
-
-        // Move airplane from current origin to destination
-        sf::Clock clock;
-        airplane.isMoving= true;
-        while (airplane.isMoving)
-        {
-            float deltaTime = clock.restart().asSeconds();
-            updateAirplanePosition(airplane, deltaTime);
-
-            // Add current position to path for visualization
-            path.append(sf::Vertex(airplane.shape.getPosition(), sf::Color::Black));
-
-            // Clear the window and draw the airplane
-            mainWindow.clear();
-            mainGUI.draw();
-            mainWindow.draw(path);         // Draw the path
-            mainWindow.draw(airplane.shape); // Draw the airplane
-            mainWindow.display();
-
-            sf::sleep(sf::milliseconds(1)); // Control update frequency
-        }
-
-        // Move to the next node in the linked list
-        currentNode = currentNode->next;
-    }
-}               
-                char ch;
-                cout<<"Proceed to see direct path (y)";
-                cin >> ch;
-                Airplane airplane;
-                airplane.shape.setPointCount(3);
-                airplane.shape.setPoint(0, sf::Vector2f(0, -10)); // Top vertex of the triangle
-                airplane.shape.setPoint(1, sf::Vector2f(-5, 10)); // Bottom left vertex
-                airplane.shape.setPoint(2, sf::Vector2f(5, 10)); // Bottom right vertex
-                airplane.shape.setFillColor(sf::Color::Red);
-                sf::Vector2f positionOrigin = flightGraph.getCityPosition(origin);
-                sf::Vector2f positionDestination = flightGraph.getCityPosition(destination);
-                sf::Vector2f scaledPos = sf::Vector2f(positionOrigin.x * windowSize.x, positionOrigin.y * windowSize.y);
-                sf::Vector2f scaledDes = sf::Vector2f(positionDestination.x * windowSize.x, positionDestination.y * windowSize.y);
-                airplane.speed = 25.f; // Speed of the airplane
-                airplane.isMoving = true;
-                airplane.targetPosition = scaledDes;
-                airplane.startPosition = scaledPos;
-                airplane.shape.setPosition(airplane.startPosition);
-                airplane.shape.setRotation(calculateAngle(airplane.startPosition, airplane.targetPosition));
-
-                mainGUI.addAirplane(airplane);
-                sf::Clock clock;
-                sf::VertexArray path(sf::LineStrip); // To trace the path
-
-                while (airplane.isMoving) // Main loop for updating and rendering
-                {
-                    float deltaTime = clock.restart().asSeconds();
-                    updateAirplanePosition(airplane, deltaTime);
-
-                    // Clear the window and draw the airplane
-                    path.append(sf::Vertex(airplane.shape.getPosition(), sf::Color::Blue));
-                    mainGUI.draw();
-                    mainWindow.draw(path);
-                    mainWindow.draw(airplane.shape);
-                    mainWindow.display();
-
-                    sf::sleep(sf::milliseconds(1)); // sleep to control frequency
-                }
-                cout<<"Proceed";
-                cin>>ch;*/
-                }
+               }
                 }
             
         }

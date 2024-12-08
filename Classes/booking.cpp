@@ -229,12 +229,15 @@ void FlightBook::confirmBooking(LinkedList &legs, RouteList::RouteNode* routeNod
                 }
             }
 
-            if (!layover.isEmpty()) {
+            if (!layover.isEmpty()) 
+            {
                 //Flight flight = layover.dequeue();
                 // Process the flight (e.g., print details or add to another data structure)
-                } else {
+            } 
+            else 
+            {
                     cout << "Layover queue is empty, cannot dequeue." << endl;
-                }
+            }
             leg = leg->next;
         }
         layover.enqueue(leg->flight);

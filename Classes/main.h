@@ -11,6 +11,7 @@
 #include <iomanip>
 #include <chrono>
 #include <thread>
+#include <cstdio>
 #include <SFML/Graphics.hpp>
 
 using namespace std;
