@@ -1173,7 +1173,7 @@ int Route::convertDateToInt(const std::string &dateStr)
     // Extract day, month, year
     int day, month, year;
     char slash;
-    std::stringstream ss(dateStr);
+    stringstream ss(dateStr);
     ss >> day >> slash >> month >> slash >> year;
     // Convert to an integer of form YYYYMMDD for easy comparison
     return year * 10000 + month * 100 + day;
