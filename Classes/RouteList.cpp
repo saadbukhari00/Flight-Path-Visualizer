@@ -21,7 +21,8 @@ void RouteList::insertRoute(FlightRoute&newRoute)
     }
 }
 
-int RouteList::countRoutes() {
+int RouteList::countRoutes() 
+{
     int count = 0;
     RouteNode* curr = head;
     while (curr) { curr = curr->next; count++; }
@@ -29,7 +30,8 @@ int RouteList::countRoutes() {
 }
 
 
-void RouteList::Display() {
+void RouteList::Display() 
+{
     RouteNode* curr = head;
     int index = 0;
     
@@ -97,4 +99,10 @@ void RouteList::clear()
         curr = next;
     }
     head = NULL;
+}
+
+
+bool RouteList::isEmpty()
+{
+    return head == NULL;
 }

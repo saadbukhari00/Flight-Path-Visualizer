@@ -13,11 +13,20 @@ class RouteList {
 public:
     struct RouteNode {
         FlightRoute route;
+        bool shortest;
+        bool cheapest;
         RouteNode* next;
+
+        RouteNode()
+        {
+            shortest = false;
+            cheapest = false;
+            next = NULL;
+        }
     };
     
     RouteList() : head(NULL) {}
-
+    bool isEmpty();
     void insertRoute(FlightRoute& newRoute);
     void Display();
     void clear();
