@@ -41,11 +41,14 @@ public:
     int getCityIndex(const char* cityName);
     int getNumVertices() const;
     sf::Texture getMapTexture() const { return mapTexture; }
-    void initializeCityCoordinates();
     sf::Vector2f getCityPosition(const std::string& city);
+    FileHandling& getFileHandler() { return fileHandler; }
+    const char* getCityName(int cityIndex) const;
 
+    void initializeCityCoordinates();
     bool isDuplicateFlight(const char* origin, const char* destination, const char* airline, const char* date);
     int findOrAddCity(const char* cityName);
+
     void addCity(const char* city, sf::Vector2f position);
     void addFlight(const char* origin, const char* destination, const char* airline, const char* date,
                    const char* departureTime, const char* arrivalTime, int price, int distance);
@@ -56,7 +59,7 @@ public:
     void displayOnMap(sf::RenderWindow& window, const sf::Texture& mapTexture);
     void displayHighlightedRoutes(sf::RenderWindow& window);
     
-    const char* getCityName(int cityIndex) const;
+    void clear();
 };
 
 #endif 

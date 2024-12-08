@@ -215,6 +215,22 @@ void FlightGraph::displayHighlightedRoutes(sf::RenderWindow& window) {
     }
 }
 
+void FlightGraph::clear()
+{
+    for (int i = 0; i < vertexCount; i++) 
+    {
+        Edge* edge = vertices[i].head;
+        while (edge) 
+        {
+            Edge* temp = edge;
+            edge = edge->next;
+            delete temp->flightData;
+            delete temp;
+        }
+    }
+    vertexCount = 0;
+}
+
 FlightGraph::~FlightGraph() {
     for (int i = 0; i < vertexCount; i++) {
         Edge* edge = vertices[i].head;

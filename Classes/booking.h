@@ -11,8 +11,11 @@
 class FlightBook{
 public:
     void bookFlightOption(string&,string&,LinkedList &directFlights, RouteList &indirectRoutes);
+
     void confirmBooking(Flight &flight);
-    void confirmBooking(LinkedList &legs,RouteList::RouteNode*);
+
+    void confirmBooking(LinkedList &legs, RouteList::RouteNode* route);
+
     void displayInDirectFlightsOnMap(LinkedList&, RouteList::RouteNode*);
     FlightBook(sf::RenderWindow&,sf::RenderWindow&, MainGUI&, FlightGraph&);
 

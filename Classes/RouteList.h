@@ -28,6 +28,8 @@ public:
     RouteList() : head(NULL) {}
     bool isEmpty();
     void insertRoute(FlightRoute& newRoute);
+
+    void DisplayWithIndexOffset(int offset);
     void Display();
     void clear();
     int countRoutes();

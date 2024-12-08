@@ -234,248 +234,6 @@ public:
     
     window.clear(sf::Color::White);  // Clear the window and proceed to next frame
 }
-/*
-void handleSearch(const string& origin, const string& destination, const string& fromDate, const string& toDate, Stack& bookingStack) 
-{
-
-    Route route(flightGraph);
-
-    // Initial booking state
-    BookingState currentState(origin, destination, fromDate, toDate);
-
-    // Push initial state to stack
-    bookingStack.Push(currentState);
-
-    // Display all direct and indirect flights
-    cout << "\n\033[1;36mSearching for flights...\033[0m\n";
-    LinkedList directFlights = route.listDirectFlightsWithinDateRange(origin.c_str(), destination.c_str(), fromDate.c_str(), toDate.c_str());
-    LinkedList indirectFlights = route.listIndirectFlightsWithinDateRange(origin.c_str(), destination.c_str(), fromDate.c_str(), toDate.c_str());
-
-
-    if (directFlights.isEmpty() && indirectFlights.isEmpty()) 
-    {
-        cout << "\033[1;31mNo flights found for the given criteria.\033[0m\n";
-        return;
-    }
-    sf::Vector2u windowSize = mainWindow.getSize();
-
-    if (!indirectFlights.isEmpty())
-{
-    // Initialize the airplane
-    Airplane airplane;
-    airplane.shape.setPointCount(3);
-    airplane.shape.setPoint(0, sf::Vector2f(0, -10)); // Top vertex of the triangle
-    airplane.shape.setPoint(1, sf::Vector2f(-5, 10)); // Bottom left vertex
-    airplane.shape.setPoint(2, sf::Vector2f(5, 10)); // Bottom right vertex
-    airplane.shape.setFillColor(sf::Color::Red);
-    airplane.speed = 200.f; // Speed of the airplane
-    airplane.isMoving = true;
-
-    sf::VertexArray path(sf::LineStrip); // To trace the path
-
-    // Linked list traversal
-    LinkedList::FlightNode* currentNode = indirectFlights.getHead(); // Start from the head of the linked list
-
-    while (currentNode) // While there are waypoints
-    {
-        sf::Vector2f positionOrigin = flightGraph.getCityPosition(currentNode->flight.origin);        // Origin
-        sf::Vector2f positionDestination = flightGraph.getCityPosition(currentNode->flight.destination); // Destination
-        
-        sf::Vector2f scaledPos = sf::Vector2f(positionOrigin.x * windowSize.x, positionOrigin.y * windowSize.y);
-        sf::Vector2f scaledDes = sf::Vector2f(positionDestination.x * windowSize.x, positionDestination.y * windowSize.y);
-
-        airplane.startPosition = scaledPos;
-        airplane.targetPosition = scaledDes;
-        airplane.shape.setPosition(airplane.startPosition);
-        airplane.shape.setRotation(calculateAngle(airplane.startPosition, airplane.targetPosition));
-
-        // Move airplane from current origin to destination
-        sf::Clock clock;
-        airplane.isMoving= true;
-        while (airplane.isMoving)
-        {
-            float deltaTime = clock.restart().asSeconds();
-            updateAirplanePosition(airplane, deltaTime);
-
-            // Add current position to path for visualization
-            path.append(sf::Vertex(airplane.shape.getPosition(), sf::Color::Black));
-
-            // Clear the window and draw the airplane
-            mainWindow.clear();
-            mainGUI.draw();
-            mainWindow.draw(path);         // Draw the path
-            mainWindow.draw(airplane.shape); // Draw the airplane
-            mainWindow.display();
-
-            sf::sleep(sf::milliseconds(1)); // Control update frequency
-        }
-
-        // Move to the next node in the linked list
-        currentNode = currentNode->next;
-    }
-}               
-                char ch;
-                cout<<"Proceed to see direct path (y)";
-                cin >> ch;
-                Airplane airplane;
-                airplane.shape.setPointCount(3);
-                airplane.shape.setPoint(0, sf::Vector2f(0, -10)); // Top vertex of the triangle
-                airplane.shape.setPoint(1, sf::Vector2f(-5, 10)); // Bottom left vertex
-                airplane.shape.setPoint(2, sf::Vector2f(5, 10)); // Bottom right vertex
-                airplane.shape.setFillColor(sf::Color::Red);
-                sf::Vector2f positionOrigin = flightGraph.getCityPosition(origin);
-                sf::Vector2f positionDestination = flightGraph.getCityPosition(destination);
-                sf::Vector2f scaledPos = sf::Vector2f(positionOrigin.x * windowSize.x, positionOrigin.y * windowSize.y);
-                sf::Vector2f scaledDes = sf::Vector2f(positionDestination.x * windowSize.x, positionDestination.y * windowSize.y);
-                airplane.speed = 25.f; // Speed of the airplane
-                airplane.isMoving = true;
-                airplane.targetPosition = scaledDes;
-                airplane.startPosition = scaledPos;
-                airplane.shape.setPosition(airplane.startPosition);
-                airplane.shape.setRotation(calculateAngle(airplane.startPosition, airplane.targetPosition));
-
-                mainGUI.addAirplane(airplane);
-                sf::Clock clock;
-                sf::VertexArray path(sf::LineStrip); // To trace the path
-
-                while (airplane.isMoving) // Main loop for updating and rendering
-                {
-                    float deltaTime = clock.restart().asSeconds();
-                    updateAirplanePosition(airplane, deltaTime);
-
-                    // Clear the window and draw the airplane
-                    path.append(sf::Vertex(airplane.shape.getPosition(), sf::Color::Blue));
-                    mainGUI.draw();
-                    mainWindow.draw(path);
-                    mainWindow.draw(airplane.shape);
-                    mainWindow.display();
-
-                    sf::sleep(sf::milliseconds(1)); // sleep to control frequency
-                }
-
-    char preferenceChoice;
-    cout << "\033[1;34m\nWould you like to apply any preferences? (Y/n): \033[0m";
-    cin >> preferenceChoice;
-
-    if (preferenceChoice == 'Y' || preferenceChoice == 'y') 
-    {
-        // Collect user preferences
-        int preferenceType;
-        string preferredAirline;
-        string* transitCities = nullptr;
-        int transitCount = 0;
-
-        cout << "\033[1;33m\n\t\tPreferences Menu:\033[0m\n";
-        cout << "1. Number of Transit Cities\n";
-        cout << "2. Preferred Airline\n";
-        cout << "3. Both Transit Cities and Airline\n";
-        cout << "\033[1;34mEnter your choice: \033[0m";
-        cin >> preferenceType;
-
-        switch (preferenceType) 
-        {
-            case 1: {
-                Menu menu;
-                transitCities = menu.takeTransitCities(transitCount);
-                currentState.availableFlights = route.findFlightsWithTransitCities(origin.c_str(), destination.c_str(), fromDate.c_str(), toDate.c_str(), transitCities, transitCount);
-                break;
-            }
-            case 2: {
-                cout << "\033[1;34mEnter the preferred airline: \033[0m";
-                cin.ignore();
-                getline(cin, preferredAirline);
-                currentState.availableFlights = route.listAllFlightsWithinDataRangeandPreferredAirline(origin.c_str(), destination.c_str(), fromDate.c_str(), toDate.c_str(), preferredAirline);
-                break;
-            }
-            case 3: {
-                Menu menu;
-                transitCities = menu.takeTransitCities(transitCount);
-                cout << "\033[1;34mEnter the preferred airline: \033[0m";
-                cin.ignore();
-                getline(cin, preferredAirline);
-                currentState.availableFlights = route.filterByTransitCitiesAndAirline(origin.c_str(), destination.c_str(), fromDate.c_str(), toDate.c_str(), transitCities, transitCount, preferredAirline);
-                break;
-            }
-            default:
-                cout << "\033[1;31mInvalid choice!\033[0m\n";
-                return;
-        }
-
-        // Push updated state to stack
-        bookingStack.Push(currentState);
-
-        // Display filtered flights
-        cout << "\033[1;36mFiltered Flights:\033[0m\n";
-        currentState.availableFlights.Display();
-    }
-
-    // Allow the user to book a flight
-    char bookChoice;
-    cout << "\033[1;34m\nWould you like to book a flight? (Y/n): \033[0m";
-    cin >> bookChoice;
-    
-    Layover layover;
-    if (bookChoice == 'Y' || bookChoice == 'y') 
-    {
-        int flightIndex;
-        cout << "\033[1;34mEnter the index of the flight you want to book: \033[0m";
-        cin >> flightIndex;
-
-        LinkedList::FlightNode* selectedFlightNode = nullptr;
-
-        if (flightIndex < directFlights.size()) 
-        {
-            selectedFlightNode = directFlights.getNodeAt(flightIndex);
-        } else 
-        {  
-            flightIndex -= directFlights.size();
-            selectedFlightNode = indirectFlights.getNodeAt(flightIndex);
-            
-            layover.enqueue(selectedFlightNode->flight);
-        }
-
-        if (selectedFlightNode) 
-        {
-            currentState.selectedFlight = selectedFlightNode->flight;
-            cout << "\033[1;32mFlight booked successfully!\033[0m\n";
-            cout << "Booking Details:\n";
-            cout << "From: " << currentState.selectedFlight.origin << "\n";
-            cout << "To: " << currentState.selectedFlight.destination << "\n";
-            cout << "Date: " << currentState.selectedFlight.date << "\n";
-            cout << "Price: $" << currentState.selectedFlight.price << "\n";
-            cout << "Airline: " << currentState.selectedFlight.airline << "\n";
-
-            // Clear stack after booking
-            while (!bookingStack.IsEmpty()) {
-                bookingStack.Pop();
-            }
-            return;
-        } else {
-            cout << "\033[1;31mInvalid flight index.\033[0m\n";
-        }
-    }
-
-    // Allow the user to undo preferences
-    char undoChoice;
-    cout << "\033[1;34mWould you like to undo preferences? (Y/n): \033[0m";
-    cin >> undoChoice;
-
-    if (undoChoice == 'Y' || undoChoice == 'y') {
-        if (!bookingStack.IsEmpty()) {
-            bookingStack.Pop();
-            if (!bookingStack.IsEmpty()) {
-                currentState = bookingStack.Top();
-                cout << "\033[1;32mPreferences undone. Showing flights from the previous state:\033[0m\n";
-                currentState.availableFlights.Display();
-            } else {
-                cout << "\033[1;31mNo preferences to undo.\033[0m\n";
-            }
-        } else 
-        {
-            cout << "\033[1;31mNo actions to undo.\033[0m\n";
-        }
-    }
-}*/
 
 void displayDirectFlightsonMap(string origin, string destination, LinkedList& directFlight)
 {
@@ -557,8 +315,6 @@ void displayDirectFlightsonMap(string origin, string destination, LinkedList& di
         currentNode = currentNode->next; // Move to the next flight
     }
 }
-
-
 
 void displayInDirectFlightsOnMap(string origin, string destination, RouteList& indirectRoutes)
 {
@@ -752,7 +508,7 @@ void displayTransitCitiesAndIndirectFlights(string origin, string destination, R
 
 
     
-// A helper to display direct flights and indirect routes
+
 void displayAvailableOptions(LinkedList &directFlights, RouteList &indirectRoutes, const string &origin, const string &destination) {
     char fazoolMe;
     if(directFlights.isEmpty()) {
@@ -811,10 +567,7 @@ void applyPreferences(Route &route, BookingState &currentState, RouteList &indir
             
             if(!filteredRoutes.isEmpty())
             {
-                route.shortestPath(originInput.c_str(), destInput.c_str(), dateInput.c_str(), dateInput1.c_str(), directFlights, filteredRoutes);
-                route.cheapestFlight(originInput.c_str(), destInput.c_str(), dateInput.c_str(), dateInput1.c_str(), directFlights, filteredRoutes);
                 displayTransitCitiesAndIndirectFlights(originInput.c_str(),destInput.c_str(),filteredRoutes,transitCities);
-
             }
             break;
     
@@ -867,6 +620,75 @@ void applyPreferences(Route &route, BookingState &currentState, RouteList &indir
             cout << "Invalid choice!\n";
             return;
     }
+
+    // creating sub graph
+    currentState.directFlights = filteredFlights;
+    currentState.indirectRoutes = filteredRoutes;
+
+    FlightGraph subGraph(flightGraph.getNumVertices(), flightGraph.getFileHandler());
+    subGraph.clear();
+
+    {
+        LinkedList::FlightNode* fnode = filteredFlights.getHead();
+        while (fnode) {
+            subGraph.addFlight(
+                fnode->flight.origin,
+                fnode->flight.destination,
+                fnode->flight.airline,
+                fnode->flight.date,
+                fnode->flight.departureTime,
+                fnode->flight.arrivalTime,
+                fnode->flight.price,
+                fnode->flight.distance
+            );
+            fnode = fnode->next;
+        }
+    }
+
+    {
+        RouteList::RouteNode* rnode = filteredRoutes.getHead();
+        while (rnode) {
+            LinkedList::FlightNode* leg = rnode->route.legs.getHead();
+            while (leg) {
+                subGraph.addFlight(
+                    leg->flight.origin,
+                    leg->flight.destination,
+                    leg->flight.airline,
+                    leg->flight.date,
+                    leg->flight.departureTime,
+                    leg->flight.arrivalTime,
+                    leg->flight.price,
+                    leg->flight.distance
+                );
+                leg = leg->next;
+            }
+            rnode = rnode->next;
+        }
+    }
+
+    // Create a new Route object tied to subGraph
+    Route subRoute(subGraph);
+
+    // Recalculate shortest and cheapest paths on the subgraph
+    cout << "\nRecalculating shortest and cheapest paths on the filtered subgraph...\n";
+    subRoute.shortestPath(
+        currentState.origin.c_str(),
+        currentState.destination.c_str(),
+        currentState.fromDate.c_str(),
+        currentState.toDate.c_str(),
+        currentState.directFlights,
+        currentState.indirectRoutes
+    );
+
+    subRoute.cheapestFlight(
+        currentState.origin.c_str(),
+        currentState.destination.c_str(),
+        currentState.fromDate.c_str(),
+        currentState.toDate.c_str(),
+        currentState.directFlights,
+        currentState.indirectRoutes
+    );
+
 }
 
 void handleSearch(const string& origin, const string& destination, const string& fromDate, const string& toDate, Stack& bookingStack) {
@@ -891,17 +713,11 @@ void handleSearch(const string& origin, const string& destination, const string&
         return;
     }
 
-    // Display options
-
 preferencesundone:
-
-    
     
     route.shortestPath(origin.c_str(), destination.c_str(), fromDate.c_str(), toDate.c_str(), directFlights, indirectRoutes);
     route.cheapestFlight(origin.c_str(), destination.c_str(), fromDate.c_str(), toDate.c_str(), directFlights, indirectRoutes);
     displayAvailableOptions(directFlights, indirectRoutes, origin, destination);
-
-    Layover layover;
 
     // Ask if user wants preferences
     cout << "\nWould you like to apply any preferences? (Y/n): ";
