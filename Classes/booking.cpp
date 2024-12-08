@@ -8,6 +8,16 @@
 FlightBook::FlightBook(sf::RenderWindow& main, sf::RenderWindow& win, MainGUI& mainG, FlightGraph& flightG) 
     : mainWindow(main), window(win), mainGUI(mainG), flightGraph(flightG) {} 
 
+
+bool FlightBook::validateFields(const std::string& cardNumber, const std::string& name, 
+                    const std::string& expiryDate, const std::string& cvc) {
+    if (cardNumber.empty() || name.empty() || expiryDate.empty() || cvc.empty()) {
+        return false;
+    }
+
+    return true;
+}
+
 void FlightBook::bookFlightOption(string& org, string& dest, LinkedList &directFlights, RouteList &indirectRoutes) {
     origin = org;
     destination = dest;
@@ -70,7 +80,252 @@ void FlightBook::bookFlightOption(string& org, string& dest, LinkedList &directF
         // Book all flights in this multi-leg route
         confirmBooking(routeNode->route.legs, routeNode); 
     }
+
+   // Create the main window
+sf::RenderWindow window(sf::VideoMode(800, 600), "Payment Form");
+
+sf::Font font;
+if (!font.loadFromFile("Assets/Aller_Bd.ttf")) {
+    std::cerr << "Error loading font\n";
+    return;
 }
+
+sf::RectangleShape cardNumberBox, nameBox, expiryDateBox, cvcBox, submitButton;
+sf::Text cardNumberText, nameText, expiryDateText, cvcText, submitText, feedback;
+
+// Set up the card number box and label
+cardNumberBox.setSize(sf::Vector2f(300, 30));
+cardNumberBox.setPosition(100, 100);
+cardNumberBox.setFillColor(sf::Color::White);
+cardNumberText.setFont(font);
+cardNumberText.setCharacterSize(20);
+cardNumberText.setPosition(110, 110);
+cardNumberText.setFillColor(sf::Color::Black);
+cardNumberText.setString("Card Number: ");
+
+// Set up the name box and label
+nameBox.setSize(sf::Vector2f(300, 30));
+nameBox.setPosition(100, 150);
+nameBox.setFillColor(sf::Color::White);
+nameText.setFont(font);
+nameText.setCharacterSize(20);
+nameText.setPosition(110, 160);
+nameText.setFillColor(sf::Color::Black);
+nameText.setString("Name on Card: ");
+
+// Set up the expiry date box and label
+expiryDateBox.setSize(sf::Vector2f(150, 30));
+expiryDateBox.setPosition(100, 200);
+expiryDateBox.setFillColor(sf::Color::White);
+expiryDateText.setFont(font);
+expiryDateText.setCharacterSize(20);
+expiryDateText.setPosition(110, 210);
+expiryDateText.setFillColor(sf::Color::Black);
+expiryDateText.setString("Expiry Date (MM/YY): ");
+
+// Set up the CVC box and label
+cvcBox.setSize(sf::Vector2f(100, 30));
+cvcBox.setPosition(100, 250);
+cvcBox.setFillColor(sf::Color::White);
+cvcText.setFont(font);
+cvcText.setCharacterSize(20);
+cvcText.setPosition(110, 260);
+cvcText.setFillColor(sf::Color::Black);
+cvcText.setString("CVC: ");
+
+// Set up the submit button
+submitButton.setSize(sf::Vector2f(100, 40));
+submitButton.setPosition(100, 300);
+submitButton.setFillColor(sf::Color::Green);
+submitText.setFont(font);
+submitText.setCharacterSize(20);
+submitText.setPosition(120, 310);
+submitText.setFillColor(sf::Color::Black);
+submitText.setString("Submit");
+
+// Set up the feedback message
+feedback.setFont(font);
+feedback.setCharacterSize(30);
+feedback.setPosition(50, 500);
+feedback.setFillColor(sf::Color::White);
+
+// Input variables
+string cardNumber, name, expiryDate, cvc;
+
+// Input focus flags
+bool isCardNumberFocused = true;
+bool isNameFocused = false;
+bool isExpiryDateFocused = false;
+bool isCVCFocused = false;
+
+while (window.isOpen()) {
+    sf::Event event;
+    while (window.pollEvent(event)) {
+        if (event.type == sf::Event::Closed) {
+            window.close();
+        } else if (event.type == sf::Event::TextEntered) {
+            if (event.text.unicode < 128) { // ASCII character check
+                if (event.text.unicode == 8) { // Backspace
+                    if (isCardNumberFocused && !cardNumber.empty()) {
+                        cardNumber.pop_back();
+                    } else if (isNameFocused && !name.empty()) {
+                        name.pop_back();
+                    } else if (isExpiryDateFocused && !expiryDate.empty()) {
+                        expiryDate.pop_back();
+                    } else if (isCVCFocused && !cvc.empty()) {
+                        cvc.pop_back();
+                    }
+                } else if (event.text.unicode == 13) { // Enter key
+                    if (isCardNumberFocused) {
+                        isCardNumberFocused = false;
+                        isNameFocused = true;
+                    } else if (isNameFocused) {
+                        isNameFocused = false;
+                        isExpiryDateFocused = true;
+                    } else if (isExpiryDateFocused) {
+                        isExpiryDateFocused = false;
+                        isCVCFocused = true;
+                    }
+                } else {
+                    if (isCardNumberFocused) {
+                        cardNumber += static_cast<char>(event.text.unicode);
+                    } else if (isNameFocused) {
+                        name += static_cast<char>(event.text.unicode);
+                    } else if (isExpiryDateFocused) {
+                        expiryDate += static_cast<char>(event.text.unicode);
+                    } else if (isCVCFocused) {
+                        cvc += static_cast<char>(event.text.unicode);
+                    }
+                }
+            }
+        } else if (event.type == sf::Event::MouseButtonPressed) {
+            // Handle focus shifts based on mouse click
+            sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+            if (cardNumberBox.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+                isCardNumberFocused = true;
+                isNameFocused = false;
+                isExpiryDateFocused = false;
+                isCVCFocused = false;
+            } else if (nameBox.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+                isCardNumberFocused = false;
+                isNameFocused = true;
+                isExpiryDateFocused = false;
+                isCVCFocused = false;
+            } else if (expiryDateBox.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+                isCardNumberFocused = false;
+                isNameFocused = false;
+                isExpiryDateFocused = true;
+                isCVCFocused = false;
+            } else if (cvcBox.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+                isCardNumberFocused = false;
+                isNameFocused = false;
+                isExpiryDateFocused = false;
+                isCVCFocused = true;
+            } else if (submitButton.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+                if (validateFields(cardNumber, name, expiryDate, cvc)) {
+                    showMessage("Payment Successful",window,sf::Color::Green);
+                    window.close();
+                } else {
+                    showMessage("Fill up all fields",window,sf::Color::Red);
+                }
+            }
+        }
+    }
+
+    // Clear the window
+    window.clear(sf::Color::White);
+
+    // Draw UI elements
+    window.draw(cardNumberBox);
+    window.draw(cardNumberText);
+    window.draw(nameBox);
+    window.draw(nameText);
+    window.draw(expiryDateBox);
+    window.draw(expiryDateText);
+    window.draw(cvcBox);
+    window.draw(cvcText);
+    window.draw(submitButton);
+    window.draw(submitText);
+
+    // Draw the input text in the boxes
+    sf::Text inputOriginText;
+    inputOriginText.setFont(font);
+    inputOriginText.setCharacterSize(20);
+    inputOriginText.setString(cardNumber);
+    inputOriginText.setPosition(250, 110);
+    inputOriginText.setFillColor(sf::Color::Black);
+    window.draw(inputOriginText);
+
+    sf::Text inputDestText;
+    inputDestText.setFont(font);
+    inputDestText.setCharacterSize(20);
+    inputDestText.setString(name);
+    inputDestText.setPosition(250, 160);
+    inputDestText.setFillColor(sf::Color::Black);
+    window.draw(inputDestText);
+
+    sf::Text inputDateText;
+    inputDateText.setFont(font);
+    inputDateText.setCharacterSize(20);
+    inputDateText.setString(expiryDate);
+    inputDateText.setPosition(310, 210);
+    inputDateText.setFillColor(sf::Color::Black);
+    window.draw(inputDateText);
+
+    sf::Text inputDateText1;
+    inputDateText1.setFont(font);
+    inputDateText1.setCharacterSize(20);
+    inputDateText1.setString(cvc);
+    inputDateText1.setPosition(200, 260);
+    inputDateText1.setFillColor(sf::Color::Black);
+    window.draw(inputDateText1);
+
+    // Draw feedback message
+    //window.draw(feedback);
+
+    // Display everything
+    window.display();
+}
+
+
+}
+
+
+void FlightBook::showMessage(const string& message,sf::RenderWindow& window,sf::Color color) 
+    {
+        sf::Font font;
+        if (!font.loadFromFile("Assets/Aller_Bd.ttf")) {
+            cerr << "Error loading font\n";
+            return;
+        }
+    sf::RectangleShape popup(sf::Vector2f(400, 100));
+    popup.setFillColor(color); 
+    popup.setPosition(100, 200);  
+
+   
+    sf::Text errorText(message, font, 20);
+    errorText.setFillColor(sf::Color::White);
+    errorText.setPosition(110, 220); 
+
+    window.draw(popup);
+    window.draw(errorText);
+    window.display();
+
+    sf::Clock clock; 
+    while (clock.getElapsedTime().asSeconds() < 5) 
+    {
+        sf::Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed) 
+            {
+                window.close();
+            }
+        }
+    }
+    
+    window.clear(sf::Color::White);  // Clear the window and proceed to next frame
+}
+
 
 void FlightBook::displayDirectFlightsonMap(Flight& flight)
 {
@@ -84,6 +339,20 @@ void FlightBook::displayDirectFlightsonMap(Flight& flight)
     airplane.shape.setPoint(2, sf::Vector2f(5, 10)); // Bottom right
     airplane.shape.setFillColor(sf::Color::Red);
     airplane.speed = 100.f; // Speed of the airplane
+
+    // Load font for displaying text
+    sf::Font font;
+    if (!font.loadFromFile("Assets/Aller_Bd.ttf")) {
+        std::cerr << "Error loading font\n";
+        return;
+    }
+
+    // Create a text object for displaying details
+    sf::Text flightDetails;
+    flightDetails.setFont(font);
+    flightDetails.setCharacterSize(20);
+    flightDetails.setFillColor(sf::Color::Blue);
+    flightDetails.setPosition(windowSize.x - 225.f, 10.f); // Top-right corner
 
         airplane.speed = 100.f;
         string currentOrigin = flight.origin;
@@ -100,6 +369,16 @@ void FlightBook::displayDirectFlightsonMap(Flight& flight)
         airplane.targetPosition = scaledDes;
         airplane.shape.setPosition(airplane.startPosition);
         airplane.shape.setRotation(calculateAngle(airplane.startPosition, airplane.targetPosition));
+
+        flightDetails.setString(
+            "Origin: " + currentOrigin + "\n" +
+            "Destination: " + currentDestination + "\n" +
+            "AirLine: " + flight.airline + "\n" +
+            "Arrival Time: " + flight.arrivalTime + "\n" +
+            "Departure Time: " + flight.departureTime + "\n" +
+            "Shortest: " + (flight.shortest ? "Yes" : "No") + "\n" +
+            "Cheapest: " + (flight.cheapest ? "Yes" : "No")
+        );
 
         // Initialize the path for the current flight
         sf::VertexArray path(sf::LineStrip);
@@ -140,6 +419,7 @@ void FlightBook::displayDirectFlightsonMap(Flight& flight)
             mainGUI.draw();              
             mainWindow.draw(path);       
             mainWindow.draw(airplane.shape); 
+            mainWindow.draw(flightDetails);
             mainWindow.display();
 
             sf::sleep(sf::milliseconds(1)); // Control update frequency
@@ -188,7 +468,7 @@ void FlightBook::confirmBooking(LinkedList &legs, RouteList::RouteNode* routeNod
     // Now handle layovers:
     if (legs.size() > 1) 
     {
-        cout << "\n\033[1;36mLayover Information:\033[0m\n";
+        
         Layover layoverCalculator; // For calculating layover times
         LinkedList::FlightNode* leg = legs.getHead();
     
@@ -197,7 +477,8 @@ void FlightBook::confirmBooking(LinkedList &legs, RouteList::RouteNode* routeNod
         HotelsList hotelsList(fileHandler);
         hotelsList.populateHotelsList(); // ensure this populates one hotel per city
         HotelBooking hotelBooking(hotelsList);
-
+        int hours;
+        int minutes;
         while (leg && leg->next) 
         {
             
@@ -205,17 +486,14 @@ void FlightBook::confirmBooking(LinkedList &legs, RouteList::RouteNode* routeNod
             Flight &nextFlight = leg->next->flight;
 
             int layoverTime = layoverCalculator.calculateLayoverTime(currentFlight.arrivalTime, nextFlight.departureTime);
-            int hours = layoverTime / 60;
-            int minutes = layoverTime % 60;
+            hours = layoverTime / 60;
+            minutes = layoverTime % 60;
 
             layover.enqueue(leg->flight);
 
-            displayInDirectFlightsOnMap(leg,routeNode);
+            displayInDirectFlightsOnMap(leg,routeNode,hours,minutes);
             
-            cout << "Layover at " << currentFlight.destination << ": " 
-                 << hours << " hours " << minutes << " minutes.\n";
             
-            pauseForTakeOff(5);
             // If layover > 12 hours (720 minutes), offer hotel booking
             if (layoverTime > 720) 
             {
@@ -241,7 +519,7 @@ void FlightBook::confirmBooking(LinkedList &legs, RouteList::RouteNode* routeNod
             leg = leg->next;
         }
         layover.enqueue(leg->flight);
-        displayInDirectFlightsOnMap(leg,routeNode);
+        displayInDirectFlightsOnMap(leg,routeNode,0,0);
         pauseForTakeOff(2);
         cout << "\n\tDestination REACHED";
     }
@@ -251,7 +529,9 @@ void FlightBook::confirmBooking(LinkedList &legs, RouteList::RouteNode* routeNod
 // so we are NOT modifying displayInDirectFlightsOnMap code other than the booking index issue.
 // The function remains as before, just ensures no other logic changed.
 
-void FlightBook::displayInDirectFlightsOnMap(LinkedList::FlightNode* leg, RouteList::RouteNode* curr)
+
+    
+void FlightBook::displayInDirectFlightsOnMap(LinkedList::FlightNode* leg, RouteList::RouteNode* curr, int hours, int minutes)
 {
     sf::Vector2u windowSize = mainWindow.getSize();
 
@@ -264,98 +544,145 @@ void FlightBook::displayInDirectFlightsOnMap(LinkedList::FlightNode* leg, RouteL
     airplane.shape.setFillColor(sf::Color::Red);
     airplane.speed = 100.f; // Speed of the airplane
 
+    sf::Vector2f positionOrigin = flightGraph.getCityPosition(leg->flight.origin);
+    sf::Vector2f positionDestination = flightGraph.getCityPosition(leg->flight.destination);
+    sf::Vector2f scaledPos = sf::Vector2f(positionOrigin.x * windowSize.x, positionOrigin.y * windowSize.y);
+    sf::Vector2f scaledDes = sf::Vector2f(positionDestination.x * windowSize.x, positionDestination.y * windowSize.y);
 
-        sf::Vector2f positionOrigin = flightGraph.getCityPosition(leg->flight.origin);
-        sf::Vector2f positionDestination = flightGraph.getCityPosition(leg->flight.destination);
-        sf::Vector2f scaledPos = sf::Vector2f(positionOrigin.x * windowSize.x, positionOrigin.y * windowSize.y);
-        sf::Vector2f scaledDes = sf::Vector2f(positionDestination.x * windowSize.x, positionDestination.y * windowSize.y);
+    airplane.startPosition = scaledPos;
+    airplane.targetPosition = scaledDes;
+    airplane.shape.setPosition(airplane.startPosition);
+    airplane.shape.setRotation(calculateAngleDotted(airplane.startPosition, airplane.targetPosition));
 
-        airplane.startPosition = scaledPos;
-        airplane.targetPosition = scaledDes;
-        airplane.shape.setPosition(airplane.startPosition);
-        airplane.shape.setRotation(calculateAngleDotted(airplane.startPosition, airplane.targetPosition));
-        
-        airplane.isMoving = true;
+    // Load font for displaying text
+    sf::Font font;
+    if (!font.loadFromFile("Assets/Aller_Bd.ttf")) {
+        std::cerr << "Error loading font\n";
+        return;
+    }
 
-        // Direction vector (normalized) for the dotted line
-        sf::Vector2f direction = scaledDes - scaledPos;
-        float totalLength = sqrt(direction.x * direction.x + direction.y * direction.y);
-        direction /= totalLength; // Normalize direction
+    // Create a text object for displaying details
+    sf::Text flightDetails;
+    flightDetails.setFont(font);
+    flightDetails.setCharacterSize(20);
+    flightDetails.setFillColor(sf::Color::Blue);
+    flightDetails.setPosition(windowSize.x - 225.f, 10.f); // Top-right corner
 
-        
-        const int maxDots = 1000; 
-        sf::CircleShape dots[maxDots];
-        float dotSpacing = 20.0f;
-        float dotRadius = 3.0f;
-        float currentLength = 0.0f;
+    airplane.isMoving = true;
 
-        sf::Color pathColor;
-        if (leg->flight.shortest && leg->flight.cheapest)
+    
+
+    // Direction vector (normalized) for the dotted line
+    sf::Vector2f direction = scaledDes - scaledPos;
+    float totalLength = sqrt(direction.x * direction.x + direction.y * direction.y);
+    direction /= totalLength; // Normalize direction
+
+    const int maxDots = 1000;
+    sf::CircleShape dots[maxDots];
+    float dotSpacing = 20.0f;
+    float dotRadius = 3.0f;
+    float currentLength = 0.0f;
+
+    sf::Color pathColor;
+    if (leg->flight.shortest && leg->flight.cheapest)
+    {
+        pathColor = sf::Color::Green;
+        airplane.speed = 25.f;
+    }
+    else if (leg->flight.cheapest)
+    {
+        pathColor = sf::Color::Red;
+        airplane.speed = 25.f;
+    }
+    else if (leg->flight.shortest)
+    {
+        pathColor = sf::Color::Magenta;
+        airplane.speed = 25.f;
+    }
+    else
+    {
+        pathColor = sf::Color::Black;
+        airplane.speed = 50.f;
+    }
+
+    int activeDots = 0;
+    string destination = leg->flight.destination;
+    string currentOrigin = leg->flight.origin;
+    // Create the text object for displaying details
+    sf::Text layoverDetails;
+    layoverDetails.setFont(font); // Make sure the font is set properly
+    layoverDetails.setCharacterSize(20);
+    layoverDetails.setFillColor(sf::Color::Red);
+    layoverDetails.setString("Layover at " + destination + ": \n" + 
+                        to_string(hours) + " hours " + 
+                        to_string(minutes) + " minutes.");
+
+    flightDetails.setString(
+            "Origin: " + currentOrigin + "\n" +
+            "Destination: " + destination + "\n" +
+            "AirLine: " + leg->flight.airline + "\n" +
+            "Arrival Time: " + leg->flight.arrivalTime + "\n" +
+            "Departure Time: " + leg->flight.departureTime + "\n" +
+            "Shortest: " + (leg->flight.shortest ? "Yes" : "No") + "\n" +
+            "Cheapest: " + (leg->flight.cheapest ? "Yes" : "No")
+        );
+
+    
+    layoverDetails.setPosition(windowSize.x - 350.f, 10.f); // Top-right corner
+
+    sf::Clock clock;
+    while (airplane.isMoving)
+    {
+        float deltaTime = clock.restart().asSeconds();
+        currentLength += airplane.speed * deltaTime;
+
+        // Update airplane position
+        updateAirplanePositionDotted(airplane, deltaTime);
+
+        // Add dots up to the current length
+        activeDots = 0;
+        for (float length = 0.0f; length < currentLength && length <= totalLength && activeDots < maxDots; length += dotSpacing)
         {
-            pathColor = sf::Color::Green;
-            airplane.speed = 25.f;
+            sf::Vector2f position = scaledPos + direction * length;
+            dots[activeDots].setRadius(dotRadius);
+            dots[activeDots].setFillColor(pathColor);
+            dots[activeDots].setPosition(position - sf::Vector2f(dotRadius, dotRadius)); // Center the dot
+            activeDots++;
         }
-        else if (leg->flight.cheapest)
+
+        // Stop movement if the airplane reaches the destination
+        if (distance(airplane.shape.getPosition(), airplane.targetPosition) < 1.0f)
         {
-            pathColor = sf::Color::Red;
-            airplane.speed = 25.f;
+            airplane.isMoving = false;
         }
-        else if (leg->flight.shortest)
+
+        // Render the scene
+        mainWindow.clear();
+        mainGUI.draw();
+
+        // Draw the growing dotted path
+        for (int i = 0; i < activeDots; i++) {
+            mainWindow.draw(dots[i]);
+        }
+
+        mainWindow.draw(airplane.shape); // Draw the airplane
+        
+        // Draw the flight details text after the airplane stops moving
+        if (!airplane.isMoving)
         {
-            pathColor = sf::Color::Magenta;
-            airplane.speed = 25.f;
+            mainWindow.draw(layoverDetails);
         }
         else
         {
-            pathColor = sf::Color::Black;
-            airplane.speed = 50.f;
+            mainWindow.draw(flightDetails);
         }
 
-        int activeDots = 0;
-
-        sf::Clock clock;
-        while (airplane.isMoving)
-        {
-            float deltaTime = clock.restart().asSeconds();
-            currentLength += airplane.speed * deltaTime;
-
-            // Update airplane position
-            updateAirplanePositionDotted(airplane, deltaTime);
-
-            // Add dots up to the current length
-            activeDots = 0;
-            for (float length = 0.0f; length < currentLength && length <= totalLength && activeDots < maxDots; length += dotSpacing) 
-            {
-                sf::Vector2f position = scaledPos + direction * length;
-                dots[activeDots].setRadius(dotRadius);
-                dots[activeDots].setFillColor(pathColor);
-                dots[activeDots].setPosition(position - sf::Vector2f(dotRadius, dotRadius)); // Center the dot
-                activeDots++;
-            }
-
-            // Stop movement if the airplane reaches the destination
-            if (distance(airplane.shape.getPosition(), airplane.targetPosition) < 1.0f)
-            {
-                airplane.isMoving = false;
-            }
-
-            // Render the scene
-            mainWindow.clear();
-            mainGUI.draw();
-
-            // Draw the growing dotted path
-            for (int i = 0; i < activeDots; i++) {
-                mainWindow.draw(dots[i]);
-            }
-
-            mainWindow.draw(airplane.shape); // Draw the airplane
-            mainWindow.display();
-
-            sf::sleep(sf::milliseconds(1)); // Small delay for smoother animation
-        }
-
-    
+        mainWindow.display();
+        sf::sleep(sf::milliseconds(1)); // Small delay for smoother animation
+    }
+    pauseForTakeOff(5);
 }
+
 
 
 

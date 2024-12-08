@@ -114,7 +114,8 @@ public:
     void handleInput() {
         sf::Event event;
         while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed) {
+            if (event.type == sf::Event::Closed) 
+            {
                 window.close();
             }
 
@@ -235,7 +236,7 @@ public:
     window.clear(sf::Color::White);  // Clear the window and proceed to next frame
 }
 
-void displayDirectFlightsonMap(string origin, string destination, LinkedList& directFlight)
+void displayDirectFlightsonMap(string origin, string destination, LinkedList& directFlight) 
 {
     sf::Vector2u windowSize = mainWindow.getSize();
 
@@ -247,6 +248,20 @@ void displayDirectFlightsonMap(string origin, string destination, LinkedList& di
     airplane.shape.setPoint(2, sf::Vector2f(5, 10)); // Bottom right
     airplane.shape.setFillColor(sf::Color::Red);
     airplane.speed = 100.f; // Speed of the airplane
+
+    // Load font for displaying text
+    sf::Font font;
+    if (!font.loadFromFile("Assets/Aller_Bd.ttf")) {
+        std::cerr << "Error loading font\n";
+        return;
+    }
+
+    // Create a text object for displaying details
+    sf::Text flightDetails;
+    flightDetails.setFont(font);
+    flightDetails.setCharacterSize(20);
+    flightDetails.setFillColor(sf::Color::Blue);
+    flightDetails.setPosition(windowSize.x - 225.f, 10.f); // Top-right corner
 
     LinkedList::FlightNode* currentNode = directFlight.getHead();
 
@@ -268,28 +283,32 @@ void displayDirectFlightsonMap(string origin, string destination, LinkedList& di
         airplane.shape.setPosition(airplane.startPosition);
         airplane.shape.setRotation(calculateAngle(airplane.startPosition, airplane.targetPosition));
 
+        // Update flight details text
+        flightDetails.setString(
+            "Origin: " + currentOrigin + "\n" +
+            "Destination: " + currentDestination + "\n" +
+            "AirLine: " + currentNode->flight.airline + "\n" +
+            "Shortest: " + (currentNode->flight.shortest ? "Yes" : "No") + "\n" +
+            "Cheapest: " + (currentNode->flight.cheapest ? "Yes" : "No")
+        );
+
         // Initialize the path for the current flight
         sf::VertexArray path(sf::LineStrip);
 
         // Determine path color
         sf::Color pathColor;
-        if(currentNode->flight.shortest && currentNode->flight.cheapest)
-        {
+        if (currentNode->flight.shortest && currentNode->flight.cheapest) {
             pathColor = sf::Color::Green;
             airplane.speed = 50.f;
-        }
-        else if (currentNode->flight.shortest)
-        {
+        } else if (currentNode->flight.shortest) {
             pathColor = sf::Color::Magenta; // Shortest flight
             airplane.speed = 50.f;
-        }
-        else if (currentNode->flight.cheapest)
-        {
+        } else if (currentNode->flight.cheapest) {
             airplane.speed = 50.f;
             pathColor = sf::Color::Red; // Cheapest flight
-        }
-        else
+        } else {
             pathColor = sf::Color::Black; // Default
+        }
 
         // Animate the airplane for this flight
         sf::Clock clock;
@@ -304,9 +323,10 @@ void displayDirectFlightsonMap(string origin, string destination, LinkedList& di
 
             // Clear the window and render everything
             mainWindow.clear();
-            mainGUI.draw();              
-            mainWindow.draw(path);       
-            mainWindow.draw(airplane.shape); 
+            mainGUI.draw();
+            mainWindow.draw(path);
+            mainWindow.draw(airplane.shape);
+            mainWindow.draw(flightDetails); // Draw flight details
             mainWindow.display();
 
             sf::sleep(sf::milliseconds(1)); // Control update frequency
@@ -329,6 +349,20 @@ void displayInDirectFlightsOnMap(string origin, string destination, RouteList& i
     airplane.shape.setFillColor(sf::Color::Red);
     airplane.speed = 100.f; // Speed of the airplane
 
+    // Load font for displaying text
+    sf::Font font;
+    if (!font.loadFromFile("Assets/Aller_Bd.ttf")) {
+        std::cerr << "Error loading font\n";
+        return;
+    }
+
+    // Create a text object for displaying details
+    sf::Text flightDetails;
+    flightDetails.setFont(font);
+    flightDetails.setCharacterSize(20);
+    flightDetails.setFillColor(sf::Color::Blue);
+    flightDetails.setPosition(windowSize.x - 225.f, 10.f); // Top-right corner
+
     RouteList::RouteNode* curr = indirectRoutes.getHead();
 
     while (curr) // Loop through each route
@@ -339,6 +373,9 @@ void displayInDirectFlightsOnMap(string origin, string destination, RouteList& i
         while (leg) 
         {
             airplane.speed = 100.f;
+
+            string currentOrigin = leg->flight.origin;
+            string currentDestination = leg->flight.destination;
             // Get origin and destination positions
             sf::Vector2f positionOrigin = flightGraph.getCityPosition(leg->flight.origin);
             sf::Vector2f positionDestination = flightGraph.getCityPosition(leg->flight.destination);
@@ -351,6 +388,13 @@ void displayInDirectFlightsOnMap(string origin, string destination, RouteList& i
             airplane.shape.setPosition(airplane.startPosition);
             airplane.shape.setRotation(calculateAngle(airplane.startPosition, airplane.targetPosition));
 
+            flightDetails.setString(
+            "Origin: " + currentOrigin + "\n" +
+            "Destination: " + currentDestination + "\n" +
+            "AirLine: " + leg->flight.airline + "\n" +
+            "Shortest: " + (leg->flight.shortest ? "Yes" : "No") + "\n" +
+            "Cheapest: " + (leg->flight.cheapest ? "Yes" : "No")
+        );
             
             airplane.isMoving = true;
 
@@ -389,6 +433,7 @@ void displayInDirectFlightsOnMap(string origin, string destination, RouteList& i
                 mainGUI.draw();              // Draw GUI
                 mainWindow.draw(path);       // Draw the path for the current leg
                 mainWindow.draw(airplane.shape); // Draw the airplane
+                mainWindow.draw(flightDetails);
                 mainWindow.display();
 
                 sf::sleep(sf::milliseconds(1)); // Control update frequency
@@ -414,6 +459,21 @@ void displayTransitCitiesAndIndirectFlights(string origin, string destination, R
     airplane.shape.setFillColor(sf::Color::Red);
     airplane.speed = 100.f; // Speed of the airplane
 
+    // Load font for displaying text
+    sf::Font font;
+    if (!font.loadFromFile("Assets/Aller_Bd.ttf")) {
+        std::cerr << "Error loading font\n";
+        return;
+    }
+
+    // Create a text object for displaying details
+    sf::Text flightDetails;
+    flightDetails.setFont(font);
+    flightDetails.setCharacterSize(20);
+    flightDetails.setFillColor(sf::Color::Blue);
+    flightDetails.setPosition(windowSize.x - 225.f, 10.f); // Top-right corner
+    
+
     RouteList::RouteNode* curr = indirectRoutes.getHead();
 
     // Set up the city point for drawing
@@ -428,6 +488,10 @@ void displayTransitCitiesAndIndirectFlights(string origin, string destination, R
         while (leg) 
         {
             airplane.speed = 100.f;
+
+            string currentOrigin = leg->flight.origin;
+            string currentDestination = leg->flight.destination;
+
             // Get origin and destination positions
             sf::Vector2f positionOrigin = flightGraph.getCityPosition(leg->flight.origin);
             sf::Vector2f positionDestination = flightGraph.getCityPosition(leg->flight.destination);
@@ -439,6 +503,14 @@ void displayTransitCitiesAndIndirectFlights(string origin, string destination, R
             airplane.targetPosition = scaledDes;
             airplane.shape.setPosition(airplane.startPosition);
             airplane.shape.setRotation(calculateAngle(airplane.startPosition, airplane.targetPosition));
+
+            flightDetails.setString(
+            "Origin: " + currentOrigin + "\n" +
+            "Destination: " + currentDestination + "\n" +
+            "AirLine: " + leg->flight.airline + "\n" +
+            "Shortest: " + (leg->flight.shortest ? "Yes" : "No") + "\n" +
+            "Cheapest: " + (leg->flight.cheapest ? "Yes" : "No")
+        );
 
             airplane.isMoving = true;
 
@@ -476,6 +548,7 @@ void displayTransitCitiesAndIndirectFlights(string origin, string destination, R
                 mainWindow.clear();
                 mainGUI.draw();              // Draw GUI
                 mainWindow.draw(path);       // Draw the path for the current leg
+                mainWindow.draw(flightDetails);
                 mainWindow.draw(airplane.shape); // Draw the airplane
 
                 // Draw the city points for the transit cities in a different color
@@ -693,6 +766,7 @@ void applyPreferences(Route &route, BookingState &currentState, RouteList &indir
     }
     else if(cases == 2)
     {
+        displayDirectFlightsonMap(originInput.c_str(),destInput.c_str(),currentState.directFlights);
         displayInDirectFlightsOnMap(originInput.c_str(),destInput.c_str(),currentState.indirectRoutes);
     }
 
