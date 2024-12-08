@@ -3,7 +3,8 @@
 
 #include"main.h"
 
-class Queue{
+class Queue
+{
 private:
     struct Node
     {

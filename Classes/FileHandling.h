@@ -3,7 +3,8 @@
 
 #include "main.h"
 
-class FileHandling {
+class FileHandling 
+{
 private:
     Flight* flights;
     Hotel* hotels;

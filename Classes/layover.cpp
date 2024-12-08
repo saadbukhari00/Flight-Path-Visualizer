@@ -1,12 +1,15 @@
 #include "layover.h"
 
-void Layover::enqueue(Flight &f) {
+void Layover::enqueue(Flight &f) 
+{
     
     flightsQueue.enqueue(f);
 }
 
-Flight Layover::dequeue() {
-    if (!flightsQueue.isEmpty()) {
+Flight Layover::dequeue() 
+{
+    if (!flightsQueue.isEmpty()) 
+    {
         return flightsQueue.dequeue();
     }
     // If empty, return a default Flight (handle as needed)
@@ -22,15 +25,12 @@ Flight Layover::dequeue() {
     return emptyFlight;
 }
 
-int Layover::calculateTotalLayoverTime() {
+int Layover::calculateTotalLayoverTime() 
+{
     // To calculate total layover time, we need at least 2 flights
     if (flightsQueue.isEmpty()) return 0;
-
-    // We will copy the queue contents temporarily (if Queue supports iteration or copying)
-    // Alternatively, if we must preserve the queue, we might need a temporary structure.
-    // Assuming we have a way to iterate or copy queue without destroying it:
     
-    Queue tempQueue = flightsQueue; // assuming copy constructor or operator= is available
+    Queue tempQueue = flightsQueue; 
     if (tempQueue.isEmpty()) return 0;
 
     Flight prevFlight = tempQueue.dequeue(); 
@@ -42,28 +42,21 @@ int Layover::calculateTotalLayoverTime() {
         // If same date, calculate layover based on times
         // If later date, layover includes the full difference from arrival of prevFlight day to departure of next day.
         
+        //darte coversion
         int prevDate = convertDateToComparableFormat(prevFlight.date);
         int nextDate = convertDateToComparableFormat(nextFlight.date);
 
         if (nextDate == prevDate) {
             // Same date, just calculate difference in times
             totalLayover += calculateLayoverTime(prevFlight.arrivalTime, nextFlight.departureTime);
-        } else if (nextDate > prevDate) {
-            // Different days, layover at least includes a day gap
-            // For simplicity, let's consider that the layover doesn't span multiple days beyond
-            // Just take difference in minutes assuming next flight departs next day:
-            // One approach: treat arrival as absolute minute in day, departure as absolute minute in next day.
-            // We can assume that if the date is strictly greater, we have a long layover.
-            
-            // This simplistic approach: no multiple-day difference calculation needed.
-            // Just note that if nextDate > prevDate by N days, add (N*24*60 + difference).
+        } 
+        else if (nextDate > prevDate) 
+        {
+            // Different date, calculate full day difference
             int dayDifference = (nextDate - prevDate); 
-            // dayDifference is not pure days if dates differ by more than a month, but let's assume test data is close
-            // A robust approach would parse the date fully, but we assume small date differences.
             
             // Minimum, assume 1 day difference = 1440 minutes (24*60)
-            // This is a rough approach; for accuracy, you might need full date diff calculation.
-            // For now, let's do simple approach: 
+            //jist for demonstration purpose
             int arrivalMin = timeStringToMinutes(prevFlight.arrivalTime);
             int departureMin = timeStringToMinutes(nextFlight.departureTime);
             totalLayover += dayDifference*1440 + (departureMin - arrivalMin);
@@ -75,10 +68,13 @@ int Layover::calculateTotalLayoverTime() {
 }
 
 
-void Layover::printLayoverDetails() {
+// Print layover details    
+void Layover::printLayoverDetails() 
+{
     // Similar to totalLayoverTime, but print each layover
-    if (flightsQueue.isEmpty()) {
-        std::cout << "No flights in the layover.\n";
+    if (flightsQueue.isEmpty()) 
+    {
+        cout << "No flights in the layover.\n";
         return;
     }
 
@@ -86,17 +82,21 @@ void Layover::printLayoverDetails() {
     Flight prevFlight = tempQueue.dequeue(); 
     int legIndex = 0;
 
-    std::cout << "\n\033[1;36mLayover Details:\033[0m\n";
+    cout << "\n\033[1;36mLayover Details:\033[0m\n";
 
-    while (!tempQueue.isEmpty()) {
+    while (!tempQueue.isEmpty()) 
+    {
         Flight nextFlight = tempQueue.dequeue();
         int prevDate = convertDateToComparableFormat(prevFlight.date);
         int nextDate = convertDateToComparableFormat(nextFlight.date);
 
         int layoverMinutes = 0;
-        if (nextDate == prevDate) {
+        if (nextDate == prevDate) 
+        {
             layoverMinutes = calculateLayoverTime(prevFlight.arrivalTime, nextFlight.departureTime);
-        } else if (nextDate > prevDate) {
+        } 
+        else if (nextDate > prevDate) 
+        {
             // Approximation for multi-day layovers:
             int arrivalMin = timeStringToMinutes(prevFlight.arrivalTime);
             int departureMin = timeStringToMinutes(nextFlight.departureTime);
@@ -104,11 +104,11 @@ void Layover::printLayoverDetails() {
             layoverMinutes = dayDifference * 1440 + (departureMin - arrivalMin);
         }
 
-        std::cout << "Leg " << legIndex << " layover before next flight: " << layoverMinutes << " minutes\n";
+       cout << "Leg " << legIndex << " layover before next flight: " << layoverMinutes << " minutes\n";
         prevFlight = nextFlight;
         legIndex++;
     }
 
     int total = calculateTotalLayoverTime();
-    std::cout << "Total Layover Time: " << total << " minutes\n";
+    cout << "Total Layover Time: " << total << " minutes\n";
 }

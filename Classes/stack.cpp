@@ -8,7 +8,8 @@ void Stack::Push(const BookingState& state)
     size++;
 }
 
-void Stack::Pop() {
+void Stack::Pop() 
+{
     if(IsEmpty()) 
     {
         return;
@@ -20,7 +21,8 @@ void Stack::Pop() {
     size--;
 }
 
-BookingState Stack::Top() const {
+BookingState Stack::Top() const 
+{
     if(IsEmpty()) 
     {
         throw out_of_range("Stack is empty");

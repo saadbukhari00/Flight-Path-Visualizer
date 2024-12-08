@@ -4,7 +4,8 @@
 #include "main.h"
 #include "FileHandling.h"
 
-struct Edge {
+struct Edge 
+{
     int destination;
     Flight* flightData;
     Edge* next;
@@ -13,17 +14,20 @@ struct Edge {
         : destination(dest), flightData(data), next(nextEdge) {}
 };
 
-struct Vertex {
+struct Vertex 
+{
     char city[50];
     Edge* head;
 };
 
-struct CityCoordinate {
+struct CityCoordinate 
+{
     char city[50];
     sf::Vector2f position;
 };
 
-class FlightGraph {
+class FlightGraph 
+{
 private:
     Vertex* vertices;
     CityCoordinate* coordinates;

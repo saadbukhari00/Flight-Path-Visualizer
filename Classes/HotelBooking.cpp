@@ -2,7 +2,8 @@
 
 HotelBooking::HotelBooking(HotelsList &hList) : hotelsList(hList) {}
 
-void HotelBooking::searchHotelsInCity(const char* cityName) {
+void HotelBooking::searchHotelsInCity(const char* cityName) 
+{
     HotelsList::HotelNode* curr = hotelsList.getHead();
     bool found = false;
     std::cout << "\n\033[1;36mHotels available in " << cityName << ":\033[0m\n";
@@ -10,8 +11,10 @@ void HotelBooking::searchHotelsInCity(const char* cityName) {
     std::cout << "   IDX | Hotel Name                     | City           | Price/Night\n";
     std::cout << "-------|--------------------------------|----------------|-------------\n";
     int index = 0;
-    while (curr) {
-        if (strcmp(curr->hotel.city, cityName) == 0) {
+    while (curr) 
+    {
+        if (strcmp(curr->hotel.city, cityName) == 0) 
+        {
             found = true;
             std::cout << "   " << index << "   | " << std::setw(30) << curr->hotel.name
                       << " | " << std::setw(14) << curr->hotel.city
@@ -22,13 +25,16 @@ void HotelBooking::searchHotelsInCity(const char* cityName) {
         curr = curr->next;
         index++;
     }
-    if (!found) {
+    if (!found) 
+    {
         std::cout << "\033[1;31mNo hotels found in " << cityName << ".\033[0m\n";
     }
     std::cout << "________________________________________________________________________________\n\n";
 }
 
-void HotelBooking::bookHotelInCity(const char* cityName) {
+// Book a hotel in the given city
+void HotelBooking::bookHotelInCity(const char* cityName) 
+{
     // Since only one hotel per city, we just find it and confirm the booking.
     HotelsList::HotelNode* curr = hotelsList.getHead();
     curr->hotel.allocateHotelNamesRandomly(cityName);

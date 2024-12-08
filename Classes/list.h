@@ -6,7 +6,8 @@
 class LinkedList
 {
 public:
-    class FlightNode{
+    class FlightNode
+    {
     public:
         FlightNode * next;
         Flight flight;

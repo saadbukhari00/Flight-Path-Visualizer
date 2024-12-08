@@ -5,13 +5,16 @@
 #include "list.h"
 
 
-struct FlightRoute {
+struct FlightRoute 
+{
     LinkedList legs;
 };
 
-class RouteList {
+class RouteList 
+{
 public:
-    struct RouteNode {
+    struct RouteNode 
+    {
         FlightRoute route;
         RouteNode* next;
         bool cheapest;

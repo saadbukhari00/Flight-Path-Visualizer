@@ -1,5 +1,6 @@
 #include"queue.h"
     
+    // Constructor
     Queue::Queue() 
     {
         front = NULL;
@@ -19,6 +20,7 @@
         }
     }
 
+    // Add a flight to the queue
     void Queue::enqueue(const Flight& flight)
     {
         Node * newNode = new Node;
@@ -40,6 +42,7 @@
         }   
     }
 
+    // Add a flight to the queue with priority
     void Queue::PriorityEnqueue(const Flight& flight, int pri)
     {
         Node * newNode = new Node;
@@ -62,6 +65,8 @@
 
     }
 
+
+// Remove a flight from the queue
 Flight Queue::dequeue()
 {
     if (isEmpty())

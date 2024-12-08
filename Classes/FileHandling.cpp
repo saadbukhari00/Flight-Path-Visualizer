@@ -1,6 +1,7 @@
 #include"FileHandling.h"
 
-    FileHandling::FileHandling(int flightCapacity, int hotelCapacity) {
+    FileHandling::FileHandling(int flightCapacity, int hotelCapacity) 
+    {
         maxFlights = flightCapacity;
         maxHotels = hotelCapacity;
         flights = new Flight[maxFlights];
@@ -9,25 +10,31 @@
         hotelCount = 0;
     }
 
-    int FileHandling::getFlightCount() const {
+    int FileHandling::getFlightCount() const 
+    {
         return flightCount;
     }
 
-    int FileHandling::getHotelCount() const {
+    int FileHandling::getHotelCount() const 
+    {
         return hotelCount;
     }
 
-    Flight* FileHandling::readFlightsFile() {
+    Flight* FileHandling::readFlightsFile() 
+    {
         const char* fileName = "Assets/flights.txt";
         ifstream file(fileName);
-        if (!file.is_open()) {
+        if (!file.is_open()) 
+        {
             cout << "Could not open the flights file.\n";
             return nullptr;
         }
 
         char line[256];
-        while (file.getline(line, sizeof(line))) {
-            if (flightCount >= maxFlights) {
+        while (file.getline(line, sizeof(line))) 
+        {
+            if (flightCount >= maxFlights) 
+            {
                 cout << "Error: Maximum flight capacity reached.\n";
                 break;
             }
@@ -42,9 +49,12 @@
                 flights[flightCount].airline,
                 &flights[flightCount].distance);
 
-            if (parsed == 8) {
+            if (parsed == 8) 
+            {
                 flightCount++;
-            } else {
+            } 
+            else 
+            {
                 cout << "Error parsing line: " << line << "\n";
             }
         }
@@ -53,7 +63,8 @@
         return flights;
     }
     
-    Hotel* FileHandling::readHotelsFile() {
+    Hotel* FileHandling::readHotelsFile() 
+    {
         const char* fileName = "Assets/HotelCharges_perday.txt";
         ifstream file(fileName);
         if(!file.is_open()) 
@@ -76,21 +87,26 @@
         return hotels;
     }
 
-    Flight* FileHandling::getFlightByIndex(int index) {
-        if (index < 0 || index >= flightCount) {
+    Flight* FileHandling::getFlightByIndex(int index) 
+    {
+        if (index < 0 || index >= flightCount) 
+        {
             return nullptr;
         }
         return &flights[index];
     }
 
-    Hotel* FileHandling::getHotelByIndex(int index) {
-        if (index < 0 || index >= hotelCount) {
+    Hotel* FileHandling::getHotelByIndex(int index) 
+    {
+        if (index < 0 || index >= hotelCount) 
+        {
             return nullptr;
         }
         return &hotels[index];
     }
 
-    FileHandling::~FileHandling() {
+    FileHandling::~FileHandling() 
+    {
         delete[] flights;
         delete[] hotels;
     }

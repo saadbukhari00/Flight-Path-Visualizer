@@ -9,7 +9,8 @@
 #include "utils.h"
 #include "layover.h"
 
-class FlightBook{
+class FlightBook
+{
 public:
 
     void bookFlightOption(string&,string&,LinkedList &directFlights, RouteList &indirectRoutes);

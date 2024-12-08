@@ -6,12 +6,17 @@
         currentSize = 0;
         arr = new int[capacity];
     }
+
+
+
     Heap::Heap(int cap) 
     {
         capacity = cap;
         currentSize = 0;
         arr = new int[capacity];
     }
+
+   
     Heap::Heap(int *a, int size) 
     {
         capacity = size;
@@ -26,6 +31,9 @@
             heapify(i);
         }
     }
+
+
+    //insert element in heap
     void Heap::insert(int x) 
     {
         if(currentSize >= capacity) 
@@ -45,6 +53,7 @@
         }
     }
     
+    //heapify the heap
     void Heap::heapify(int index) 
     {
         int largest = index;
@@ -63,6 +72,7 @@
         }
     }
 
+    //remove element from heap
     void Heap::remove() 
     {
         if(currentSize == 0) 
@@ -75,14 +85,19 @@
         heapify(0);
     }
     
+    //clear hjeap
     void Heap::clear() 
     {
         currentSize = 0;
     }
+
+    //chck if heap is empy
     bool Heap::isEmpty() 
     {
         return currentSize == 0;
     }
+
+    //pritns the heap
     void Heap::print() 
     {
         for(int i = 0; i < currentSize; i++) 

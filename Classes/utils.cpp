@@ -6,6 +6,7 @@ float calculateAngle(const sf::Vector2f& start, const sf::Vector2f& target)
 {
     return atan2(target.y - start.y, target.x - start.x) * 180.f / 3.14159f;
 }
+
 void pauseForTakeOff(int seconds) 
 {
     this_thread::sleep_for(chrono::seconds(seconds));
@@ -19,7 +20,8 @@ sf::Vector2f normalize(const sf::Vector2f& vector)
 }
 
 // Update airplane position based on direction and speed
-void updateAirplanePosition(Airplane& airplane, float deltaTime) {
+void updateAirplanePosition(Airplane& airplane, float deltaTime) 
+{
     if (airplane.isMoving) 
     {
         sf::Vector2f direction = normalize(airplane.targetPosition - airplane.shape.getPosition());

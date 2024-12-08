@@ -18,6 +18,7 @@ using namespace std;
 
 
 
+// Airplane structure
 struct Airplane 
 {
     sf::ConvexShape shape;      // The triangle to represent the airplane
@@ -28,6 +29,7 @@ struct Airplane
 };
 
 
+// Flight structure
 struct Flight 
 {
     char origin[50];
@@ -41,6 +43,7 @@ struct Flight
     bool cheapest;
     bool shortest;
 
+    // Default constructor
     Flight()
     {
         strcpy(origin, "");
@@ -55,6 +58,7 @@ struct Flight
         shortest = false;
     }
 
+    // Parameterized constructor
     Flight(const char* origin, const char* destination, const char* airline, const char* date, const char* departureTime, const char* arrivalTime, int price, int distance)
     {
         strcpy(this->origin, origin);
@@ -69,6 +73,7 @@ struct Flight
         this->shortest = false;
     }
 
+    // Display the flight details
     void display()
     {
          cout <<" Origin: " << origin << ", Destination: " << destination
@@ -82,7 +87,10 @@ struct Flight
 
 };
 
-struct Hotel{
+
+// Hotel structure
+struct Hotel
+{
 public:
     char city[50];
     char name[100];
@@ -102,6 +110,7 @@ public:
         this->pricePerNight = pricePerNight;
     }
 
+    // Display the hotel details
     void allocateHotelNamesRandomly(const char * city)
     {
         if(strcmp(city, "Islamabad") == 0)

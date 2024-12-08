@@ -82,7 +82,8 @@ void RouteList::Display()
     RouteNode* curr = head;
     int index = 0;
     
-    while (curr) {
+    while (curr)
+    {
         LinkedList::FlightNode* leg = curr->route.legs.getHead();
         int legCount = curr->route.legs.size();
 
@@ -126,7 +127,8 @@ void RouteList::Display()
     }
 }
 
-RouteList::RouteNode* RouteList::getRouteByIndex(int idx) {
+RouteList::RouteNode* RouteList::getRouteByIndex(int idx) 
+{
     int count = 0;
     RouteNode* curr = head;
     while (curr && count < idx) {

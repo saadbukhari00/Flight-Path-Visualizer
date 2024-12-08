@@ -1,6 +1,7 @@
 #include "main.h"
 
-class Menu{
+class Menu
+{
 public:
     void displayHeader();
 

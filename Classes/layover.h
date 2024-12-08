@@ -18,6 +18,7 @@ private:
         return hours * 60 + minutes;
     }
 
+    // Convert date string to a comparable integer format
     int convertDateToComparableFormat(const char* date)
     {
         int day, month, year;
@@ -32,6 +33,7 @@ private:
 
 public:
 
+    // Calculate layover time between two times
     int calculateLayoverTime(const char* arrival, const char* departure) 
     {
         int arrivalMinutes = timeStringToMinutes(arrival);

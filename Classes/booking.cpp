@@ -5,20 +5,25 @@
 #include "FileHandling.h"  // For fileHandler if needed
 
 
+//Constructor
 FlightBook::FlightBook(sf::RenderWindow& main, sf::RenderWindow& win, MainGUI& mainG, FlightGraph& flightG) 
     : mainWindow(main), window(win), mainGUI(mainG), flightGraph(flightG) {} 
 
 
-bool FlightBook::validateFields(const std::string& cardNumber, const std::string& name, 
-                    const std::string& expiryDate, const std::string& cvc) {
-    if (cardNumber.empty() || name.empty() || expiryDate.empty() || cvc.empty()) {
+// Function to validate fields for payment system
+bool FlightBook::validateFields(const std::string& cardNumber, const std::string& name, const std::string& expiryDate, const std::string& cvc) 
+{
+    if (cardNumber.empty() || name.empty() || expiryDate.empty() || cvc.empty()) 
+    {
         return false;
     }
 
     return true;
 }
 
-void FlightBook::bookFlightOption(string& org, string& dest, LinkedList &directFlights, RouteList &indirectRoutes) {
+// Function to book a flight option
+void FlightBook::bookFlightOption(string& org, string& dest, LinkedList &directFlights, RouteList &indirectRoutes) 
+{
     origin = org;
     destination = dest;
 
@@ -26,7 +31,9 @@ void FlightBook::bookFlightOption(string& org, string& dest, LinkedList &directF
     cout << "\n\033[1;36mAvailable Direct Flights:\033[0m\n";
     directFlights.Display();
     int directCount = directFlights.size();
-    if (directCount <= 0) {
+
+    if (directCount <= 0) 
+    {
         cout << "\033[1;31mNo Direct Flights available.\033[0m\n";
     }
 
@@ -34,12 +41,15 @@ void FlightBook::bookFlightOption(string& org, string& dest, LinkedList &directF
     cout << "\n\033[1;36mAvailable Indirect Routes (Multi-leg Journeys):\033[0m\n";
     indirectRoutes.DisplayWithIndexOffset(directCount);
     int routeCount = indirectRoutes.countRoutes();
-    if(routeCount <= 0) {
+
+    if(routeCount <= 0) 
+    {
         cout << "\033[1;31mNo Indirect Routes available.\033[0m\n";
     }
 
     int totalOptions = directCount + routeCount;
-    if (totalOptions == 0) {
+    if (totalOptions == 0) 
+    {
         cout << "No flights/routes available to book.\n";
         return;
     }
@@ -48,7 +58,8 @@ void FlightBook::bookFlightOption(string& org, string& dest, LinkedList &directF
     int choice;
     cin >> choice;
 
-    if (choice < 0 || choice >= totalOptions) {
+    if (choice < 0 || choice >= totalOptions) 
+    {
         cout << "\033[1;31mInvalid choice.\033[0m\n";
         return;
     }
@@ -72,7 +83,8 @@ void FlightBook::bookFlightOption(string& org, string& dest, LinkedList &directF
         // It's an indirect route (multi-leg journey)
         int routeIndex = choice - directCount;
         RouteList::RouteNode* routeNode = indirectRoutes.getRouteByIndex(routeIndex);
-        if (!routeNode) {
+        if (!routeNode)
+         {
             cout << "\033[1;31mInvalid route index.\033[0m\n";
             return;
         }
@@ -85,7 +97,8 @@ void FlightBook::bookFlightOption(string& org, string& dest, LinkedList &directF
 sf::RenderWindow window(sf::VideoMode(800, 600), "Payment Form");
 
 sf::Font font;
-if (!font.loadFromFile("Assets/Aller_Bd.ttf")) {
+if (!font.loadFromFile("Assets/Aller_Bd.ttf")) 
+{
     std::cerr << "Error loading font\n";
     return;
 }
@@ -158,47 +171,79 @@ bool isNameFocused = false;
 bool isExpiryDateFocused = false;
 bool isCVCFocused = false;
 
-while (window.isOpen()) {
+while (window.isOpen()) 
+{
     sf::Event event;
-    while (window.pollEvent(event)) {
-        if (event.type == sf::Event::Closed) {
+    while (window.pollEvent(event)) 
+    {
+        if (event.type == sf::Event::Closed) 
+        {
             window.close();
-        } else if (event.type == sf::Event::TextEntered) {
-            if (event.text.unicode < 128) { // ASCII character check
-                if (event.text.unicode == 8) { // Backspace
-                    if (isCardNumberFocused && !cardNumber.empty()) {
+        } 
+        else if (event.type == sf::Event::TextEntered) 
+        {
+            if (event.text.unicode < 128) 
+            { // ASCII character check
+                if (event.text.unicode == 8) 
+                { // Backspace
+                    if (isCardNumberFocused && !cardNumber.empty())
+                    {
                         cardNumber.pop_back();
-                    } else if (isNameFocused && !name.empty()) {
+                    } 
+                    else if (isNameFocused && !name.empty()) 
+                    {
                         name.pop_back();
-                    } else if (isExpiryDateFocused && !expiryDate.empty()) {
+                    } 
+                    else if (isExpiryDateFocused && !expiryDate.empty()) 
+                    {
                         expiryDate.pop_back();
-                    } else if (isCVCFocused && !cvc.empty()) {
+                    } 
+                    else if (isCVCFocused && !cvc.empty()) 
+                    {
                         cvc.pop_back();
                     }
-                } else if (event.text.unicode == 13) { // Enter key
-                    if (isCardNumberFocused) {
+                } 
+                else if (event.text.unicode == 13)
+                 { // Enter key
+                    if (isCardNumberFocused) 
+                    {
                         isCardNumberFocused = false;
                         isNameFocused = true;
-                    } else if (isNameFocused) {
+                    } 
+                    else if (isNameFocused) 
+                    {
                         isNameFocused = false;
                         isExpiryDateFocused = true;
-                    } else if (isExpiryDateFocused) {
+                    } 
+                    else if (isExpiryDateFocused) 
+                    {
                         isExpiryDateFocused = false;
                         isCVCFocused = true;
                     }
-                } else {
-                    if (isCardNumberFocused) {
+                } 
+                else 
+                {
+                    if (isCardNumberFocused) 
+                    {
                         cardNumber += static_cast<char>(event.text.unicode);
-                    } else if (isNameFocused) {
+                    } 
+                    else if (isNameFocused) 
+                    {
                         name += static_cast<char>(event.text.unicode);
-                    } else if (isExpiryDateFocused) {
+                    } 
+                    else if (isExpiryDateFocused) 
+                    {
                         expiryDate += static_cast<char>(event.text.unicode);
-                    } else if (isCVCFocused) {
+                    } 
+                    else if (isCVCFocused) 
+                    {
                         cvc += static_cast<char>(event.text.unicode);
                     }
                 }
             }
-        } else if (event.type == sf::Event::MouseButtonPressed) {
+        } 
+        else if (event.type == sf::Event::MouseButtonPressed)
+         {
             // Handle focus shifts based on mouse click
             sf::Vector2i mousePos = sf::Mouse::getPosition(window);
             if (cardNumberBox.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
@@ -280,8 +325,6 @@ while (window.isOpen()) {
     inputDateText1.setFillColor(sf::Color::Black);
     window.draw(inputDateText1);
 
-    // Draw feedback message
-    //window.draw(feedback);
 
     // Display everything
     window.display();
@@ -342,7 +385,8 @@ void FlightBook::displayDirectFlightsonMap(Flight& flight)
 
     // Load font for displaying text
     sf::Font font;
-    if (!font.loadFromFile("Assets/Aller_Bd.ttf")) {
+    if (!font.loadFromFile("Assets/Aller_Bd.ttf")) 
+    {
         std::cerr << "Error loading font\n";
         return;
     }
@@ -441,7 +485,8 @@ void FlightBook::confirmBooking(Flight &flight)
     cout << "\n\tDestination REACHED";
 }
 
-void FlightBook::confirmBooking(LinkedList &legs, RouteList::RouteNode* routeNode) {
+void FlightBook::confirmBooking(LinkedList &legs, RouteList::RouteNode* routeNode) 
+{
     cout << "\n\033[1;32mBooking Multi-Leg Route Details:\033[0m\n";
     int totalPrice = 0;
     int totalDistance = 0;
@@ -473,9 +518,9 @@ void FlightBook::confirmBooking(LinkedList &legs, RouteList::RouteNode* routeNod
         LinkedList::FlightNode* leg = legs.getHead();
     
         // Initialize HotelsList and HotelBooking for possible hotel booking
-        FileHandling fileHandler(200,50); // adjust as needed
+        FileHandling fileHandler(200,50); 
         HotelsList hotelsList(fileHandler);
-        hotelsList.populateHotelsList(); // ensure this populates one hotel per city
+        hotelsList.populateHotelsList();
         HotelBooking hotelBooking(hotelsList);
         int hours;
         int minutes;
@@ -510,7 +555,7 @@ void FlightBook::confirmBooking(LinkedList &legs, RouteList::RouteNode* routeNod
             if (!layover.isEmpty()) 
             {
                 Flight flight = layover.dequeue();
-                // Process the flight (e.g., print details or add to another data structure)
+               
             } 
             else 
             {
@@ -524,13 +569,7 @@ void FlightBook::confirmBooking(LinkedList &legs, RouteList::RouteNode* routeNod
         cout << "\n\tDestination REACHED";
     }
 }
-
-// Note: The user said "dont change the displayIndirect functions and keep it as same before" 
-// so we are NOT modifying displayInDirectFlightsOnMap code other than the booking index issue.
-// The function remains as before, just ensures no other logic changed.
-
-
-    
+ 
 void FlightBook::displayInDirectFlightsOnMap(LinkedList::FlightNode* leg, RouteList::RouteNode* curr, int hours, int minutes)
 {
     sf::Vector2u windowSize = mainWindow.getSize();
@@ -556,7 +595,8 @@ void FlightBook::displayInDirectFlightsOnMap(LinkedList::FlightNode* leg, RouteL
 
     // Load font for displaying text
     sf::Font font;
-    if (!font.loadFromFile("Assets/Aller_Bd.ttf")) {
+    if (!font.loadFromFile("Assets/Aller_Bd.ttf")) 
+    {
         std::cerr << "Error loading font\n";
         return;
     }

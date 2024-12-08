@@ -1,7 +1,8 @@
 #include "FlightGraph.h"
 
 FlightGraph::FlightGraph(int size, FileHandling& fileHandler)
-    : fileHandler(fileHandler), vertexCount(0), coordinateCount(0), maxVertices(size) {
+    : fileHandler(fileHandler), vertexCount(0), coordinateCount(0), maxVertices(size) 
+{
     vertices = new Vertex[size];
     coordinates = new CityCoordinate[120];
     if (!mapTexture.loadFromFile("Assets/world_map.png")) 
@@ -27,14 +28,17 @@ const char* FlightGraph::getCityName(int cityIndex) const
 
 
 // Returns the list of vertices (cities)
-Vertex* FlightGraph::getVertices() {
+Vertex* FlightGraph::getVertices() 
+{
     return vertices;
 }
 
 // Returns the index of a city in the graph, or -1 if not found
-int FlightGraph::getCityIndex(const char* cityName) {
+int FlightGraph::getCityIndex(const char* cityName) 
+{
     for (int i = 0; i < vertexCount; i++) {
-        if (strcmp(vertices[i].city, cityName) == 0) {
+        if (strcmp(vertices[i].city, cityName) == 0) 
+        {
             return i;
         }
     }
@@ -42,11 +46,13 @@ int FlightGraph::getCityIndex(const char* cityName) {
 }
 
 // Returns the number of vertices (cities) in the graph
-int FlightGraph::getNumVertices() const {
+int FlightGraph::getNumVertices() const 
+{
     return vertexCount;
 }
 
-void FlightGraph::addCity(const char* city, sf::Vector2f position) {
+void FlightGraph::addCity(const char* city, sf::Vector2f position) 
+{
     for (int i = 0; i < coordinateCount; i++) {
         if (strcmp(coordinates[i].city, city) == 0)
             return; // City already added
@@ -56,7 +62,8 @@ void FlightGraph::addCity(const char* city, sf::Vector2f position) {
     coordinateCount++;
 }
 
-void FlightGraph::initializeCityCoordinates() {
+void FlightGraph::initializeCityCoordinates() 
+{
     addCity("Islamabad", sf::Vector2f(0.74f, 0.45f));
     addCity("Newyork", sf::Vector2f(0.35f, 0.35f));
     addCity("Paris", sf::Vector2f(0.53f, 0.38f));
@@ -70,7 +77,8 @@ void FlightGraph::initializeCityCoordinates() {
     addCity("Sydney", sf::Vector2f(0.98f, 0.84f));
 }
 
-sf::Vector2f FlightGraph::getCityPosition(const std::string& city) {
+sf::Vector2f FlightGraph::getCityPosition(const std::string& city) 
+{
     for (int i = 0; i < coordinateCount; i++) 
     {
         if (strcmp(coordinates[i].city, city.c_str()) == 0) {
@@ -80,16 +88,20 @@ sf::Vector2f FlightGraph::getCityPosition(const std::string& city) {
     return sf::Vector2f(0, 0); // Return a default position if city is not found
 }
 
-int FlightGraph::findOrAddCity(const char* cityName) {
+// Find a city in the graph, or add it if not found
+int FlightGraph::findOrAddCity(const char* cityName) 
+{
     // Search for the city
     for (int i = 0; i < vertexCount; i++) {
-        if (strcmp(vertices[i].city, cityName) == 0) {
+        if (strcmp(vertices[i].city, cityName) == 0) 
+        {
             return i; // City found
         }
     }
 
     // Add the city if not found
-    if (vertexCount < maxVertices) {
+    if (vertexCount < maxVertices) 
+    {
         strcpy(vertices[vertexCount].city, cityName);
         vertices[vertexCount].head = nullptr;
         return vertexCount++;
@@ -99,14 +111,16 @@ int FlightGraph::findOrAddCity(const char* cityName) {
     return -1; // Error: Max vertices reached
 }
 
-void FlightGraph::addFlight(const char* origin, const char* destination, const char* airline, const char* date,
-                            const char* departureTime, const char* arrivalTime, int price, int distance) {
+// Add a flight to the graph
+void FlightGraph::addFlight(const char* origin, const char* destination, const char* airline, const char* date,const char* departureTime, const char* arrivalTime, int price, int distance) 
+{
     int originIndex = findOrAddCity(origin);
     int destIndex = findOrAddCity(destination);
 
     // Check for duplicate flights
     Edge* current = vertices[originIndex].head;
-    while (current) {
+    while (current) 
+    {
         if (strcmp(current->flightData->destination, destination) == 0 &&
             strcmp(current->flightData->airline, airline) == 0 &&
             strcmp(current->flightData->date, date) == 0)
@@ -119,7 +133,10 @@ void FlightGraph::addFlight(const char* origin, const char* destination, const c
     Edge* newEdge = new Edge(destIndex, newFlight, vertices[originIndex].head);
     vertices[originIndex].head = newEdge;
 }
-bool FlightGraph::isDuplicateFlight(const char* origin, const char* destination, const char* airline, const char* date) {
+
+//Check for duplicate flights
+bool FlightGraph::isDuplicateFlight(const char* origin, const char* destination, const char* airline, const char* date) 
+{
     int originIndex = getCityIndex(origin);
     if (originIndex == -1) return false;
 
@@ -135,11 +152,14 @@ bool FlightGraph::isDuplicateFlight(const char* origin, const char* destination,
     return false; // No duplicate flight found
 }
 
-void FlightGraph::populateGraph() {
+//To fill the graph
+void FlightGraph::populateGraph() 
+{
     fileHandler.readFlightsFile();
     int flightCount = fileHandler.getFlightCount();
 
-    for (int i = 0; i < flightCount; i++) {
+    for (int i = 0; i < flightCount; i++) 
+    {
         Flight* flight = fileHandler.getFlightByIndex(i);
 
         if(flight && !isDuplicateFlight(flight->origin, flight->destination, flight->airline, flight->date)) 
@@ -149,13 +169,15 @@ void FlightGraph::populateGraph() {
     }
 }
 
-void FlightGraph::displayGraph() const {
+void FlightGraph::displayGraph() const 
+{
     for (int i = 0; i < vertexCount; i++) {
         if (vertices[i].city[0] == '\0') continue;
 
         std::cout << "City: " << vertices[i].city << " -> ";
         Edge* edge = vertices[i].head;
-        while (edge) {
+        while (edge) 
+        {
             std::cout << vertices[edge->destination].city
                       << " (Airline: " << edge->flightData->airline
                       << ", Date: " << edge->flightData->date
@@ -167,7 +189,8 @@ void FlightGraph::displayGraph() const {
     }
 }
 
-void FlightGraph::displayOnMap(sf::RenderWindow& window, const sf::Texture& mapTexture) {
+void FlightGraph::displayOnMap(sf::RenderWindow& window, const sf::Texture& mapTexture) 
+{
     sf::Sprite map(mapTexture);
     sf::Vector2u windowSize = window.getSize();
     map.setScale(static_cast<float>(windowSize.x) / mapTexture.getSize().x,
@@ -178,7 +201,8 @@ void FlightGraph::displayOnMap(sf::RenderWindow& window, const sf::Texture& mapT
     cityPoint.setFillColor(sf::Color::Red);
 
     sf::Font font;
-    if (!font.loadFromFile("Assets/arial.ttf")) {
+    if (!font.loadFromFile("Assets/arial.ttf")) 
+    {
         std::cerr << "Error: Failed to load font.\n";
         return;
     }
@@ -197,7 +221,9 @@ void FlightGraph::displayOnMap(sf::RenderWindow& window, const sf::Texture& mapT
     }
 }
 
-void FlightGraph::displayHighlightedRoutes(sf::RenderWindow& window) {
+// Display the graph with highlighted routes
+void FlightGraph::displayHighlightedRoutes(sf::RenderWindow& window) 
+{
     for (int i = 0; i < vertexCount; ++i) {
         Edge* edge = vertices[i].head;
         while (edge) {
@@ -215,6 +241,7 @@ void FlightGraph::displayHighlightedRoutes(sf::RenderWindow& window) {
     }
 }
 
+// Clear the graph
 void FlightGraph::clear()
 {
     for (int i = 0; i < vertexCount; i++) 
@@ -231,8 +258,11 @@ void FlightGraph::clear()
     vertexCount = 0;
 }
 
-FlightGraph::~FlightGraph() {
-    for (int i = 0; i < vertexCount; i++) {
+// Destructor
+FlightGraph::~FlightGraph() 
+{
+    for (int i = 0; i < vertexCount; i++) 
+    {
         Edge* edge = vertices[i].head;
         while (edge) {
             Edge* temp = edge;

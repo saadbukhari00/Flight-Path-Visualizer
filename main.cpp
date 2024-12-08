@@ -7,6 +7,10 @@ g++ -I/opt/homebrew/opt/sfml/include -L/opt/homebrew/opt/sfml/lib main.cpp Class
 g++ -o FlightPathVisualizer main.cpp Classes/FileHandling.cpp Classes/FlightGraph.cpp Classes/route.cpp Classes/list.cpp Classes/menu.cpp Classes/stack.cpp Classes/layover.cpp Classes/queue.cpp -lsfml-graphics -lsfml-window -lsfml-system
 */
 
+//23I-2001 Saad Bukhari
+//23I-2017 Huzaifa Malik
+//23I-2034 Abdul Rafay
+
 #include "Classes/main.h"
 #include "Classes/heap.h"
 #include "Classes/stack.h"
@@ -22,7 +26,7 @@ g++ -o FlightPathVisualizer main.cpp Classes/FileHandling.cpp Classes/FlightGrap
 #include "Classes/utils.h"
 
 
-// Function to calculate the angle (in degrees) between two points
+
 
 
 class FlightBookingGUI 
@@ -657,7 +661,7 @@ void applyPreferences(Route &route, BookingState &currentState, RouteList &indir
             filteredRoutes = route.filterMultiLegRoutesByAirline(indirectRoutes, preferredAirline);
             currentState.indirectRoutes = filteredRoutes;
 
-            if(!filteredRoutes.isEmpty())
+            if(!filteredRoutes.isEmpty() || (!filteredFlights.isEmpty()))
             {
                 cases = 2;
             }

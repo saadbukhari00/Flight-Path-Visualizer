@@ -1,5 +1,6 @@
 #include "HotelsList.h"
 
+// Add a hotel to the list
 void HotelsList::addHotel(Hotel hotel)
 {
     HotelNode * newNode = new HotelNode;
@@ -21,6 +22,7 @@ void HotelsList::addHotel(Hotel hotel)
     }
 }
 
+// Display all hotels in the list           
 void HotelsList::displayHotels()
 {
     if (head == nullptr)
@@ -41,6 +43,7 @@ void HotelsList::displayHotels()
     }
 }
 
+// Delete a hotel from the list
 void HotelsList::deleteHotel(const char* cityName)
 {
     if (head == nullptr)
@@ -72,6 +75,7 @@ void HotelsList::deleteHotel(const char* cityName)
     cout << "Hotel not found" << endl;
 }
 
+// Delete all hotels from the list
 void HotelsList::deleteAllHotels()
 {
     if (head == nullptr)
@@ -91,6 +95,8 @@ void HotelsList::deleteAllHotels()
     head = nullptr;
 }
 
+
+// Populate the hotels list from the file
 void HotelsList::populateHotelsList()
 {
     Hotel* hotels = fileHandler.readHotelsFile();

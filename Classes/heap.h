@@ -1,6 +1,7 @@
 #include"main.h"
 
-class Heap{
+class Heap
+{
 private:
     int *arr;
     int capacity;

@@ -5,7 +5,8 @@
 #include"main.h"
 #include"FlightGraph.h"
 
-class MainGUI {
+class MainGUI 
+{
 private:
     sf::RenderWindow& mainWindow;
     sf::Font font;
@@ -16,7 +17,8 @@ private:
 
 public:
     MainGUI(sf::RenderWindow& window, FlightGraph& graph)
-        : mainWindow(window), flightGraph(graph), airplane() {
+        : mainWindow(window), flightGraph(graph), airplane() 
+        {
         font.loadFromFile("Assets/Aller_Bd.ttf");
 
         // Configure the Book Flight button

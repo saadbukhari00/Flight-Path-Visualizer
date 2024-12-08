@@ -17,40 +17,53 @@
         }
     }
 
-    void LinkedList::remove(string airL){
+    // Remove a flight by airline name  
+    void LinkedList::remove(string airL)
+    {
         FlightNode *curr=head,*prev=NULL;
-        while(curr&&curr->flight.airline != airL){
+        while(curr&&curr->flight.airline != airL)
+        {
             prev=curr;
             curr=curr->next;
         }
-        if(curr){
-            if(prev){
+
+        if(curr)
+        {
+            if(prev)
+            {
                 prev->next=curr->next;
                 delete curr;
-            }else{
+            }
+            else
+            {
                 head=curr->next;
                 delete curr;
             }
         }
     }
 
+// Returns the number of flights in the list
 int LinkedList::size() 
 {
     int count = 0;
     FlightNode* curr = head;
-    while (curr) {
+    while (curr) 
+    {
         count++;
         curr = curr->next;
     }
     return count;
 }
 
+// Returns the flight at the given index
 LinkedList::FlightNode* LinkedList::getFlightByIndex(int index) 
 {
     FlightNode* curr = head;
     int count = 0;
-    while (curr) {
-        if (count == index) {
+    while (curr) 
+    {
+        if (count == index) 
+        {
             return curr;
         }
         count++;
@@ -59,12 +72,16 @@ LinkedList::FlightNode* LinkedList::getFlightByIndex(int index)
     return NULL;
 }
 
+// Returns the flight node at the given index
 LinkedList::FlightNode* LinkedList::getNodeAt(int index) 
 {
     return getFlightByIndex(index);
 }
 
-Flight* LinkedList::getLastFlight() {
+
+// Returns the last flight in the list
+Flight* LinkedList::getLastFlight() 
+{
     if (!head) return NULL;
     FlightNode* curr = head;
     while (curr->next) {
@@ -73,21 +90,29 @@ Flight* LinkedList::getLastFlight() {
     return &(curr->flight);
 }
 
-void LinkedList::removeLast() {
+
+// Removes the last flight in the list
+void LinkedList::removeLast() 
+{
     if (!head) return;
-    if (!head->next) {
+    if (!head->next)
+     {
         delete head;
         head = NULL;
         return;
     }
+
     FlightNode* curr = head;
-    while (curr->next && curr->next->next) {
+    while (curr->next && curr->next->next) 
+    {
         curr = curr->next;
     }
     delete curr->next;
     curr->next = NULL;
 }
 
+
+// Merges the given list with the current list
 void LinkedList::merge(LinkedList& list) 
 {
     FlightNode* curr = list.getHead();
@@ -110,8 +135,6 @@ void LinkedList::Display()
     int index = 0;
     while (curr) 
     {
-        // Color each row alternatingly (optional)
-        // For simplicity, all rows same color here
         cout << "      |\033[1;33m" << setw(6) << index << "\033[0m |" 
              << setw(15) << curr->flight.origin << " |" 
              << setw(15) << curr->flight.destination << " |" 
@@ -130,6 +153,7 @@ void LinkedList::Display()
     cout << "\033[0m";
 }
 
+// Display indirect flights
 void LinkedList::DisplayIndirectFlights()
 {
     if (head == NULL)
@@ -155,6 +179,7 @@ void LinkedList::DisplayIndirectFlights()
     }
 }
 
+    // Clear the list
     void LinkedList::clear(){
         FlightNode *curr=head,*next=NULL;
         while(curr){

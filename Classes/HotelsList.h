@@ -7,7 +7,8 @@
 class HotelsList
 {
 public:
-    class HotelNode{
+    class HotelNode
+    {
     public:
         HotelNode * next;
         Hotel hotel;

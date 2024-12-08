@@ -4,7 +4,8 @@
 #include "main.h"
 #include "list.h"
 #include "RouteList.h"
-struct BookingState {
+struct BookingState 
+{
     string origin;
     string destination;
     string fromDate;
@@ -17,7 +18,8 @@ struct BookingState {
     BookingState(const string& ori, const string& dest, const string& from, const string& to)
         : origin(ori), destination(dest), fromDate(from), toDate(to) {}
 };
-class Stack {
+class Stack 
+{
 private:
 private:
     struct Node {
