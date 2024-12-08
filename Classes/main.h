@@ -9,9 +9,13 @@
 #include <sstream>
 #include <cmath>
 #include <iomanip>
+#include <chrono>
+#include <thread>
 #include <SFML/Graphics.hpp>
 
 using namespace std;
+
+
 
 struct Airplane 
 {
@@ -60,6 +64,8 @@ struct Flight
         strcpy(this->arrivalTime, arrivalTime);
         this->price = price;
         this->distance = distance;
+        this->cheapest = false;
+        this->shortest = false;
     }
 
     void display()
