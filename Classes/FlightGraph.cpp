@@ -174,18 +174,18 @@ void FlightGraph::displayGraph() const
     for (int i = 0; i < vertexCount; i++) {
         if (vertices[i].city[0] == '\0') continue;
 
-        std::cout << "City: " << vertices[i].city << " -> ";
+        cout << "City: " << vertices[i].city << " -> ";
         Edge* edge = vertices[i].head;
         while (edge) 
         {
-            std::cout << vertices[edge->destination].city
+            cout << vertices[edge->destination].city
                       << " (Airline: " << edge->flightData->airline
                       << ", Date: " << edge->flightData->date
                       << ", Price: " << edge->flightData->price << "), "
                       << "Distance: " << edge->flightData->distance << " km, ";
             edge = edge->next;
         }
-        std::cout << "\n";
+        cout << "\n";
     }
 }
 

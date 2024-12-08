@@ -6,17 +6,17 @@ void HotelBooking::searchHotelsInCity(const char* cityName)
 {
     HotelsList::HotelNode* curr = hotelsList.getHead();
     bool found = false;
-    std::cout << "\n\033[1;36mHotels available in " << cityName << ":\033[0m\n";
-    std::cout << "________________________________________________________________________________\n";
-    std::cout << "   IDX | Hotel Name                     | City           | Price/Night\n";
-    std::cout << "-------|--------------------------------|----------------|-------------\n";
+    cout << "\n\033[1;36mHotels available in " << cityName << ":\033[0m\n";
+    cout << "________________________________________________________________________________\n";
+    cout << "   IDX | Hotel Name                     | City           | Price/Night\n";
+    cout << "-------|--------------------------------|----------------|-------------\n";
     int index = 0;
     while (curr) 
     {
         if (strcmp(curr->hotel.city, cityName) == 0) 
         {
             found = true;
-            std::cout << "   " << index << "   | " << std::setw(30) << curr->hotel.name
+            cout << "   " << index << "   | " << std::setw(30) << curr->hotel.name
                       << " | " << std::setw(14) << curr->hotel.city
                       << " | " << curr->hotel.pricePerNight << "\n";
             // Since only one hotel per city, we can break after we find it.
@@ -27,9 +27,9 @@ void HotelBooking::searchHotelsInCity(const char* cityName)
     }
     if (!found) 
     {
-        std::cout << "\033[1;31mNo hotels found in " << cityName << ".\033[0m\n";
+        cout << "\033[1;31mNo hotels found in " << cityName << ".\033[0m\n";
     }
-    std::cout << "________________________________________________________________________________\n\n";
+    cout << "________________________________________________________________________________\n\n";
 }
 
 // Book a hotel in the given city
