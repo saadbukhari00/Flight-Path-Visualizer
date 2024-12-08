@@ -645,6 +645,7 @@ void applyPreferences(Route &route, BookingState &currentState, RouteList &indir
             cout << "Enter the preferred airline: ";
             cin.ignore();
             getline(cin, preferredAirline);
+            
             // Filter direct flights by airline
             filteredFlights = route.listDirectFlightsWithinDataRangeandPreferredAirline(
                 currentState.origin.c_str(), currentState.destination.c_str(),
