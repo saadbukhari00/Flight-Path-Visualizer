@@ -109,7 +109,7 @@ sudo apt-get install libsfml-dev
 ## Contact
 For queries or suggestions, please reach out to:
 - **Saad Bukhari**: [GitHub Profile](https://github.com/saadbukhari00)
-- **Huzaifa Khan**: [GitHub Profile](https://github.com/huzzaaaaifa)
+- **Huzaifa Malik**: [GitHub Profile](https://github.com/huzzaaaaifa)
 - **Abdul Rafay**: [GitHub Profile](https://github.com/abdulrafay1-4)
 
 ---
